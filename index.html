@@ -144,6 +144,107 @@ button {
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+const fileInput = document.getElementById("file");
+const copiesInput = document.getElementById("copies");
+const typeInput = document.getElementById("type");
+const sideInput = document.getElementById("side");
+const pageCountDisplay = document.getElementById("pageCount");
+const totalPriceDisplay = document.getElementById("totalPrice");
+
+let totalPages = 0;
+
+async function countPages() {
+  const files = Array.from(fileInput.files);
+  totalPages = 0;
+
+  if (files.length === 0) {
+    pageCountDisplay.textContent = "Total Pages: 0";
+    calculatePrice();
+    return;
+  }
+
+  pageCountDisplay.textContent = "Pages count ho rahe hain...";
+
+  try {
+    let count = 0;
+
+    for (const file of files) {
+      if (file.name.toLowerCase().endsWith(".pdf")) {
+        const data = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({
+          data: data
+        }).promise;
+
+        count += pdf.numPages;
+      } else {
+        count += 1;
+      }
+    }
+
+    totalPages = count;
+
+    pageCountDisplay.textContent =
+      "Total Pages (1 copy): " + totalPages;
+
+    calculatePrice();
+
+  } catch (error) {
+    pageCountDisplay.textContent =
+      "PDF pages count nahi ho paye. Dobara try karein.";
+
+    totalPriceDisplay.textContent = "Total Price: Calculate nahi hua";
+  }
+}
+
+function calculatePrice() {
+  const copies = Number(copiesInput.value);
+
+  if (
+    totalPages === 0 ||
+    !Number.isInteger(copies) ||
+    copies < 1 ||
+    copies > 1000
+  ) {
+    totalPriceDisplay.textContent = "Total Price: ₹0";
+    return;
+  }
+
+  const printType = typeInput.value;
+  const printSide = sideInput.value;
+
+  let rate;
+  let quantity;
+  let unit;
+
+  if (printType === "Black & White") {
+    rate = printSide === "Single Side" ? 2 : 3;
+  } else {
+    rate = printSide === "Single Side" ? 10 : 15;
+  }
+
+  if (printSide === "Single Side") {
+    quantity = totalPages * copies;
+    unit = "pages";
+  } else {
+    quantity = Math.ceil(totalPages / 2) * copies;
+    unit = "sheets";
+  }
+
+  const total = quantity * rate;
+
+  totalPriceDisplay.textContent =
+    "Total Price: ₹" + total +
+    " (" + quantity + " " + unit +
+    " × ₹" + rate + ")";
+}
+
+fileInput.addEventListener("change", countPages);
+copiesInput.addEventListener("input", calculatePrice);
+typeInput.addEventListener("change", calculatePrice);
+sideInput.addEventListener("change", calculatePrice);
   document.getElementById("printForm").addEventListener("submit", function(event) {
     event.preventDefault();
 
