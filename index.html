@@ -1,1 +1,197 @@
+<!DOCTYPE html><html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Printing</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f2f5fa;
+      color: #172033;
+    }header {
+  background: #155eef;
+  color: white;
+  text-align: center;
+  padding: 30px 15px;
+}
 
+header h1 {
+  margin: 0 0 10px;
+}
+
+main {
+  max-width: 500px;
+  margin: 25px auto;
+  padding: 0 15px;
+}
+
+.card {
+  background: white;
+  padding: 22px;
+  border-radius: 15px;
+  box-shadow: 0 3px 12px #00000010;
+}
+
+label {
+  display: block;
+  margin: 18px 0 8px;
+  font-weight: bold;
+}
+
+input, select, button {
+  width: 100%;
+  padding: 12px;
+  box-sizing: border-box;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+input, select {
+  border: 1px solid #ccc;
+  background: white;
+}
+
+button {
+  margin-top: 22px;
+  border: none;
+  background: #155eef;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#result {
+  margin-top: 18px;
+  overflow-wrap: anywhere;
+}
+
+.note {
+  font-size: 13px;
+  color: #667085;
+  line-height: 1.5;
+}
+
+  </style>
+</head><body><header>
+  <h1>🖨️ Smart Printing</h1>
+  <p>Upload karo, print shop se collect karo!</p>
+</header><main>
+  <div class="card">
+    <h2>Apna Print Order Banayein</h2><form id="printForm">
+  <label for="file">PDF ya Photo select karein</label>
+  <input
+    type="file"
+    id="file"
+    accept=".pdf,.jpg,.jpeg,.png"
+    multiple
+    required
+  >
+
+  <label for="type">Print Type</label>
+  <select id="type">
+    <option>Black & White</option>
+    <option>Colour</option>
+  </select>
+
+  <label for="side">Printing Side</label>
+  <select id="side">
+    <option>Single Side</option>
+    <option>Double Side</option>
+  </select>
+
+  <label for="copies">Copies</label>
+  <select id="copies">
+    <option value="1">1 Copy</option>
+    <option value="2">2 Copies</option>
+    <option value="3">3 Copies</option>
+    <option value="5">5 Copies</option>
+    <option value="10">10 Copies</option>
+  </select>
+
+  <label for="name">Aapka Naam</label>
+  <input
+    type="text"
+    id="name"
+    placeholder="Apna naam likhein"
+    required
+  >
+
+  <label for="phone">Mobile Number</label>
+  <input
+    type="tel"
+    id="phone"
+    inputmode="numeric"
+    pattern="[0-9]{10}"
+    maxlength="10"
+    placeholder="10 digit mobile number"
+    required
+  >
+
+  <button type="submit">Create Demo Order</button>
+</form>
+
+<div id="result" aria-live="polite"></div>
+
+<p class="note">
+  Note: Yeh abhi demo website hai. Order filhaal kisi real shop ko nahi bheja jata.
+</p>
+
+  </div>
+</main><script>
+  document.getElementById("printForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const fileInput = document.getElementById("file");
+    const files = Array.from(fileInput.files);
+    const phone = document.getElementById("phone").value.trim();
+
+    if (files.length === 0) {
+      alert("Pehle PDF ya photo select karein.");
+      return;
+    }
+
+    const allowedExtensions = /\.(pdf|jpg|jpeg|png)$/i;
+
+    for (const file of files) {
+      if (!allowedExtensions.test(file.name)) {
+        alert("Sirf PDF, JPG, JPEG aur PNG files allowed hain.");
+        return;
+      }
+
+      if (file.size > 15 * 1024 * 1024) {
+        alert("Har file 15 MB se chhoti honi chahiye.");
+        return;
+      }
+    }
+
+    if (!/^[0-9]{10}$/.test(phone)) {
+      alert("Sahi 10 digit mobile number likhein.");
+      return;
+    }
+
+    const orderId = "SP-" + Date.now().toString().slice(-8);
+    const result = document.getElementById("result");
+
+    result.replaceChildren();
+
+    const title = document.createElement("h3");
+    title.textContent = "✅ Demo Order Ready!";
+
+    const details = document.createElement("p");
+    details.textContent =
+      "Order ID: " + orderId +
+      " | Name: " + document.getElementById("name").value.trim() +
+      " | Files: " + files.length +
+      " | Type: " + document.getElementById("type").value +
+      " | Side: " + document.getElementById("side").value +
+      " | Copies: " + document.getElementById("copies").value;
+
+    const note = document.createElement("p");
+    note.textContent =
+      "Yeh demo order hai. File server par upload nahi hui aur shop ko order nahi mila.";
+
+    result.append(title, details, note);
+  });
+</script></body>
+  </html>
