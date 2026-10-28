@@ -277,7 +277,42 @@ sideInput.addEventListener("change", calculatePrice);
     }
 
     const orderId = "SP-" + Date.now().toString().slice(-8);
-    
-  });
-</script></body>
-  </html>
+
+const copies = Number(document.getElementById("copies").value);
+const printType = typeInput.value;
+const printSide = sideInput.value;
+
+let rate;
+
+if (printType === "Black & White") {
+  rate = printSide === "Single Side" ? 2 : 3;
+} else {
+  rate = printSide === "Single Side" ? 10 : 15;
+}
+
+let quantity;
+
+if (printSide === "Single Side") {
+  quantity = totalPages * copies;
+} else {
+  quantity = Math.ceil(totalPages / 2) * copies;
+}
+
+const order = {
+  orderId: orderId,
+  name: document.getElementById("name").value.trim(),
+  phone: phone,
+  fileNames: files.map(file => file.name),
+  totalPages: totalPages * copies,
+  printType: printType,
+  printSide: printSide,
+  copies: copies,
+  totalPrice: quantity * rate
+};
+
+sessionStorage.setItem(
+  "smartPrintingOrder",
+  JSON.stringify(order)
+);
+
+window.location.href = "confirmation.html";
