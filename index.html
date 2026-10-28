@@ -101,14 +101,17 @@ button {
   </select>
 
   <label for="copies">Copies</label>
-  <select id="copies">
-    <option value="1">1 Copy</option>
-    <option value="2">2 Copies</option>
-    <option value="3">3 Copies</option>
-    <option value="5">5 Copies</option>
-    <option value="10">10 Copies</option>
-  </select>
+<input
+type="number"
+id="copies"
+min="1"
+max="1000"
+step="1"
+value="1"
+placeholder="Copies ki sankhya likhein"
+required
 
+«»
   <label for="name">Aapka Naam</label>
   <input
     type="text"
