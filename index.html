@@ -277,54 +277,7 @@ sideInput.addEventListener("change", calculatePrice);
     }
 
     const orderId = "SP-" + Date.now().toString().slice(-8);
-    const result = document.getElementById("result");
-
-    result.replaceChildren();
-
-    const title = document.createElement("h3");
-    title.textContent = "✅ Demo Order Ready!";
-
-    const details = document.createElement("p");
-
-const copies = Number(document.getElementById("copies").value);
-const printType = document.getElementById("type").value;
-const printSide = document.getElementById("side").value;
-
-let rate;
-let quantity;
-let unit;
-
-if (printType === "Black & White") {
-rate = printSide === "Single Side" ? 2 : 3;
-} else {
-rate = printSide === "Single Side" ? 10 : 15;
-}
-
-if (printSide === "Single Side") {
-quantity = totalPages * copies;
-unit = "pages";
-} else {
-quantity = Math.ceil(totalPages / 2) * copies;
-unit = "sheets";
-}
-
-const total = quantity * rate;
-
-details.textContent =
-"Order ID: " + orderId +
-" | Name: " + document.getElementById("name").value.trim() +
-" | Files: " + files.length +
-" | Total Pages: " + (totalPages * copies) +
-" | Type: " + printType +
-" | Side: " + printSide +
-" | Copies: " + copies +
-" | Total Price: ₹" + total;
-
-    const note = document.createElement("p");
-    note.textContent =
-      "Yeh demo order hai. File server par upload nahi hui aur shop ko order nahi mila.";
-  
-    result.append(title, details, note);
+    
   });
 </script></body>
   </html>
