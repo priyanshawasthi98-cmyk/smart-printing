@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Printing - Shop Dashboard</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 16px;
+      font-family: Arial, sans-serif;
+      background: #f1f5f9;
+      color: #172033;
+    }
+
+    .container {
+      max-width: 850px;
+      margin: auto;
+    }
+
+    .box, .order {
+      background: white;
+      padding: 16px;
+      margin: 14px 0;
+      border-radius: 10px;
+    }
+
+    input, button, select {
+      width: 100%;
+      padding: 12px;
+      margin: 7px 0;
+      border: 1px solid #ccc;
+      border-radius: 7px;
+      font-size: 15px;
+    }
+
+    button {
+      background: #1769d2;
+      color: white;
+      border: none;
+    }
+
+    .logout { background: #dc3545; }
+    .status { font-weight: bold; color: #b45309; }
+    .hidden { display: none; }
+    #message { font-weight: bold; }
+  </style>
+</head>
+
+<body>
+<div class="container">
+
+  <h1>Smart Printing</h1>
+  <h2>Shop Dashboard</h2>
+
+  <div class="box" id="loginBox">
+    <h3>Login</h3>
+
+    <form id="loginForm">
+      <input id="email" type="email"
+        placeholder="Admin Email" required>
+
+      <input id="password" type="password"
+        placeholder="Password" required>
+
+      <button type="submit">Login</button>
+    </form>
+  </div>
+
+  <div id="dashboard" class="hidden">
+
+    <div class="box">
+      <h3>Shop Orders</h3>
+
+      <button id="refreshBtn">Refresh Orders</button>
+      <button id="logoutBtn" class="logout">Logout</button>
+
+      <p id="message"></p>
+      <div id="ordersList">Loading...</div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+
+import { auth, db } from "./firebase.js";
+
+import {
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+  collection,
+  getDocs,
+  query,
+  orderBy,
+  doc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+const ADMIN_UID = "SElLitfTaQhCwuSCOjguFrKXuWx1";
+
+const loginBox = document.getElementById("loginBox");
+const dashboard = document.getElementById("dashboard");
+const ordersList = document.getElementById("ordersList");
+const message = document.getElementById("message");
+
+
+function showMessage(text) {
+  message.textContent = text;
+}
+
+
+// Login
+document.getElementById("loginForm").addEventListener(
+  "submit", async (e) => {
+
+    e.preventDefault();
+
+    try {
+      const result = await signInWithEmailAndPassword(
+        auth,
+        document.getElementById("email").value.trim(),
+        document.getElementById("password").value
+      );
+
+      if (result.user.uid !== ADMIN_UID) {
+        await signOut(auth);
+        showMessage("Admin access required.");
+        return;
+      }
+
+      showMessage("Login successful.");
+
+    } catch (error) {
+      showMessage("Login Error: " + error.message);
+    }
+  }
+);
+
+
+// Login state
+onAuthStateChanged(auth, async (user) => {
+
+  if (user && user.uid === ADMIN_UID) {
+
+    loginBox.classList.add("hidden");
+    dashboard.classList.remove("hidden");
+
+    await loadOrders();
+
+  } else {
+
+    loginBox.classList.remove("hidden");
+    dashboard.classList.add("hidden");
+
+  }
+
+});
+
+
+// Load Orders
+async function loadOrders() {
+
+  ordersList.textContent = "Orders load ho rahe hain...";
+
+  try {
+
+    const q = query(
+      collection(db, "orders"),
+      orderBy("createdAt", "desc")
+    );
+
+    const snapshot = await getDocs(q);
+
+    ordersList.innerHTML = "";
+
+    if (snapshot.empty) {
+      ordersList.textContent = "Koi order nahi mila.";
+      return;
+    }
+
+    snapshot.forEach((item) => {
+
+      const order = item.data();
+
+      const card = document.createElement("div");
+      card.className = "order";
+
+      function addLine(label, value) {
+        const p = document.createElement("p");
+        p.textContent = label + ": " + (value ?? "-");
+        card.appendChild(p);
+      }
+
+      const title = document.createElement("h3");
+      title.textContent = "Order: " + (order.orderId || item.id);
+      card.appendChild(title);
+
+      addLine("Customer", order.name);
+      addLine("Mobile", order.phone);
+      addLine("Files", (order.fileNames || []).join(", "));
+      addLine("Pages", order.totalPages);
+      addLine("Print Type", order.printType);
+      addLine("Print Side", order.printSide);
+      addLine("Copies", order.copies);
+      addLine("Amount", "₹" + order.totalPrice);
+
+      const payment = document.createElement("p");
+      payment.className = "status";
+      payment.textContent =
+        "Payment: " + (order.paymentStatus || "PENDING");
+      card.appendChild(payment);
+
+      const currentStatus = order.orderStatus || "PENDING";
+
+      const statusSelect = document.createElement("select");
+
+      ["PENDING", "ACCEPTED", "PRINTING", "COMPLETED", "REJECTED"]
+        .forEach(status => {
+          const option = document.createElement("option");
+          option.value = status;
+          option.textContent = status;
+          statusSelect.appendChild(option);
+        });
+
+      statusSelect.value = currentStatus;
+      card.appendChild(statusSelect);
+
+      const saveButton = document.createElement("button");
+      saveButton.textContent = "Update Order Status";
+
+      saveButton.addEventListener("click", async () => {
+
+        if (!auth.currentUser ||
+            auth.currentUser.uid !== ADMIN_UID) {
+          showMessage("Admin login required.");
+          return;
+        }
+
+        if (statusSelect.value === "COMPLETED" &&
+            order.paymentStatus !== "PAID") {
+          showMessage("Payment verify hone se pehle order complete nahi kar sakte.");
+          return;
+        }
+
+        saveButton.disabled = true;
+
+        try {
+
+          await updateDoc(doc(db, "orders", item.id), {
+            orderStatus: statusSelect.value
+          });
+
+          showMessage("Order status update ho gaya!");
+          await loadOrders();
+
+        } catch (error) {
+
+          showMessage("Update Error: " + error.message);
+          saveButton.disabled = false;
+
+        }
+
+      });
+
+      card.appendChild(saveButton);
+      ordersList.appendChild(card);
+
+    });
+
+    showMessage("Total Orders: " + snapshot.size);
+
+  } catch (error) {
+
+    ordersList.textContent = "Orders load nahi hue.";
+    showMessage("Error: " + error.message);
+
+  }
+}
+
+
+// Refresh
+document.getElementById("refreshBtn").addEventListener(
+  "click", loadOrders
+);
+
+
+// Logout
+document.getElementById("logoutBtn").addEventListener(
+  "click", async () => {
+    await signOut(auth);
+    showMessage("Logout successful.");
+  }
+);
+
+</script>
+</body>
+  </html>
