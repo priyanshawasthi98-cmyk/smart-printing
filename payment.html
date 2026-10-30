@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html lang="hi">
+<!DOCTYPE html><html lang="hi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Payment - Smart Printing</title>
-
-  <style>
+  <title>Payment - Smart Printing</title>  <style>
     body {
       margin: 0;
       padding: 20px;
@@ -13,7 +10,6 @@
       background: #f2f5fa;
       color: #172033;
     }
-
     header {
       background: #155eef;
       color: white;
@@ -21,42 +17,33 @@
       padding: 25px 15px;
       border-radius: 15px;
     }
-
     main {
       max-width: 500px;
       margin: 25px auto;
     }
-
     .card {
       background: white;
       padding: 22px;
       border-radius: 15px;
       box-shadow: 0 3px 12px #00000010;
     }
-
     .row {
       display: flex;
       justify-content: space-between;
       gap: 15px;
       padding: 13px 0;
-      border-bottom: 1px solid #eeeeee;
+      border-bottom: 1px solid #eee;
     }
-
-    .label {
-      color: #667085;
-    }
-
+    .label { color: #667085; }
     .value {
       font-weight: bold;
       text-align: right;
       overflow-wrap: anywhere;
     }
-
     .total {
       color: #155eef;
       font-size: 24px;
     }
-
     button {
       width: 100%;
       padding: 14px;
@@ -67,23 +54,41 @@
       font-weight: bold;
       cursor: pointer;
     }
-
     .pay {
       background: #155eef;
       color: white;
     }
-
     .back {
       background: #e8efff;
       color: #155eef;
     }
-
     .note {
       color: #667085;
       font-size: 13px;
       line-height: 1.5;
     }
-
+    #qrSection {
+      text-align: center;
+      margin-top: 20px;
+      padding: 15px;
+      background: #f8faff;
+      border-radius: 12px;
+    }
+    #qrImage {
+      width: 230px;
+      max-width: 100%;
+      display: block;
+      margin: 15px auto;
+    }
+    input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 13px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      margin-top: 8px;
+    }
     #paymentMessage {
       margin-top: 15px;
       padding: 12px;
@@ -91,42 +96,59 @@
       border-radius: 8px;
       line-height: 1.5;
     }
-  </style>
-</head>
-
-<body>
-
-<header>
+  </style></head><body><header>
   <h1>🖨️ Smart Printing</h1>
-  <p>Order Payment</p>
-</header>
-
-<main>
+  <p>UPI Payment</p>
+</header><main>
   <div class="card">
-    <h2>💳 Payment Summary</h2>
+    <h2>💳 Payment Summary</h2><div id="orderDetails">
+  Order details load ho rahi hain...
+</div>
 
-    <div id="orderDetails">
-      Order details load ho rahi hain...
-    </div>
+<button class="pay" id="payButton" type="button">
+  Generate Payment QR
+</button>
 
-    <button class="pay" id="payButton" type="button">
-      Pay Now
-    </button>
+<section id="qrSection" hidden>
+  <h3>Scan & Pay</h3>
+  <p id="qrAmount"></p>
+  <img id="qrImage" alt="UPI Payment QR Code">
+  <p>UPI ID: 9770981980@ybl</p>
 
-    <button class="back" id="backButton" type="button">
-      Back to Order
-    </button>
+  <button class="pay" id="openUPI" type="button">
+    Open UPI App
+  </button>
 
-    <div id="paymentMessage" hidden></div>
+  <label for="utr"><b>Payment UTR / Transaction ID</b></label>
+  <input
+    id="utr"
+    type="text"
+    maxlength="30"
+    placeholder="Payment ke baad UTR dalein"
+    autocomplete="off"
+  >
 
-    <p class="note">
-      Note: Yeh demo payment page hai. Koi real payment nahi hoga
-      aur order kisi real print shop ko nahi bheja gaya hai.
-    </p>
+  <button class="pay" id="submitUTR" type="button">
+    Submit Payment Reference
+  </button>
+</section>
+
+<button class="back" id="backButton" type="button">
+  Back to Order
+</button>
+
+<div id="paymentMessage" hidden></div>
+
+<p class="note">
+  QR payment request hai. UTR submit karne se payment verify nahi hota.
+  Payment ko PhonePe mein check karne ke baad hi order Paid maana jayega.
+</p>
+
   </div>
-</main>
+</main><script>
+  const UPI_ID = "9770981980@ybl";
+  const UPI_NAME = "Smart Printing";
 
-<script>
   const order = JSON.parse(
     sessionStorage.getItem("smartPrintingOrder") || "null"
   );
@@ -134,11 +156,16 @@
   const details = document.getElementById("orderDetails");
   const payButton = document.getElementById("payButton");
   const message = document.getElementById("paymentMessage");
+  const qrSection = document.getElementById("qrSection");
 
-  if (!order) {
-    details.textContent =
-      "Order details nahi mili. Pehle order form bharein.";
+  function showMessage(text) {
+    message.hidden = false;
+    message.textContent = text;
+  }
 
+  if (!order || !Number.isFinite(Number(order.totalPrice)) ||
+      Number(order.totalPrice) <= 0) {
+    details.textContent = "Valid order nahi mila. Pehle order form bharein.";
     payButton.disabled = true;
   } else {
     const rows = [
@@ -148,7 +175,7 @@
       ["Print Type", order.printType],
       ["Printing Side", order.printSide],
       ["Copies", order.copies],
-      ["Total Amount", "₹" + order.totalPrice]
+      ["Total Amount", "₹" + Number(order.totalPrice).toFixed(2)]
     ];
 
     rows.forEach(function(item, index) {
@@ -160,9 +187,8 @@
       label.textContent = item[0];
 
       const value = document.createElement("span");
-      value.className =
-        index === rows.length - 1 ? "value total" : "value";
-
+      value.className = index === rows.length - 1
+        ? "value total" : "value";
       value.textContent = item[1];
 
       row.append(label, value);
@@ -170,22 +196,73 @@
     });
   }
 
-  payButton.addEventListener("click", function() {
+  function generateQR() {
     if (!order) return;
 
-    message.hidden = false;
-    message.textContent =
-      "Demo only: Payment abhi available nahi hai. " +
-      "Koi paisa nahi kata aur payment confirm nahi hua.";
+    const amount = Number(order.totalPrice).toFixed(2);
+
+    const upiLink = "upi://pay?" + new URLSearchParams({
+      pa: UPI_ID,
+      pn: UPI_NAME,
+      am: amount,
+      cu: "INR",
+      tn: "Order " + order.orderId
+    }).toString();
+
+    const qrURL =
+      "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" +
+      encodeURIComponent(upiLink);
+
+    document.getElementById("qrImage").src = qrURL;
+    document.getElementById("qrAmount").textContent =
+      "Pay exactly ₹" + amount;
+
+    document.getElementById("openUPI").onclick = function() {
+      window.location.href = upiLink;
+    };
+
+    qrSection.hidden = false;
+    payButton.disabled = true;
+    payButton.textContent = "QR Generated";
+  }
+
+  payButton.addEventListener("click", generateQR);
+
+  document.getElementById("submitUTR").addEventListener("click", function() {
+    const utr = document.getElementById("utr").value.trim();
+
+    if (!/^[A-Za-z0-9]{8,30}$/.test(utr)) {
+      showMessage("Kripya valid Transaction Reference / UTR enter karein.");
+      return;
+    }
+
+    const pending = JSON.parse(
+      localStorage.getItem("smartPrintingPendingPayments") || "[]"
+    );
+
+    pending.push({
+      orderId: order.orderId,
+      utr: utr,
+      amount: Number(order.totalPrice),
+      submittedAt: new Date().toISOString(),
+      status: "PENDING_MANUAL_VERIFICATION"
+    });
+
+    localStorage.setItem(
+      "smartPrintingPendingPayments",
+      JSON.stringify(pending)
+    );
+
+    showMessage(
+      "Reference is device par save ho gaya hai. Payment abhi verify nahi hua. " +
+      "PhonePe mein actual payment check karna zaroori hai."
+    );
+
+    document.getElementById("submitUTR").disabled = true;
   });
 
-  document.getElementById("backButton").addEventListener(
-    "click",
-    function() {
-      window.location.href = "confirmation.html";
-    }
-  );
-</script>
-
-</body>
+  document.getElementById("backButton").addEventListener("click", function() {
+    window.location.href = "confirmation.html";
+  });
+</script></body>
   </html>
