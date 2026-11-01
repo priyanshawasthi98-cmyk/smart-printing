@@ -98,14 +98,14 @@ button:disabled {
 
 <label for="type">Print Type</label>
 <select id="type">
-<option>Black & White</option>
-<option>Colour</option>
+  <option>Black & White</option>
+  <option>Colour</option>
 </select>
 
 <label for="side">Printing Side</label>
 <select id="side">
-<option>Single Side</option>
-<option>Double Side</option>
+  <option>Single Side</option>
+  <option>Double Side</option>
 </select>
 
 <label for="copies">Copies</label>
@@ -159,8 +159,7 @@ Note: Order confirmation ke baad payment process hoga.
 
 import { supabase } from "./firebase.js";
 
-pdfjsLib.GlobalWorkerOptions.workerSrc =
-"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+const pdfjs = window.pdfjsLib;
 
 const fileInput = document.getElementById("file");
 const copiesInput = document.getElementById("copies");
@@ -173,63 +172,25 @@ const submitBtn = document.getElementById("submitBtn");
 
 let totalPages = 0;
 let counting = false;
+let selectionNumber = 0;
 
-async function countPages() {
-
-  const files = Array.from(fileInput.files);
-  totalPages = 0;
-
-  if (files.length === 0) {
-    pageCountDisplay.textContent = "Total Pages: 0";
-    calculatePrice();
-    return;
-  }
-
-  counting = true;
-  pageCountDisplay.textContent = "Pages count ho rahe hain...";
-
-  try {
-    let count = 0;
-
-    for (const file of files) {
-      if (file.name.toLowerCase().endsWith(".pdf")) {
-        const data = await file.arrayBuffer();
-        const pdf = await pdfjsLib.getDocument({
-          data: data
-        }).promise;
-
-        count += pdf.numPages;
-      } else {
-        count += 1;
-      }
-    }
-
-    totalPages = count;
-
-    pageCountDisplay.textContent =
-      "Total Pages (1 copy): " + totalPages;
-
-    calculatePrice();
-
-  } catch (error) {
-    totalPages = 0;
-    pageCountDisplay.textContent =
-      "PDF pages count nahi ho paye.";
-
-    totalPriceDisplay.textContent =
-      "Total Price: Calculate nahi hua";
-
-  } finally {
-    counting = false;
-  }
+if (!pdfjs) {
+  pageCountDisplay.textContent = "PDF library load nahi hui.";
+  submitBtn.disabled = true;
+} else {
+  pdfjs.GlobalWorkerOptions.workerSrc =
+    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 }
+
+
+// PRICE CALCULATION
 
 function calculatePrice() {
 
   const copies = Number(copiesInput.value);
 
   if (
-    totalPages === 0 ||
+    totalPages <= 0 ||
     !Number.isInteger(copies) ||
     copies < 1 ||
     copies > 1000
@@ -257,15 +218,121 @@ function calculatePrice() {
     quantity = Math.ceil(totalPages / 2) * copies;
   }
 
-  totalPriceDisplay.textContent =
-    "Total Price: ₹" + (quantity * rate);
+  const total = quantity * rate;
+
+  totalPriceDisplay.textContent = "Total Price: ₹" + total;
 }
 
+
+// PDF AND PHOTO PAGE COUNT
+
+async function countPages() {
+
+  const currentSelection = ++selectionNumber;
+  const files = Array.from(fileInput.files);
+
+  totalPages = 0;
+  calculatePrice();
+
+  if (files.length === 0) {
+    pageCountDisplay.textContent = "Total Pages: 0";
+    counting = false;
+    submitBtn.disabled = false;
+    return;
+  }
+
+  if (!pdfjs) {
+    pageCountDisplay.textContent = "PDF library load nahi hui.";
+    return;
+  }
+
+  counting = true;
+  submitBtn.disabled = true;
+
+  pageCountDisplay.textContent = "Pages count ho rahe hain...";
+  totalPriceDisplay.textContent = "Total Price: Calculating...";
+
+  try {
+
+    let count = 0;
+
+    for (const file of files) {
+
+      const extension = file.name.split(".").pop().toLowerCase();
+
+      if (extension === "pdf") {
+
+        const data = await file.arrayBuffer();
+
+        const pdf = await pdfjs.getDocument({
+          data: new Uint8Array(data)
+        }).promise;
+
+        count += pdf.numPages;
+
+        pdf.destroy();
+
+      } else if (
+        extension === "jpg" ||
+        extension === "jpeg" ||
+        extension === "png"
+      ) {
+
+        count += 1;
+
+      } else {
+
+        throw new Error("Unsupported file format: " + file.name);
+
+      }
+    }
+
+    if (currentSelection !== selectionNumber) return;
+
+    totalPages = count;
+
+    pageCountDisplay.textContent =
+      "Total Pages (1 copy): " + totalPages;
+
+    calculatePrice();
+
+  } catch (error) {
+
+    if (currentSelection !== selectionNumber) return;
+
+    console.error("Page counting error:", error);
+
+    totalPages = 0;
+
+    pageCountDisplay.textContent =
+      "PDF Error: " + error.message;
+
+    totalPriceDisplay.textContent =
+      "Total Price: Calculate nahi hua";
+
+  } finally {
+
+    if (currentSelection === selectionNumber) {
+      counting = false;
+      submitBtn.disabled = false;
+    }
+
+  }
+}
+
+
+// INPUT EVENTS
+
 fileInput.addEventListener("change", countPages);
+
 copiesInput.addEventListener("input", calculatePrice);
+
 typeInput.addEventListener("change", calculatePrice);
+
 sideInput.addEventListener("change", calculatePrice);
 
+
+// FORM SUBMISSION
 
 document.getElementById("printForm").addEventListener(
 "submit",
@@ -409,6 +476,7 @@ async function(event) {
       "Upload failed: " + (error.message || "Please try again.");
 
     submitBtn.disabled = false;
+
     submitBtn.textContent =
       "Continue to Order Confirmation";
 
