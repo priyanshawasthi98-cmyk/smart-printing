@@ -18,7 +18,7 @@ export const db = getFirestore(app);
 export const auth = getAuth(app);
 
 // Supabase Configuration
-const supabaseUrl ="https://lhpxgxgqhyvcfgmlzdpi.supabase.co/rest/v1/";
+const supabaseUrl ="https://lhpxgxgqhyvcfgmlzdpi.supabase.co";
 const supabasePublishableKey = "sb_publishable_RjOjldVeR9q4NF-UeeEQCA_Wbm7oDoV";
 
 // Initialize Supabase
