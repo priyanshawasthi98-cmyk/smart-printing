@@ -71,4 +71,397 @@
     .message {
       text-align: center;
       margin: 10px 0;
-     
+      font-weight: bold;
+      overflow-wrap: anywhere;
+    }
+
+    .success { color: green; }
+    .error { color: red; }
+
+    .note {
+      font-size: 13px;
+      color: #666;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>Smart Printing</h1>
+  <h2 style="text-align:center;">Admin Dashboard</h2>
+
+  <div class="box" id="loginBox">
+    <h3>Admin Login</h3>
+
+    <input
+      type="email"
+      id="email"
+      placeholder="Admin Email"
+      autocomplete="username"
+    >
+
+    <input
+      type="password"
+      id="password"
+      placeholder="Password"
+      autocomplete="current-password"
+    >
+
+    <button id="loginBtn" type="button">Login</button>
+
+    <div id="loginMessage" class="message"></div>
+  </div>
+
+  <div id="dashboard" style="display:none;">
+
+    <div class="box">
+      <h3>All Orders</h3>
+
+      <button id="refreshBtn" type="button">Refresh Orders</button>
+      <button id="logoutBtn" class="logout" type="button">Logout</button>
+
+      <div id="message" class="message"></div>
+      <div id="orders">Loading orders...</div>
+    </div>
+
+  </div>
+
+</div>
+
+<script type="module">
+
+  import { auth, db } from "./firebase.js";
+
+  import {
+    signInWithEmailAndPassword,
+    signOut,
+    onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+  import {
+    collection,
+    getDocs,
+    query,
+    orderBy,
+    doc,
+    updateDoc,
+    serverTimestamp,
+    deleteField
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+  // ADMIN UID
+  const ADMIN_UID = "ibK3XWMUEYQIbBhPmGQRnW72MZg1";
+
+
+  const loginBox = document.getElementById("loginBox");
+  const dashboard = document.getElementById("dashboard");
+
+  const loginBtn = document.getElementById("loginBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const refreshBtn = document.getElementById("refreshBtn");
+
+  const loginMessage = document.getElementById("loginMessage");
+  const message = document.getElementById("message");
+  const ordersDiv = document.getElementById("orders");
+
+
+  function showMessage(element, text, type = "") {
+    element.textContent = text;
+    element.className = "message " + type;
+  }
+
+
+  // ADMIN LOGIN
+  loginBtn.addEventListener("click", async () => {
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    if (!email || !password) {
+      showMessage(loginMessage, "Enter email and password.", "error");
+      return;
+    }
+
+    loginBtn.disabled = true;
+    showMessage(loginMessage, "Logging in...");
+
+    try {
+
+      const result = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      if (result.user.uid !== ADMIN_UID) {
+
+        await signOut(auth);
+
+        showMessage(
+          loginMessage,
+          "Access denied. This account is not an admin.",
+          "error"
+        );
+
+        return;
+      }
+
+      showMessage(loginMessage, "Login successful.", "success");
+
+    } catch (error) {
+
+      showMessage(loginMessage, error.message, "error");
+
+    } finally {
+
+      loginBtn.disabled = false;
+
+    }
+
+  });
+
+
+  // AUTH CHECK
+  onAuthStateChanged(auth, async (user) => {
+
+    if (user && user.uid === ADMIN_UID) {
+
+      loginBox.style.display = "none";
+      dashboard.style.display = "block";
+
+      await loadOrders();
+
+    } else {
+
+      loginBox.style.display = "block";
+      dashboard.style.display = "none";
+
+    }
+
+  });
+
+
+  // LOAD ORDERS
+  async function loadOrders() {
+
+    ordersDiv.textContent = "Loading orders...";
+    showMessage(message, "");
+
+    try {
+
+      const ordersQuery = query(
+        collection(db, "orders"),
+        orderBy("createdAt", "desc")
+      );
+
+      const snapshot = await getDocs(ordersQuery);
+
+      if (snapshot.empty) {
+
+        ordersDiv.textContent = "No orders found.";
+        return;
+
+      }
+
+      ordersDiv.innerHTML = "";
+
+      snapshot.forEach((orderDoc) => {
+
+        const order = orderDoc.data();
+
+        const card = document.createElement("div");
+        card.className = "order";
+
+        const heading = document.createElement("h3");
+        heading.textContent =
+          "Order ID: " + (order.orderId || orderDoc.id);
+
+        card.appendChild(heading);
+
+
+        function addDetail(label, value) {
+
+          const p = document.createElement("p");
+
+          p.textContent = label + ": " +
+            (value === undefined || value === null ? "-" : value);
+
+          card.appendChild(p);
+
+        }
+
+
+        addDetail("Customer", order.name);
+        addDetail("Phone", order.phone);
+
+        addDetail(
+          "Files",
+          Array.isArray(order.fileNames)
+            ? order.fileNames.join(", ")
+            : "-"
+        );
+
+        addDetail("Total Pages", order.totalPages);
+        addDetail("Print Type", order.printType);
+        addDetail("Print Side", order.printSide);
+        addDetail("Copies", order.copies);
+        addDetail("Total Amount", "₹" + order.totalPrice);
+        addDetail("UTR", order.utr);
+        addDetail("Payment Status", order.paymentStatus);
+        addDetail("Order Status", order.orderStatus || "PENDING");
+
+
+        // PAYMENT STATUS
+        const paymentLabel = document.createElement("label");
+        paymentLabel.textContent = "Payment Status";
+        card.appendChild(paymentLabel);
+
+        const paymentSelect = document.createElement("select");
+
+        ["PENDING", "PAID"].forEach((status) => {
+
+          const option = document.createElement("option");
+
+          option.value = status;
+          option.textContent = status;
+
+          if (status === (order.paymentStatus || "PENDING")) {
+            option.selected = true;
+          }
+
+          paymentSelect.appendChild(option);
+
+        });
+
+        card.appendChild(paymentSelect);
+
+
+        // ORDER STATUS
+        const orderLabel = document.createElement("label");
+        orderLabel.textContent = "Order Status";
+        card.appendChild(orderLabel);
+
+        const orderSelect = document.createElement("select");
+
+        ["PENDING", "ACCEPTED", "REJECTED"].forEach((status) => {
+
+          const option = document.createElement("option");
+
+          option.value = status;
+          option.textContent = status;
+
+          if (status === (order.orderStatus || "PENDING")) {
+            option.selected = true;
+          }
+
+          orderSelect.appendChild(option);
+
+        });
+
+        card.appendChild(orderSelect);
+
+
+        // UPDATE BUTTON
+        const updateButton = document.createElement("button");
+        updateButton.textContent = "Update Order";
+
+        updateButton.addEventListener("click", async () => {
+
+          const newPaymentStatus = paymentSelect.value;
+          const newOrderStatus = orderSelect.value;
+
+          if (
+            newPaymentStatus === "PAID" &&
+            order.paymentStatus !== "PAID"
+          ) {
+
+            const confirmed = confirm(
+              "Have you verified this payment in PhonePe?"
+            );
+
+            if (!confirmed) return;
+
+          }
+
+
+          updateButton.disabled = true;
+          updateButton.textContent = "Updating...";
+
+          try {
+
+            const updateData = {
+              paymentStatus: newPaymentStatus,
+              orderStatus: newOrderStatus
+            };
+
+            if (newOrderStatus === "COMPLETED") {
+              updateData.completedAt = serverTimestamp();
+            } else {
+              updateData.completedAt = deleteField();
+            }
+
+            await updateDoc(
+              doc(db, "orders", orderDoc.id),
+              updateData
+            );
+
+            showMessage(
+              message,
+              "Order updated successfully.",
+              "success"
+            );
+
+            await loadOrders();
+
+          } catch (error) {
+
+            alert("Update failed: " + error.message);
+
+            updateButton.disabled = false;
+            updateButton.textContent = "Update Order";
+
+          }
+
+        });
+
+        card.appendChild(updateButton);
+        ordersDiv.appendChild(card);
+
+      });
+
+    } catch (error) {
+
+      ordersDiv.textContent =
+        "Error loading orders: " + error.message;
+
+    }
+
+  }
+
+
+  // REFRESH ORDERS
+  refreshBtn.addEventListener("click", loadOrders);
+
+
+  // LOGOUT
+  logoutBtn.addEventListener("click", async () => {
+
+    try {
+
+      await signOut(auth);
+
+    } catch (error) {
+
+      alert("Logout failed: " + error.message);
+
+    }
+
+  });
+
+</script>
+
+</body>
+  </html>
