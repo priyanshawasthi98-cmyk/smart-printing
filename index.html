@@ -73,8 +73,8 @@ button:disabled {
 <body>
 
 <header>
-<h1>🖨️ Smart Printing</h1>
-<p>Upload karo, print shop se collect karo!</p>
+  <h1>🖨️ Smart Printing</h1>
+  <p>Upload karo, print shop se collect karo!</p>
 </header>
 
 <main>
@@ -93,14 +93,14 @@ accept=".pdf,.jpg,.jpeg,.png" multiple required>
 
 <label for="type">Print Type</label>
 <select id="type">
-<option>Black & White</option>
-<option>Colour</option>
+  <option>Black & White</option>
+  <option>Colour</option>
 </select>
 
 <label for="side">Printing Side</label>
 <select id="side">
-<option>Single Side</option>
-<option>Double Side</option>
+  <option>Single Side</option>
+  <option>Double Side</option>
 </select>
 
 <label for="copies">Copies</label>
@@ -131,11 +131,9 @@ Note: Order confirmation ke baad payment process hoga.
 </div>
 </main>
 
-<!-- PDF.js library -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
 <script>
-// PDF.js setup
 const pdfjs = window.pdfjsLib;
 
 if (pdfjs) {
@@ -155,8 +153,8 @@ const result = document.getElementById("result");
 let totalPages = 0;
 let counting = false;
 let selectionNumber = 0;
+let uploading = false;
 
-// Price calculation
 function calculatePrice() {
   const copies = Number(copiesInput.value);
 
@@ -178,19 +176,13 @@ function calculatePrice() {
     rate = sideInput.value === "Single Side" ? 10 : 15;
   }
 
-  let quantity;
+  const quantity = sideInput.value === "Single Side"
+    ? totalPages * copies
+    : Math.ceil(totalPages / 2) * copies;
 
-  if (sideInput.value === "Single Side") {
-    quantity = totalPages * copies;
-  } else {
-    quantity = Math.ceil(totalPages / 2) * copies;
-  }
-
-  priceDisplay.textContent =
-    "Total Price: ₹" + (quantity * rate);
+  priceDisplay.textContent = "Total Price: ₹" + quantity * rate;
 }
 
-// Count PDF and photo pages
 async function countPages() {
   const current = ++selectionNumber;
   const files = Array.from(fileInput.files);
@@ -212,7 +204,7 @@ async function countPages() {
 
   try {
     if (!pdfjs) {
-      throw new Error("PDF.js library load nahi hui. Internet check karein.");
+      throw new Error("PDF.js library load nahi hui.");
     }
 
     let count = 0;
@@ -268,12 +260,12 @@ copiesInput.addEventListener("input", calculatePrice);
 typeInput.addEventListener("change", calculatePrice);
 sideInput.addEventListener("change", calculatePrice);
 
-
-// Submit order and upload files
 document.getElementById("printForm").addEventListener(
 "submit", async function(event) {
 
   event.preventDefault();
+
+  if (uploading) return;
 
   const files = Array.from(fileInput.files);
   const name = document.getElementById("name").value.trim();
@@ -325,28 +317,38 @@ document.getElementById("printForm").addEventListener(
     : Math.ceil(totalPages / 2) * copies;
 
   const totalPrice = quantity * rate;
-
   const orderId = "SP-" + Date.now().toString().slice(-8);
 
+  uploading = true;
   submitBtn.disabled = true;
   submitBtn.textContent = "Files upload ho rahi hain...";
   result.textContent = "Kripya wait karein...";
 
+  const uploadedFiles = [];
+
   try {
-    // Load Supabase only when submitting
     const { supabase } = await import("./firebase.js");
 
-    const uploadedFiles = [];
+    if (!supabase) {
+      throw new Error("Supabase initialize nahi hua.");
+    }
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
 
-      const safeName = file.name.replace(
-        /[^a-zA-Z0-9._-]/g, "_"
-      );
+      const safeName = file.name
+        .normalize("NFKD")
+        .replace(/[^a-zA-Z0-9._-]/g, "_")
+        .replace(/^\.+/, "")
+        .slice(-100);
 
+      if (!safeName) {
+        throw new Error("File name valid nahi hai.");
+      }
+
+      // Flat file path: no folders or URL segments
       const filePath =
-        orderId + "/" + Date.now() + "_" + i + "_" + safeName;
+        orderId + "_" + Date.now() + "_" + i + "_" + safeName;
 
       const { data, error } = await supabase.storage
         .from("print-files")
@@ -356,7 +358,11 @@ document.getElementById("printForm").addEventListener(
           contentType: file.type || "application/octet-stream"
         });
 
-      if (error) throw error;
+      if (error) {
+        throw new Error(
+          "File " + file.name + ": " + error.message
+        );
+      }
 
       uploadedFiles.push({
         name: file.name,
@@ -390,6 +396,7 @@ document.getElementById("printForm").addEventListener(
     result.textContent =
       "Upload failed: " + (error.message || "Please try again.");
 
+    uploading = false;
     submitBtn.disabled = false;
     submitBtn.textContent = "Continue to Order Confirmation";
   }
