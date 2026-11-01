@@ -8,7 +8,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 // Firebase Configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyChFdnkCefAEGZQ9S4_-xFcWY0HFkBZA9M",
+  apiKey: "YOUR_FIREBASE_API_KEY",
   authDomain: "smart-printing-network.firebaseapp.com",
   projectId: "smart-printing-network",
   storageBucket: "smart-printing-network.firebasestorage.app",
@@ -23,8 +23,8 @@ export const db = getFirestore(app);
 export const auth = getAuth(app);
 
 // Supabase Configuration
-const supabaseUrl = "lhpxgxgqhyvcfgmlzdpi";
-const supabasePublishableKey = "sb_publishable_RjOjldVeR9q4NF-UeeEQCA_Wbm7oDoV";
+const supabaseUrl = lhpxgxgqhyvcfgmlzdpi;
+const supabasePublishableKey = sb_publishable_RjOjldVeR9q4NF-UeeEQCA_Wbm7oDoV;
 
 // Initialize Supabase
 export const supabase = createClient(
