@@ -4,7 +4,7 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-aut
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const firebaseConfig = {
-  apiKey: "APNI_FIREBASE_API_KEY",
+  apiKey: "AIzaSyChFdnkCefAEGZQ9S4_-xFcWY0HFkBZA9M",
   authDomain: "smart-printing-network.firebaseapp.com",
   projectId: "smart-printing-network",
   storageBucket: "smart-printing-network.firebasestorage.app",
