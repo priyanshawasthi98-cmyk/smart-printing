@@ -1,88 +1,95 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smart Printing - Shop Dashboard</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Printing - Shop Dashboard</title>
 
-  <style>
-    * { box-sizing: border-box; }
+<style>
+* { box-sizing: border-box; }
 
-    body {
-      margin: 0;
-      padding: 16px;
-      font-family: Arial, sans-serif;
-      background: #f1f5f9;
-      color: #172033;
-    }
+body {
+  margin: 0;
+  padding: 16px;
+  font-family: Arial, sans-serif;
+  background: #f1f5f9;
+  color: #172033;
+}
 
-    .container {
-      max-width: 850px;
-      margin: auto;
-    }
+.container {
+  max-width: 850px;
+  margin: auto;
+}
 
-    .box, .order {
-      background: white;
-      padding: 16px;
-      margin: 14px 0;
-      border-radius: 10px;
-    }
+.box, .order {
+  background: white;
+  padding: 16px;
+  margin: 14px 0;
+  border-radius: 10px;
+}
 
-    input, button, select {
-      width: 100%;
-      padding: 12px;
-      margin: 7px 0;
-      border: 1px solid #ccc;
-      border-radius: 7px;
-      font-size: 15px;
-    }
+input, button, select {
+  width: 100%;
+  padding: 12px;
+  margin: 7px 0;
+  border: 1px solid #ccc;
+  border-radius: 7px;
+  font-size: 15px;
+}
 
-    button {
-      background: #1769d2;
-      color: white;
-      border: none;
-    }
+button {
+  background: #1769d2;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
 
-    .logout { background: #dc3545; }
-    .status { font-weight: bold; color: #b45309; }
-    .hidden { display: none; }
-    #message { font-weight: bold; }
-  </style>
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.logout { background: #dc3545; }
+.status { font-weight: bold; color: #b45309; }
+.hidden { display: none; }
+#message { font-weight: bold; }
+</style>
 </head>
 
 <body>
+
 <div class="container">
 
-  <h1>Smart Printing</h1>
-  <h2>Shop Dashboard</h2>
+<h1>Smart Printing</h1>
+<h2>Shop Dashboard</h2>
 
-  <div class="box" id="loginBox">
-    <h3>Login</h3>
+<div class="box" id="loginBox">
+  <h3>Login</h3>
 
-    <form id="loginForm">
-      <input id="email" type="email"
-        placeholder="Admin Email" required>
+  <form id="loginForm">
+    <input id="email" type="email"
+      placeholder="Admin Email" required>
 
-      <input id="password" type="password"
-        placeholder="Password" required>
+    <input id="password" type="password"
+      placeholder="Password" required>
 
-      <button type="submit">Login</button>
-    </form>
+    <button type="submit">Login</button>
+  </form>
+</div>
+
+<div id="dashboard" class="hidden">
+
+  <div class="box">
+    <h3>Shop Orders</h3>
+
+    <button id="refreshBtn">Refresh Orders</button>
+    <button id="logoutBtn" class="logout">Logout</button>
+
+    <p id="message"></p>
+    <div id="ordersList">Loading...</div>
   </div>
 
-  <div id="dashboard" class="hidden">
-
-    <div class="box">
-      <h3>Shop Orders</h3>
-
-      <button id="refreshBtn">Refresh Orders</button>
-      <button id="logoutBtn" class="logout">Logout</button>
-
-      <p id="message"></p>
-      <div id="ordersList">Loading...</div>
-    </div>
-
-  </div>
+</div>
 </div>
 
 <script type="module">
@@ -101,9 +108,10 @@ import {
   query,
   orderBy,
   doc,
-  updateDoc
+  updateDoc,
+  serverTimestamp,
+  deleteField
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
 
 const ADMIN_UID = "SElLitfTaQhCwuSCOjguFrKXuWx1";
 
@@ -112,59 +120,49 @@ const dashboard = document.getElementById("dashboard");
 const ordersList = document.getElementById("ordersList");
 const message = document.getElementById("message");
 
-
 function showMessage(text) {
   message.textContent = text;
 }
 
-
 // Login
 document.getElementById("loginForm").addEventListener(
-  "submit", async (e) => {
+"submit", async (e) => {
 
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      const result = await signInWithEmailAndPassword(
-        auth,
-        document.getElementById("email").value.trim(),
-        document.getElementById("password").value
-      );
+  try {
+    const result = await signInWithEmailAndPassword(
+      auth,
+      document.getElementById("email").value.trim(),
+      document.getElementById("password").value
+    );
 
-      if (result.user.uid !== ADMIN_UID) {
-        await signOut(auth);
-        showMessage("Admin access required.");
-        return;
-      }
-
-      showMessage("Login successful.");
-
-    } catch (error) {
-      showMessage("Login Error: " + error.message);
+    if (result.user.uid !== ADMIN_UID) {
+      await signOut(auth);
+      showMessage("Admin access required.");
+      return;
     }
-  }
-);
 
+    showMessage("Login successful.");
+
+  } catch (error) {
+    showMessage("Login Error: " + error.message);
+  }
+});
 
 // Login state
 onAuthStateChanged(auth, async (user) => {
 
   if (user && user.uid === ADMIN_UID) {
-
     loginBox.classList.add("hidden");
     dashboard.classList.remove("hidden");
-
     await loadOrders();
-
   } else {
-
     loginBox.classList.remove("hidden");
     dashboard.classList.add("hidden");
-
   }
 
 });
-
 
 // Load Orders
 async function loadOrders() {
@@ -224,12 +222,12 @@ async function loadOrders() {
       const statusSelect = document.createElement("select");
 
       ["PENDING", "ACCEPTED", "PRINTING", "COMPLETED", "REJECTED"]
-        .forEach(status => {
-          const option = document.createElement("option");
-          option.value = status;
-          option.textContent = status;
-          statusSelect.appendChild(option);
-        });
+      .forEach(status => {
+        const option = document.createElement("option");
+        option.value = status;
+        option.textContent = status;
+        statusSelect.appendChild(option);
+      });
 
       statusSelect.value = currentStatus;
       card.appendChild(statusSelect);
@@ -245,9 +243,13 @@ async function loadOrders() {
           return;
         }
 
-        if (statusSelect.value === "COMPLETED" &&
+        const newStatus = statusSelect.value;
+
+        if (newStatus === "COMPLETED" &&
             order.paymentStatus !== "PAID") {
-          showMessage("Payment verify hone se pehle order complete nahi kar sakte.");
+          showMessage(
+            "Payment verify hone se pehle order complete nahi kar sakte."
+          );
           return;
         }
 
@@ -255,11 +257,27 @@ async function loadOrders() {
 
         try {
 
-          await updateDoc(doc(db, "orders", item.id), {
-            orderStatus: statusSelect.value
-          });
+          const updateData = {
+            orderStatus: newStatus
+          };
 
-          showMessage("Order status update ho gaya!");
+          if (newStatus === "COMPLETED") {
+            updateData.completedAt = serverTimestamp();
+          } else {
+            updateData.completedAt = deleteField();
+          }
+
+          await updateDoc(
+            doc(db, "orders", item.id),
+            updateData
+          );
+
+          showMessage(
+            newStatus === "COMPLETED"
+              ? "Order completed aur completion time save ho gaya!"
+              : "Order status update ho gaya!"
+          );
+
           await loadOrders();
 
         } catch (error) {
@@ -286,21 +304,18 @@ async function loadOrders() {
   }
 }
 
-
 // Refresh
 document.getElementById("refreshBtn").addEventListener(
-  "click", loadOrders
+"click", loadOrders
 );
-
 
 // Logout
 document.getElementById("logoutBtn").addEventListener(
-  "click", async () => {
-    await signOut(auth);
-    showMessage("Logout successful.");
-  }
-);
+"click", async () => {
+  await signOut(auth);
+  showMessage("Logout successful.");
+});
 
 </script>
 </body>
-  </html>
+</html>
