@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="hi">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,29 +13,37 @@ body {
   background: #f2f5fa;
   color: #172033;
 }
+
 header {
   background: #155eef;
   color: white;
   text-align: center;
   padding: 30px 15px;
 }
-header h1 { margin: 0 0 10px; }
+
+header h1 {
+  margin: 0 0 10px;
+}
+
 main {
   max-width: 500px;
   margin: 25px auto;
   padding: 0 15px;
 }
+
 .card {
   background: white;
   padding: 22px;
   border-radius: 15px;
   box-shadow: 0 3px 12px #00000010;
 }
+
 label {
   display: block;
   margin: 18px 0 8px;
   font-weight: bold;
 }
+
 input, select, button {
   width: 100%;
   padding: 12px;
@@ -42,10 +51,12 @@ input, select, button {
   border-radius: 8px;
   font-size: 16px;
 }
+
 input, select {
   border: 1px solid #ccc;
   background: white;
 }
+
 button {
   margin-top: 22px;
   border: none;
@@ -54,14 +65,17 @@ button {
   font-weight: bold;
   cursor: pointer;
 }
+
 button:disabled {
   background: #98a2b3;
   cursor: not-allowed;
 }
+
 #result {
   margin-top: 18px;
   overflow-wrap: anywhere;
 }
+
 .note {
   font-size: 13px;
   color: #667085;
@@ -85,39 +99,67 @@ button:disabled {
 <form id="printForm">
 
 <label for="file">PDF ya Photo select karein</label>
-<input type="file" id="file"
-accept=".pdf,.jpg,.jpeg,.png" multiple required>
+
+<input
+  type="file"
+  id="file"
+  accept=".pdf,.jpg,.jpeg,.png"
+  multiple
+  required
+>
 
 <p id="pageCount">Total Pages: 0</p>
 <p id="totalPrice">Total Price: ₹0</p>
 
 <label for="type">Print Type</label>
+
 <select id="type">
   <option>Black & White</option>
   <option>Colour</option>
 </select>
 
 <label for="side">Printing Side</label>
+
 <select id="side">
   <option>Single Side</option>
   <option>Double Side</option>
 </select>
 
 <label for="copies">Copies</label>
-<input type="number" id="copies"
-min="1" max="1000" step="1" value="1" required>
+
+<input
+  type="number"
+  id="copies"
+  min="1"
+  max="1000"
+  step="1"
+  value="1"
+  required
+>
 
 <label for="name">Aapka Naam</label>
-<input type="text" id="name"
-placeholder="Apna naam likhein" required>
+
+<input
+  type="text"
+  id="name"
+  placeholder="Apna naam likhein"
+  required
+>
 
 <label for="phone">Mobile Number</label>
-<input type="tel" id="phone"
-inputmode="numeric" pattern="[0-9]{10}"
-maxlength="10" placeholder="10 digit mobile number" required>
+
+<input
+  type="tel"
+  id="phone"
+  inputmode="numeric"
+  pattern="[0-9]{10}"
+  maxlength="10"
+  placeholder="10 digit mobile number"
+  required
+>
 
 <button type="submit" id="submitBtn">
-Continue to Order Confirmation
+  Continue to Order Confirmation
 </button>
 
 </form>
@@ -138,15 +180,17 @@ const pdfjs = window.pdfjsLib;
 
 if (pdfjs) {
   pdfjs.GlobalWorkerOptions.workerSrc =
-  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 }
 
 const fileInput = document.getElementById("file");
 const copiesInput = document.getElementById("copies");
 const typeInput = document.getElementById("type");
 const sideInput = document.getElementById("side");
+
 const pageDisplay = document.getElementById("pageCount");
 const priceDisplay = document.getElementById("totalPrice");
+
 const submitBtn = document.getElementById("submitBtn");
 const result = document.getElementById("result");
 
@@ -155,7 +199,11 @@ let counting = false;
 let selectionNumber = 0;
 let uploading = false;
 
+
+// Calculate price
+
 function calculatePrice() {
+
   const copies = Number(copiesInput.value);
 
   if (
@@ -176,14 +224,20 @@ function calculatePrice() {
     rate = sideInput.value === "Single Side" ? 10 : 15;
   }
 
-  const quantity = sideInput.value === "Single Side"
-    ? totalPages * copies
-    : Math.ceil(totalPages / 2) * copies;
+  const quantity =
+    sideInput.value === "Single Side"
+      ? totalPages * copies
+      : Math.ceil(totalPages / 2) * copies;
 
-  priceDisplay.textContent = "Total Price: ₹" + quantity * rate;
+  priceDisplay.textContent =
+    "Total Price: ₹" + quantity * rate;
 }
 
+
+// Count pages
+
 async function countPages() {
+
   const current = ++selectionNumber;
   const files = Array.from(fileInput.files);
 
@@ -199,10 +253,12 @@ async function countPages() {
 
   counting = true;
   submitBtn.disabled = true;
+
   pageDisplay.textContent = "Pages count ho rahe hain...";
   priceDisplay.textContent = "Total Price: Calculating...";
 
   try {
+
     if (!pdfjs) {
       throw new Error("PDF.js library load nahi hui.");
     }
@@ -210,9 +266,11 @@ async function countPages() {
     let count = 0;
 
     for (const file of files) {
+
       const extension = file.name.split(".").pop().toLowerCase();
 
       if (extension === "pdf") {
+
         const buffer = await file.arrayBuffer();
 
         const pdf = await pdfjs.getDocument({
@@ -220,12 +278,17 @@ async function countPages() {
         }).promise;
 
         count += pdf.numPages;
+
         await pdf.destroy();
 
       } else if (["jpg", "jpeg", "png"].includes(extension)) {
+
         count += 1;
+
       } else {
+
         throw new Error("Unsupported file: " + file.name);
+
       }
     }
 
@@ -239,37 +302,56 @@ async function countPages() {
     calculatePrice();
 
   } catch (error) {
+
     if (current !== selectionNumber) return;
 
     console.error("Page count error:", error);
 
     totalPages = 0;
-    pageDisplay.textContent = "Error: " + error.message;
+
+    pageDisplay.textContent =
+      "Error: " + error.message;
+
     priceDisplay.textContent = "Total Price: ₹0";
 
   } finally {
+
     if (current === selectionNumber) {
       counting = false;
       submitBtn.disabled = false;
     }
+
   }
 }
 
+
+// Event listeners
+
 fileInput.addEventListener("change", countPages);
+
 copiesInput.addEventListener("input", calculatePrice);
+
 typeInput.addEventListener("change", calculatePrice);
+
 sideInput.addEventListener("change", calculatePrice);
 
+
+// Submit order
+
 document.getElementById("printForm").addEventListener(
-"submit", async function(event) {
+"submit",
+async function(event) {
 
   event.preventDefault();
 
   if (uploading) return;
 
   const files = Array.from(fileInput.files);
+
   const name = document.getElementById("name").value.trim();
+
   const phone = document.getElementById("phone").value.trim();
+
   const copies = Number(copiesInput.value);
 
   if (counting) {
@@ -287,12 +369,18 @@ document.getElementById("printForm").addEventListener(
     return;
   }
 
+  if (!name) {
+    alert("Apna naam likhein.");
+    return;
+  }
+
   if (!/^[0-9]{10}$/.test(phone)) {
     alert("Sahi 10 digit mobile number likhein.");
     return;
   }
 
   for (const file of files) {
+
     if (!/\.(pdf|jpg|jpeg|png)$/i.test(file.name)) {
       alert("Sirf PDF, JPG, JPEG aur PNG allowed hain.");
       return;
@@ -302,7 +390,11 @@ document.getElementById("printForm").addEventListener(
       alert("Har file 15 MB se chhoti honi chahiye.");
       return;
     }
+
   }
+
+
+  // Calculate final amount
 
   let rate;
 
@@ -312,96 +404,6 @@ document.getElementById("printForm").addEventListener(
     rate = sideInput.value === "Single Side" ? 10 : 15;
   }
 
-  const quantity = sideInput.value === "Single Side"
-    ? totalPages * copies
-    : Math.ceil(totalPages / 2) * copies;
-
-  const totalPrice = quantity * rate;
-  const orderId = "SP-" + Date.now().toString().slice(-8);
-
-  uploading = true;
-  submitBtn.disabled = true;
-  submitBtn.textContent = "Files upload ho rahi hain...";
-  result.textContent = "Kripya wait karein...";
-
-  const uploadedFiles = [];
-
-  try {
-    const { supabase } = await import("./firebase.js");
-
-    if (!supabase) {
-      throw new Error("Supabase initialize nahi hua.");
-    }
-
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-
-      const safeName = file.name
-        .normalize("NFKD")
-        .replace(/[^a-zA-Z0-9._-]/g, "_")
-        .replace(/^\.+/, "")
-        .slice(-100);
-
-      if (!safeName) {
-        throw new Error("File name valid nahi hai.");
-      }
-
-      // Flat file path: no folders or URL segments
-      const filePath =
-        orderId + "_" + Date.now() + "_" + i + "_" + safeName;
-
-      const { data, error } = await supabase.storage
-        .from("print-files")
-        .upload(filePath, file, {
-          cacheControl: "3600",
-          upsert: false,
-          contentType: file.type || "application/octet-stream"
-        });
-
-      if (error) {
-        throw new Error(
-          "File " + file.name + ": " + error.message
-        );
-      }
-
-      uploadedFiles.push({
-        name: file.name,
-        path: data.path
-      });
-    }
-
-    const order = {
-      orderId: orderId,
-      name: name,
-      phone: phone,
-      fileNames: uploadedFiles.map(f => f.name),
-      filePaths: uploadedFiles.map(f => f.path),
-      totalPages: totalPages * copies,
-      printType: typeInput.value,
-      printSide: sideInput.value,
-      copies: copies,
-      totalPrice: totalPrice
-    };
-
-    sessionStorage.setItem(
-      "smartPrintingOrder",
-      JSON.stringify(order)
-    );
-
-    window.location.href = "confirmation.html";
-
-  } catch (error) {
-    console.error("Upload error:", error);
-
-    result.textContent =
-      "Upload failed: " + (error.message || "Please try again.");
-
-    uploading = false;
-    submitBtn.disabled = false;
-    submitBtn.textContent = "Continue to Order Confirmation";
-  }
-});
-</script>
-
-</body>
-  </html>
+  const quantity =
+    sideInput.value === "Single Side"
+      ? totalPages * copies
