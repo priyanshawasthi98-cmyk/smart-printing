@@ -1,432 +1,357 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smart Printing - Shop Dashboard</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Printing - Shop Dashboard</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      padding: 15px;
-      font-family: Arial, sans-serif;
-      background: #f3f5f9;
-      color: #222;
-    }
-
-    .container {
-      max-width: 1000px;
-      margin: auto;
-    }
-
-    h1 {
-      text-align: center;
-      color: #174ea6;
-    }
-
-    .box {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      margin: 15px 0;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
-
-    input, button, select {
-      width: 100%;
-      padding: 12px;
-      margin: 7px 0;
-      border: 1px solid #ccc;
-      border-radius: 7px;
-      font-size: 15px;
-    }
-
-    button {
-      background: #174ea6;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-
-    button:disabled {
-      background: #999;
-      cursor: not-allowed;
-    }
-
-    .logout {
-      background: #d93025;
-    }
-
-    .order {
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      padding: 15px;
-      margin: 15px 0;
-      background: #fff;
-      overflow-wrap: anywhere;
-    }
-
-    .order h3 {
-      color: #174ea6;
-      margin-top: 0;
-    }
-
-    .message {
-      text-align: center;
-      margin: 10px 0;
-      font-weight: bold;
-    }
-
-    .success {
-      color: green;
-    }
-
-    .error {
-      color: red;
-    }
-
-    .muted {
-      color: #666;
-      font-size: 13px;
-    }
-  </style>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:15px;font-family:Arial,sans-serif;background:#f3f5f9;color:#222}
+.container{max-width:1000px;margin:auto}
+h1{text-align:center;color:#174ea6}
+.box{background:white;padding:20px;border-radius:12px;margin:15px 0;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+input,button,select{width:100%;padding:12px;margin:7px 0;border:1px solid #ccc;border-radius:7px;font-size:15px}
+button{background:#174ea6;color:white;border:none;cursor:pointer}
+button:disabled{background:#999;cursor:not-allowed}
+.logout{background:#d93025}
+.order{border:1px solid #ddd;border-radius:10px;padding:15px;margin:15px 0;background:#fff;overflow-wrap:anywhere}
+.order h3{color:#174ea6;margin-top:0}
+.message{text-align:center;margin:10px 0;font-weight:bold}
+.success{color:green}
+.error{color:red}
+.muted{color:#666;font-size:13px}
+</style>
 </head>
 
 <body>
-
 <div class="container">
 
-  <h1>Smart Printing</h1>
-  <h2 style="text-align:center;">Shop Dashboard</h2>
+<h1>Smart Printing</h1>
+<h2 style="text-align:center;">Shop Dashboard</h2>
 
-  <div class="box" id="loginBox">
-    <h3>Shop Login</h3>
+<div class="box" id="loginBox">
+<h3>Shop Login</h3>
+<input type="email" id="email" placeholder="Admin Email" autocomplete="username">
+<input type="password" id="password" placeholder="Password" autocomplete="current-password">
+<button id="loginBtn">Login</button>
+<div id="loginMessage" class="message"></div>
+</div>
 
-    <input
-      type="email"
-      id="email"
-      placeholder="Admin Email"
-      autocomplete="username"
-    >
+<div id="dashboard" style="display:none;">
+<div class="box">
+<h3>Orders Dashboard</h3>
 
-    <input
-      type="password"
-      id="password"
-      placeholder="Password"
-      autocomplete="current-password"
-    >
+<button id="notifyBtn" type="button">Enable Browser Notifications</button>
+<div id="notificationMessage" class="message"></div>
 
-    <button id="loginBtn" type="button">Login</button>
+<p class="muted">New orders will appear automatically while this dashboard is open.</p>
 
-    <div id="loginMessage" class="message"></div>
-  </div>
+<button id="refreshBtn">Refresh Orders</button>
+<button id="logoutBtn" class="logout">Logout</button>
 
-  <div id="dashboard" style="display:none;">
-
-    <div class="box">
-      <h3>Orders Dashboard</h3>
-
-      <button id="refreshBtn" type="button">Refresh Orders</button>
-      <button id="logoutBtn" class="logout" type="button">Logout</button>
-
-      <div id="message" class="message"></div>
-      <div id="orders">Loading orders...</div>
-    </div>
-
-  </div>
+<div id="message" class="message"></div>
+<div id="orders">Loading orders...</div>
+</div>
+</div>
 
 </div>
 
 <script type="module">
 
-  import { auth, db } from "./firebase.js";
+import { auth, db } from "./firebase.js";
 
-  import {
-    signInWithEmailAndPassword,
-    signOut,
-    onAuthStateChanged
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+ signInWithEmailAndPassword,
+ signOut,
+ onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-  import {
-    collection,
-    getDocs,
-    query,
-    orderBy,
-    doc,
-    updateDoc,
-    serverTimestamp,
-    deleteField
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+ collection,
+ getDocs,
+ query,
+ orderBy,
+ doc,
+ updateDoc,
+ serverTimestamp,
+ deleteField,
+ onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+const ADMIN_UID = "ibK3XWMUEYQIbBhPmGQRnW72MZg1";
 
-  // NEW ADMIN UID
-  const ADMIN_UID = "ibK3XWMUEYQIbBhPmGQRnW72MZg1";
+const loginBox = document.getElementById("loginBox");
+const dashboard = document.getElementById("dashboard");
+const loginBtn = document.getElementById("loginBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const refreshBtn = document.getElementById("refreshBtn");
+const notifyBtn = document.getElementById("notifyBtn");
 
+const loginMessage = document.getElementById("loginMessage");
+const message = document.getElementById("message");
+const notificationMessage = document.getElementById("notificationMessage");
+const ordersDiv = document.getElementById("orders");
 
-  const loginBox = document.getElementById("loginBox");
-  const dashboard = document.getElementById("dashboard");
+let unsubscribeOrders = null;
+let firstSnapshot = true;
+let knownOrderIds = new Set();
 
-  const loginBtn = document.getElementById("loginBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
-  const refreshBtn = document.getElementById("refreshBtn");
+function showMessage(element, text, type = "") {
+ element.textContent = text;
+ element.className = "message " + type;
+}
 
-  const loginMessage = document.getElementById("loginMessage");
-  const message = document.getElementById("message");
-  const ordersDiv = document.getElementById("orders");
+// ENABLE NOTIFICATIONS
+notifyBtn.addEventListener("click", async () => {
+ if (!("Notification" in window)) {
+  showMessage(notificationMessage, "Browser notifications are not supported.", "error");
+  return;
+ }
 
+ try {
+  const permission = await Notification.requestPermission();
 
-  function showMessage(element, text, type = "") {
-    element.textContent = text;
-    element.className = "message " + type;
+  if (permission === "granted") {
+   showMessage(notificationMessage, "Notifications enabled successfully.", "success");
+  } else {
+   showMessage(notificationMessage, "Notification permission was not granted.", "error");
+  }
+ } catch (error) {
+  showMessage(notificationMessage, error.message, "error");
+ }
+});
+
+// LOGIN
+loginBtn.addEventListener("click", async () => {
+ const email = document.getElementById("email").value.trim();
+ const password = document.getElementById("password").value;
+
+ if (!email || !password) {
+  showMessage(loginMessage, "Enter email and password.", "error");
+  return;
+ }
+
+ loginBtn.disabled = true;
+ showMessage(loginMessage, "Logging in...");
+
+ try {
+  const result = await signInWithEmailAndPassword(auth, email, password);
+
+  if (result.user.uid !== ADMIN_UID) {
+   await signOut(auth);
+   showMessage(loginMessage, "Access denied. This account is not an admin.", "error");
+   return;
   }
 
+  showMessage(loginMessage, "Login successful.", "success");
 
-  // LOGIN
-  loginBtn.addEventListener("click", async () => {
+ } catch (error) {
+  showMessage(loginMessage, error.message, "error");
+ } finally {
+  loginBtn.disabled = false;
+ }
+});
 
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
+// AUTH CHECK
+onAuthStateChanged(auth, async (user) => {
+ if (user && user.uid === ADMIN_UID) {
+  loginBox.style.display = "none";
+  dashboard.style.display = "block";
+  startLiveOrders();
+ } else {
+  stopLiveOrders();
+  loginBox.style.display = "block";
+  dashboard.style.display = "none";
+ }
+});
 
-    if (!email || !password) {
-      showMessage(loginMessage, "Enter email and password.", "error");
-      return;
+// LIVE ORDERS
+function startLiveOrders() {
+ stopLiveOrders();
+
+ firstSnapshot = true;
+ knownOrderIds = new Set();
+
+ ordersDiv.textContent = "Loading orders...";
+
+ const ordersQuery = query(
+  collection(db, "orders"),
+  orderBy("createdAt", "desc")
+ );
+
+ unsubscribeOrders = onSnapshot(ordersQuery, (snapshot) => {
+
+  if (firstSnapshot) {
+   snapshot.forEach((orderDoc) => knownOrderIds.add(orderDoc.id));
+   firstSnapshot = false;
+  } else {
+   snapshot.docChanges().forEach((change) => {
+    if (change.type === "added" && !knownOrderIds.has(change.doc.id)) {
+     const order = change.doc.data();
+     showNewOrderNotification(order);
+     knownOrderIds.add(change.doc.id);
     }
+   });
+  }
 
-    loginBtn.disabled = true;
-    showMessage(loginMessage, "Logging in...");
+  renderOrders(snapshot);
 
-    try {
+ }, (error) => {
+  ordersDiv.textContent = "Error loading orders: " + error.message;
+ });
+}
 
-      const result = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+function stopLiveOrders() {
+ if (unsubscribeOrders) {
+  unsubscribeOrders();
+  unsubscribeOrders = null;
+ }
+}
 
-      if (result.user.uid !== ADMIN_UID) {
-        await signOut(auth);
+// NEW ORDER NOTIFICATION
+function showNewOrderNotification(order) {
+ showMessage(message, "New order received!", "success");
 
-        showMessage(
-          loginMessage,
-          "Access denied. This account is not an admin.",
-          "error"
-        );
-
-        return;
-      }
-
-      showMessage(loginMessage, "Login successful.", "success");
-
-    } catch (error) {
-
-      showMessage(
-        loginMessage,
-        error.message,
-        "error"
-      );
-
-    } finally {
-      loginBtn.disabled = false;
-    }
-
+ if ("Notification" in window && Notification.permission === "granted") {
+  const notification = new Notification("New Smart Printing Order!", {
+   body: "Order ID: " + (order.orderId || "New Order") +
+         "\nCustomer: " + (order.name || "Customer"),
+   tag: order.orderId || "new-order"
   });
 
+  notification.onclick = () => {
+   window.focus();
+   notification.close();
+  };
+ }
+}
 
-  // AUTH CHECK
-  onAuthStateChanged(auth, async (user) => {
+// DISPLAY ORDERS
+function renderOrders(snapshot) {
+ if (snapshot.empty) {
+  ordersDiv.textContent = "No orders found.";
+  return;
+ }
 
-    if (user && user.uid === ADMIN_UID) {
+ ordersDiv.innerHTML = "";
 
-      loginBox.style.display = "none";
-      dashboard.style.display = "block";
+ snapshot.forEach((orderDoc) => {
+  const order = orderDoc.data();
+  const orderId = order.orderId || orderDoc.id;
 
-      await loadOrders();
+  const card = document.createElement("div");
+  card.className = "order";
 
+  const heading = document.createElement("h3");
+  heading.textContent = "Order ID: " + orderId;
+  card.appendChild(heading);
+
+  function addDetail(label, value) {
+   const p = document.createElement("p");
+   p.textContent = label + ": " +
+    (value === undefined || value === null ? "-" : value);
+   card.appendChild(p);
+  }
+
+  addDetail("Customer", order.name);
+  addDetail("Phone", order.phone);
+  addDetail("Files", Array.isArray(order.fileNames) ? order.fileNames.join(", ") : "-");
+  addDetail("Total Pages", order.totalPages);
+  addDetail("Print Type", order.printType);
+  addDetail("Print Side", order.printSide);
+  addDetail("Copies", order.copies);
+  addDetail("Total Amount", "₹" + order.totalPrice);
+  addDetail("UTR", order.utr);
+  addDetail("Payment Status", order.paymentStatus);
+  addDetail("Order Status", order.orderStatus || "PENDING");
+
+  const label = document.createElement("label");
+  label.textContent = "Update Order Status";
+  card.appendChild(label);
+
+  const select = document.createElement("select");
+
+  const statuses = ["PENDING", "ACCEPTED", "PRINTING", "COMPLETED", "REJECTED"];
+  const currentStatus = order.orderStatus || "PENDING";
+
+  statuses.forEach((status) => {
+   const option = document.createElement("option");
+   option.value = status;
+   option.textContent = status;
+   option.selected = status === currentStatus;
+   select.appendChild(option);
+  });
+
+  card.appendChild(select);
+
+  const updateButton = document.createElement("button");
+  updateButton.textContent = "Update Status";
+
+  updateButton.addEventListener("click", async () => {
+   const newStatus = select.value;
+
+   if (newStatus === "COMPLETED" && order.paymentStatus !== "PAID") {
+    alert("Payment must be verified before completing this order.");
+    return;
+   }
+
+   updateButton.disabled = true;
+   updateButton.textContent = "Updating...";
+
+   try {
+    const updateData = { orderStatus: newStatus };
+
+    if (newStatus === "COMPLETED") {
+     updateData.completedAt = serverTimestamp();
     } else {
-
-      loginBox.style.display = "block";
-      dashboard.style.display = "none";
-
+     updateData.completedAt = deleteField();
     }
 
+    await updateDoc(doc(db, "orders", orderDoc.id), updateData);
+
+    showMessage(message, "Order status updated successfully.", "success");
+
+   } catch (error) {
+    alert("Update failed: " + error.message);
+    updateButton.disabled = false;
+    updateButton.textContent = "Update Status";
+   }
   });
 
+  card.appendChild(updateButton);
+  ordersDiv.appendChild(card);
+ });
+}
 
-  // LOAD ORDERS
-  async function loadOrders() {
+// MANUAL REFRESH
+refreshBtn.addEventListener("click", async () => {
+ refreshBtn.disabled = true;
+ refreshBtn.textContent = "Refreshing...";
 
-    ordersDiv.textContent = "Loading orders...";
-    showMessage(message, "");
+ try {
+  const snapshot = await getDocs(
+   query(collection(db, "orders"), orderBy("createdAt", "desc"))
+  );
+  renderOrders(snapshot);
+  showMessage(message, "Orders refreshed.", "success");
+ } catch (error) {
+  showMessage(message, error.message, "error");
+ } finally {
+  refreshBtn.disabled = false;
+  refreshBtn.textContent = "Refresh Orders";
+ }
+});
 
-    try {
-
-      const ordersQuery = query(
-        collection(db, "orders"),
-        orderBy("createdAt", "desc")
-      );
-
-      const snapshot = await getDocs(ordersQuery);
-
-      if (snapshot.empty) {
-        ordersDiv.textContent = "No orders found.";
-        return;
-      }
-
-      ordersDiv.innerHTML = "";
-
-      snapshot.forEach((orderDoc) => {
-
-        const order = orderDoc.data();
-
-        const orderId = order.orderId || orderDoc.id;
-
-        const card = document.createElement("div");
-        card.className = "order";
-
-        const heading = document.createElement("h3");
-        heading.textContent = "Order ID: " + orderId;
-        card.appendChild(heading);
-
-        function addDetail(label, value) {
-          const p = document.createElement("p");
-          p.textContent = label + ": " +
-            (value === undefined || value === null ? "-" : value);
-          card.appendChild(p);
-        }
-
-        addDetail("Customer", order.name);
-        addDetail("Phone", order.phone);
-        addDetail("Files", Array.isArray(order.fileNames)
-          ? order.fileNames.join(", ")
-          : "-");
-        addDetail("Total Pages", order.totalPages);
-        addDetail("Print Type", order.printType);
-        addDetail("Print Side", order.printSide);
-        addDetail("Copies", order.copies);
-        addDetail("Total Amount", "₹" + order.totalPrice);
-        addDetail("UTR", order.utr);
-        addDetail("Payment Status", order.paymentStatus);
-        addDetail("Order Status", order.orderStatus || "PENDING");
-
-        const label = document.createElement("label");
-        label.textContent = "Update Order Status";
-        card.appendChild(label);
-
-        const select = document.createElement("select");
-
-        const statuses = [
-          "PENDING",
-          "ACCEPTED",
-          "PRINTING",
-          "COMPLETED",
-          "REJECTED"
-        ];
-
-        const currentStatus = order.orderStatus || "PENDING";
-
-        statuses.forEach((status) => {
-          const option = document.createElement("option");
-          option.value = status;
-          option.textContent = status;
-
-          if (status === currentStatus) {
-            option.selected = true;
-          }
-
-          select.appendChild(option);
-        });
-
-        card.appendChild(select);
-
-        const updateButton = document.createElement("button");
-        updateButton.textContent = "Update Status";
-
-        updateButton.addEventListener("click", async () => {
-
-          const newStatus = select.value;
-
-          if (
-            newStatus === "COMPLETED" &&
-            order.paymentStatus !== "PAID"
-          ) {
-            alert("Payment must be verified before completing this order.");
-            return;
-          }
-
-          updateButton.disabled = true;
-          updateButton.textContent = "Updating...";
-
-          try {
-
-            const updateData = {
-              orderStatus: newStatus
-            };
-
-            if (newStatus === "COMPLETED") {
-              updateData.completedAt = serverTimestamp();
-            } else {
-              updateData.completedAt = deleteField();
-            }
-
-            await updateDoc(
-              doc(db, "orders", orderDoc.id),
-              updateData
-            );
-
-            showMessage(
-              message,
-              "Order status updated successfully.",
-              "success"
-            );
-
-            await loadOrders();
-
-          } catch (error) {
-
-            alert("Update failed: " + error.message);
-
-            updateButton.disabled = false;
-            updateButton.textContent = "Update Status";
-
-          }
-
-        });
-
-        card.appendChild(updateButton);
-
-        ordersDiv.appendChild(card);
-
-      });
-
-    } catch (error) {
-
-      ordersDiv.textContent = "Error loading orders: " + error.message;
-
-    }
-
-  }
-
-
-  // REFRESH
-  refreshBtn.addEventListener("click", loadOrders);
-
-
-  // LOGOUT
-  logoutBtn.addEventListener("click", async () => {
-
-    try {
-      await signOut(auth);
-    } catch (error) {
-      alert("Logout failed: " + error.message);
-    }
-
-  });
+// LOGOUT
+logoutBtn.addEventListener("click", async () => {
+ try {
+  await signOut(auth);
+ } catch (error) {
+  alert("Logout failed: " + error.message);
+ }
+});
 
 </script>
-
 </body>
 </html>
