@@ -18,12 +18,10 @@
 
     header {
       background: #155eef;
-      color: #fff;
+      color: white;
       text-align: center;
       padding: 28px 15px;
     }
-
-    header h1 { margin: 0 0 8px; }
 
     main {
       max-width: 540px;
@@ -32,7 +30,7 @@
     }
 
     .card {
-      background: #fff;
+      background: white;
       padding: 20px;
       border-radius: 15px;
       box-shadow: 0 3px 12px #00000010;
@@ -53,14 +51,14 @@
 
     input, select {
       border: 1px solid #ccc;
-      background: #fff;
+      background: white;
     }
 
     button {
       margin-top: 20px;
       border: 0;
       background: #155eef;
-      color: #fff;
+      color: white;
       font-weight: bold;
       cursor: pointer;
     }
@@ -182,8 +180,8 @@
     <div id="result" aria-live="polite"></div>
 
     <p class="note">
-      Upload ke baad order confirmation page khulega.
-      Payment status verify hone ke baad hi shop printing shuru karegi.
+      Order submit hone ke baad details Firestore mein save hongi.
+      Payment verify hone ke baad hi shop printing shuru karegi.
     </p>
 
   </div>
@@ -191,7 +189,18 @@
 
 <script type="module">
 
-import { supabase } from "./firebase.js";
+import { db, auth, supabase } from "./firebase.js";
+
+import {
+  doc,
+  setDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+  signInAnonymously
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
 
 "use strict";
 
@@ -204,6 +213,7 @@ const PDFJS_CDNS = [
 
 const PDF_WORKER =
   `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJS_VERSION}/pdf.worker.min.js`;
+
 
 const fileInput = document.getElementById("file");
 const copiesInput = document.getElementById("copies");
@@ -224,25 +234,18 @@ let uploading = false;
 let selectionToken = 0;
 
 
-// MESSAGE FUNCTION
-
 function showMessage(message, className = "") {
   result.className = className;
   result.textContent = message;
 }
 
 
-// LOAD PDF.JS
-
 function loadScript(src) {
-
   return new Promise((resolve, reject) => {
-
     const script = document.createElement("script");
 
     script.src = src;
     script.async = true;
-
     script.onload = resolve;
 
     script.onerror = () => {
@@ -251,9 +254,7 @@ function loadScript(src) {
     };
 
     document.head.appendChild(script);
-
   });
-
 }
 
 
@@ -266,9 +267,7 @@ async function ensurePdfJs() {
   let lastError;
 
   for (const src of PDFJS_CDNS) {
-
     try {
-
       await loadScript(src);
 
       if (window.pdfjsLib) {
@@ -278,16 +277,12 @@ async function ensurePdfJs() {
     } catch (error) {
       lastError = error;
     }
-
   }
 
   throw lastError ||
-    new Error("PDF.js load nahi ho paayi. Internet connection check karein.");
-
+    new Error("PDF.js load nahi ho paayi.");
 }
 
-
-// PRICE CALCULATION
 
 function calculatePrice() {
 
@@ -299,7 +294,6 @@ function calculatePrice() {
     copies < 1 ||
     copies > 1000
   ) {
-
     priceDisplay.innerHTML =
       "<strong>Total Price:</strong> ₹0";
 
@@ -309,13 +303,9 @@ function calculatePrice() {
   let rate;
 
   if (typeInput.value === "Black & White") {
-
     rate = sideInput.value === "Single Side" ? 2 : 3;
-
   } else {
-
     rate = sideInput.value === "Single Side" ? 10 : 15;
-
   }
 
   const billableUnits =
@@ -329,20 +319,15 @@ function calculatePrice() {
     `<strong>Total Price:</strong> ₹${total}`;
 
   return total;
-
 }
 
-
-// PDF PAGE COUNTING
 
 async function countPages() {
 
   const token = ++selectionToken;
-
   const files = Array.from(fileInput.files || []);
 
   totalPages = 0;
-
   calculatePrice();
   showMessage("");
 
@@ -363,7 +348,8 @@ async function countPages() {
   counting = true;
   submitBtn.disabled = true;
 
-  pageDisplay.textContent = "Pages count ho rahe hain...";
+  pageDisplay.textContent =
+    "Pages count ho rahe hain...";
 
   priceDisplay.innerHTML =
     "<strong>Total Price:</strong> Calculating...";
@@ -402,7 +388,6 @@ async function countPages() {
 
           pdfLib.GlobalWorkerOptions.workerSrc =
             PDF_WORKER;
-
         }
 
         const data =
@@ -429,15 +414,13 @@ async function countPages() {
         throw new Error(
           `${file.name}: sirf PDF, JPG, JPEG aur PNG allowed hain.`
         );
-
       }
-
     }
 
     if (token !== selectionToken) return;
 
     if (count < 1) {
-      throw new Error("Selected files ke pages count nahi ho paaye.");
+      throw new Error("Pages count nahi ho paaye.");
     }
 
     totalPages = count;
@@ -456,7 +439,7 @@ async function countPages() {
 
     if (token !== selectionToken) return;
 
-    console.error("Page count error:", error);
+    console.error(error);
 
     totalPages = 0;
 
@@ -469,39 +452,23 @@ async function countPages() {
     fileStatus.textContent =
       "File read nahi ho paayi.";
 
-    showMessage(
-      error.message || "File read karte waqt error aaya.",
-      "error"
-    );
+    showMessage(error.message, "error");
 
   } finally {
 
     if (token === selectionToken) {
-
       counting = false;
-
-      submitBtn.disabled =
-        totalPages <= 0 || uploading;
-
+      submitBtn.disabled = totalPages <= 0 || uploading;
     }
-
   }
-
 }
 
 
-// EVENT LISTENERS
-
 fileInput.addEventListener("change", countPages);
-
 copiesInput.addEventListener("input", calculatePrice);
-
 typeInput.addEventListener("change", calculatePrice);
-
 sideInput.addEventListener("change", calculatePrice);
 
-
-// ORDER SUBMISSION
 
 form.addEventListener("submit", async (event) => {
 
@@ -509,8 +476,7 @@ form.addEventListener("submit", async (event) => {
 
   if (uploading) return;
 
-  const files =
-    Array.from(fileInput.files || []);
+  const files = Array.from(fileInput.files || []);
 
   const name =
     document.getElementById("name").value.trim();
@@ -518,26 +484,17 @@ form.addEventListener("submit", async (event) => {
   const phone =
     document.getElementById("phone").value.trim();
 
-  const copies =
-    Number(copiesInput.value);
-
-  const totalPrice =
-    calculatePrice();
+  const copies = Number(copiesInput.value);
+  const totalPrice = calculatePrice();
 
 
   if (counting) {
-    showMessage(
-      "Page counting complete hone ka wait karein.",
-      "error"
-    );
+    showMessage("Page counting complete hone ka wait karein.", "error");
     return;
   }
 
   if (!files.length || totalPages <= 0) {
-    showMessage(
-      "Pehle valid PDF ya photo select karein.",
-      "error"
-    );
+    showMessage("Pehle valid PDF ya photo select karein.", "error");
     return;
   }
 
@@ -546,10 +503,7 @@ form.addEventListener("submit", async (event) => {
     copies < 1 ||
     copies > 1000
   ) {
-    showMessage(
-      "Copies 1 se 1000 ke beech honi chahiye.",
-      "error"
-    );
+    showMessage("Copies 1 se 1000 ke beech honi chahiye.", "error");
     return;
   }
 
@@ -559,44 +513,42 @@ form.addEventListener("submit", async (event) => {
   }
 
   if (!/^[0-9]{10}$/.test(phone)) {
-    showMessage(
-      "Sahi 10 digit mobile number likhein.",
-      "error"
-    );
+    showMessage("Sahi 10 digit mobile number likhein.", "error");
     return;
   }
 
-  if (
-    !Number.isFinite(totalPrice) ||
-    totalPrice <= 0
-  ) {
-    showMessage(
-      "Price calculate nahi ho paayi. Details check karein.",
-      "error"
-    );
+  if (!Number.isFinite(totalPrice) || totalPrice <= 0) {
+    showMessage("Price calculate nahi ho paayi.", "error");
     return;
   }
-
-
-  const orderId = "SP-" + Date.now();
-
-  const filePaths = [];
-  const fileNames = [];
 
 
   uploading = true;
-
   submitBtn.disabled = true;
+  submitBtn.textContent = "Order process ho raha hai...";
 
-  submitBtn.textContent =
-    "Files upload ho rahi hain...";
-
-  showMessage(
-    "Kripya page band na karein. Files upload ho rahi hain."
-  );
-
+  let uploadedPaths = [];
 
   try {
+
+    // STEP 1: ANONYMOUS LOGIN
+
+    if (!auth.currentUser) {
+      await signInAnonymously(auth);
+    }
+
+    const customerUid = auth.currentUser.uid;
+
+
+    // STEP 2: CREATE ORDER ID
+
+    const orderId = "SP-" + Date.now();
+
+
+    // STEP 3: UPLOAD FILES
+
+    const filePaths = [];
+    const fileNames = [];
 
     for (const file of files) {
 
@@ -606,34 +558,65 @@ form.addEventListener("submit", async (event) => {
       const path =
         `${orderId}/${Date.now()}_${safeName}`;
 
-
       const { error } = await supabase.storage
         .from("print-files")
         .upload(path, file, {
-
           cacheControl: "3600",
           upsert: false,
-
-          contentType:
-            file.type || "application/octet-stream"
-
+          contentType: file.type || "application/octet-stream"
         });
-
 
       if (error) throw error;
 
       filePaths.push(path);
       fileNames.push(file.name);
-
+      uploadedPaths.push(path);
     }
 
 
-    // SAVE ORDER DETAILS
+    // STEP 4: SAVE ORDER IN FIRESTORE
+
+    const orderData = {
+
+      orderId: orderId,
+      uid: customerUid,
+
+      name: name,
+      phone: phone,
+
+      fileNames: fileNames,
+      filePaths: filePaths,
+
+      totalPages: totalPages * copies,
+
+      printType: typeInput.value,
+      printSide: sideInput.value,
+
+      copies: copies,
+      totalPrice: totalPrice,
+
+      utr: "",
+
+      paymentStatus: "PENDING",
+      orderStatus: "PENDING",
+
+      createdAt: serverTimestamp()
+
+    };
+
+
+    await setDoc(
+      doc(db, "orders", orderId),
+      orderData
+    );
+
+
+    // STEP 5: SAVE SESSION DATA
 
     sessionStorage.setItem("orderId", orderId);
+    sessionStorage.setItem("customerUid", customerUid);
 
     sessionStorage.setItem("name", name);
-
     sessionStorage.setItem("phone", phone);
 
     sessionStorage.setItem(
@@ -651,57 +634,42 @@ form.addEventListener("submit", async (event) => {
       String(totalPages * copies)
     );
 
-    sessionStorage.setItem(
-      "printType",
-      typeInput.value
-    );
-
-    sessionStorage.setItem(
-      "printSide",
-      sideInput.value
-    );
-
-    sessionStorage.setItem(
-      "copies",
-      String(copies)
-    );
-
-    sessionStorage.setItem(
-      "totalPrice",
-      String(totalPrice)
-    );
+    sessionStorage.setItem("printType", typeInput.value);
+    sessionStorage.setItem("printSide", sideInput.value);
+    sessionStorage.setItem("copies", String(copies));
+    sessionStorage.setItem("totalPrice", String(totalPrice));
 
 
-    // REDIRECT
+    // STEP 6: REDIRECT
 
-    window.location.href =
-      "confirmation.html";
+    showMessage("Order successfully saved!", "ok");
+
+    window.location.href = "confirmation.html";
 
 
   } catch (error) {
 
-    console.error("Order upload failed:", error);
+    console.error("Order creation failed:", error);
 
     showMessage(
-      "Upload fail hua: " +
-      (error.message || "Please try again."),
+      "Order save nahi hua: " +
+      (error.message || "Unknown error"),
       "error"
     );
 
+    // Uploaded files may remain in storage if Firestore save fails.
+    // Cleanup can be added after testing.
+
     uploading = false;
 
-    submitBtn.disabled =
-      totalPages <= 0;
+    submitBtn.disabled = totalPages <= 0;
 
     submitBtn.textContent =
       "Continue to Order Confirmation";
-
   }
 
 });
 
-
-// INITIAL VALUES
 
 pageDisplay.innerHTML =
   "<strong>Total Pages:</strong> 0";
@@ -712,4 +680,4 @@ priceDisplay.innerHTML =
 </script>
 
 </body>
-    </html>
+          </html>
