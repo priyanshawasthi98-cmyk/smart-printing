@@ -69,7 +69,7 @@
     </form>
 
     <div id="result" aria-live="polite"></div>
-    <p class="note">Note: Is file mein page counting aur price calculation chalte hain. Supabase file upload aur Firebase order creation is uploaded source ke missing hissa mein the; unhe bina original integration details ke yahan safely recreate nahi kiya gaya hai.</p>
+    <p class="note">Upload ke baad order confirmation page khulega. Payment status server-side verify hone ke baad hi shop printing shuru karegi.</p>
   </div>
 </main>
 
@@ -284,6 +284,82 @@
   priceDisplay.innerHTML = "<strong>Total Price:</strong> ₹0";
 })();
 </script>
-</body>
-          </html>
-        
+
+<script type="module">
+  import { supabase } from "./firebase.js";
+
+  const form = document.getElementById("printForm");
+  const submitBtn = document.getElementById("submitBtn");
+  const result = document.getElementById("result");
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const files = Array.from(document.getElementById("file").files || []);
+    const name = document.getElementById("name").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const copies = Number(document.getElementById("copies").value);
+    const printType = document.getElementById("type").value;
+    const printSide = document.getElementById("side").value;
+    const pageText = document.getElementById("pageCount").textContent;
+    const totalPages = Number((pageText.match(/\d+/g) || []).slice(-1)[0] || 0);
+    const priceText = document.getElementById("totalPrice").textContent;
+    const totalPrice = Number((priceText.match(/[0-9]+/g) || []).join("") || 0);
+
+    if (!files.length || totalPages < 1 || !Number.isInteger(copies) ||
+        copies < 1 || copies > 1000 || !name || !/^[0-9]{10}$/.test(phone)) {
+      result.className = "error";
+      result.textContent = "Kripya details aur files dobara check karein.";
+      return;
+    }
+
+    const orderId = "SP-" + Date.now();
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Files upload ho rahi hain...";
+    result.className = "";
+    result.textContent = "Kripya page band na karein. Files upload ho rahi hain.";
+
+    try {
+      const filePaths = [];
+      const fileNames = [];
+
+      for (const file of files) {
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+        const path = `${orderId}/${Date.now()}_${safeName}`;
+        const { error } = await supabase.storage
+          .from("print-files")
+          .upload(path, file, {
+            cacheControl: "3600",
+            upsert: false,
+            contentType: file.type || "application/octet-stream"
+          });
+
+        if (error) throw error;
+        filePaths.push(path);
+        fileNames.push(file.name);
+      }
+
+      sessionStorage.setItem("orderId", orderId);
+      sessionStorage.setItem("name", name);
+      sessionStorage.setItem("phone", phone);
+      sessionStorage.setItem("fileNames", JSON.stringify(fileNames));
+      sessionStorage.setItem("filePaths", JSON.stringify(filePaths));
+      sessionStorage.setItem("totalPages", String(totalPages * copies));
+      sessionStorage.setItem("printType", printType);
+      sessionStorage.setItem("printSide", printSide);
+      sessionStorage.setItem("copies", String(copies));
+      sessionStorage.setItem("totalPrice", String(totalPrice));
+
+      window.location.href = "confirmation.html";
+    } catch (error) {
+      console.error("Order upload failed:", error);
+      result.className = "error";
+      result.textContent = "Upload fail hua: " + (error.message || "Please try again.");
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Continue to Order Confirmation";
+    }
+  });
+</script>
+\n</body>
+        </html>
+  
