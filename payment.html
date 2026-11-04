@@ -1,408 +1,184 @@
 <!DOCTYPE html>
 <html lang="hi">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Payment - Smart Printing</title>
-
   <style>
-    body {
-      margin: 0;
-      padding: 20px;
-      font-family: Arial, sans-serif;
-      background: #f2f5fa;
-      color: #172033;
-    }
-
-    header {
-      background: #155eef;
-      color: white;
-      text-align: center;
-      padding: 25px 15px;
-      border-radius: 15px;
-    }
-
-    main {
-      max-width: 500px;
-      margin: 25px auto;
-    }
-
-    .card {
-      background: white;
-      padding: 22px;
-      border-radius: 15px;
-      box-shadow: 0 3px 12px #00000010;
-    }
-
-    .row {
-      display: flex;
-      justify-content: space-between;
-      gap: 15px;
-      padding: 13px 0;
-      border-bottom: 1px solid #eee;
-    }
-
-    .label {
-      color: #667085;
-    }
-
-    .value {
-      font-weight: bold;
-      text-align: right;
-      overflow-wrap: anywhere;
-    }
-
-    .total {
-      color: #155eef;
-      font-size: 24px;
-    }
-
-    button {
-      width: 100%;
-      padding: 14px;
-      margin-top: 15px;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button:disabled {
-      opacity: 0.6;
-    }
-
-    .pay {
-      background: #155eef;
-      color: white;
-    }
-
-    .back {
-      background: #e8efff;
-      color: #155eef;
-    }
-
-    .note {
-      color: #667085;
-      font-size: 13px;
-      line-height: 1.6;
-    }
-
-    #qrSection {
-      text-align: center;
-      margin-top: 20px;
-      padding: 15px;
-      background: #f8faff;
-      border-radius: 12px;
-    }
-
-    #qrImage {
-      width: 230px;
-      max-width: 100%;
-      display: block;
-      margin: 15px auto;
-    }
-
-    input {
-      width: 100%;
-      box-sizing: border-box;
-      padding: 13px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 16px;
-      margin-top: 8px;
-    }
-
-    #paymentMessage {
-      margin-top: 15px;
-      padding: 12px;
-      background: #fff4e5;
-      border-radius: 8px;
-      line-height: 1.6;
-      overflow-wrap: anywhere;
-    }
+    body{margin:0;padding:20px;font-family:Arial,sans-serif;background:#f2f5fa;color:#172033}
+    header{background:#155eef;color:white;text-align:center;padding:25px 15px;border-radius:15px}
+    main{max-width:500px;margin:25px auto}
+    .card{background:white;padding:22px;border-radius:15px;box-shadow:0 3px 12px #00000010}
+    .row{display:flex;justify-content:space-between;gap:15px;padding:13px 0;border-bottom:1px solid #eee}
+    .label{color:#667085}.value{font-weight:bold;text-align:right;overflow-wrap:anywhere}
+    .total{color:#155eef;font-size:24px}
+    button{width:100%;padding:14px;margin-top:15px;border:0;border-radius:8px;font-size:16px;font-weight:bold;cursor:pointer}
+    button:disabled{opacity:.6;cursor:not-allowed}
+    .pay{background:#155eef;color:white}.back{background:#e8efff;color:#155eef}
+    .note{color:#667085;font-size:13px;line-height:1.6}
+    #qrSection{text-align:center;margin-top:20px;padding:15px;background:#f8faff;border-radius:12px}
+    #qrImage{width:230px;max-width:100%;display:block;margin:15px auto}
+    input{width:100%;box-sizing:border-box;padding:13px;border:1px solid #ccc;border-radius:8px;font-size:16px;margin-top:8px}
+    #paymentMessage{margin-top:15px;padding:12px;background:#fff4e5;border-radius:8px;line-height:1.6;overflow-wrap:anywhere}
   </style>
 </head>
-
 <body>
-
-  <header>
-    <h1>🖨️ Smart Printing</h1>
-    <p>UPI Payment</p>
-  </header>
-
+  <header><h1>🖨️ Smart Printing</h1><p>UPI Payment</p></header>
   <main>
     <div class="card">
-
       <h2>💳 Payment Summary</h2>
-
-      <div id="orderDetails">
-        Order details load ho rahi hain...
-      </div>
-
-      <button class="pay" id="payButton" type="button">
-        Generate Payment QR
-      </button>
-
+      <div id="orderDetails">Order details load ho rahi hain...</div>
+      <button class="pay" id="payButton" type="button">Generate Payment QR</button>
       <section id="qrSection" hidden>
-
-        <h3>Scan & Pay</h3>
-
+        <h3>Scan &amp; Pay</h3>
         <p id="qrAmount"></p>
-
         <img id="qrImage" alt="UPI Payment QR Code">
-
         <p>UPI ID: 9770981980@ybl</p>
-
-        <button class="pay" id="openUPI" type="button">
-          Open UPI App
-        </button>
-
-        <label for="utr">
-          <b>Payment UTR / Transaction ID</b>
-        </label>
-
-        <input
-          id="utr"
-          type="text"
-          maxlength="30"
-          placeholder="Payment ke baad UTR dalein"
-          autocomplete="off"
-        >
-
-        <button class="pay" id="submitUTR" type="button">
-          Submit Payment Reference
-        </button>
-
+        <button class="pay" id="openUPI" type="button">Open UPI App</button>
+        <label for="utr"><b>Payment UTR / Transaction ID</b></label>
+        <input id="utr" type="text" maxlength="30" placeholder="Payment ke baad UTR dalein" autocomplete="off">
+        <button class="pay" id="submitUTR" type="button">Submit Payment Reference</button>
       </section>
-
-      <button class="back" id="backButton" type="button">
-        Back to Order
-      </button>
-
+      <button class="back" id="backButton" type="button">Back to Order</button>
       <div id="paymentMessage" hidden></div>
-
-      <p class="note">
-        UTR submit karne se payment automatically verify nahi hota.
-        PhonePe transaction history check karne ke baad hi payment
-        Paid maana jayega.
-      </p>
-
+      <p class="note">UTR submit karne se payment automatically verify nahi hota. PhonePe transaction history check karne ke baad hi payment Paid maana jayega.</p>
     </div>
   </main>
 
   <script type="module">
-
     import { db, auth } from "./firebase.js";
-
-    import {
-      collection,
-      addDoc,
-      serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-    import {
-      signInAnonymously
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
+    import { collection, addDoc, serverTimestamp }
+      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { signInAnonymously }
+      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
     const UPI_ID = "9770981980@ybl";
     const UPI_NAME = "Smart Printing";
+    const get = key => sessionStorage.getItem(key);
 
-    const order = JSON.parse(
-      sessionStorage.getItem("smartPrintingOrder") || "null"
-    );
+    function readOrder() {
+      let legacy = null;
+      try { legacy = JSON.parse(get("smartPrintingOrder") || "null"); }
+      catch (error) { console.warn("Legacy order data invalid.", error); }
 
+      const separate = {
+        orderId:get("orderId"), name:get("name"), phone:get("phone"),
+        fileNames:get("fileNames"), filePaths:get("filePaths"),
+        totalPages:get("totalPages"), printType:get("printType"),
+        printSide:get("printSide"), copies:get("copies"),
+        totalPrice:get("totalPrice")
+      };
+      const raw = separate.orderId ? separate : (legacy || {});
+
+      function arrayValue(value) {
+        if (Array.isArray(value)) return value;
+        if (typeof value !== "string" || !value) return [];
+        try {
+          const parsed = JSON.parse(value);
+          if (Array.isArray(parsed)) return parsed;
+        } catch (_) {}
+        return value.split(",").map(x => x.trim()).filter(Boolean);
+      }
+
+      return {
+        orderId:raw.orderId, name:raw.name, phone:raw.phone,
+        fileNames:arrayValue(raw.fileNames), filePaths:arrayValue(raw.filePaths),
+        totalPages:Number(raw.totalPages), printType:raw.printType,
+        printSide:raw.printSide, copies:Number(raw.copies),
+        totalPrice:Number(raw.totalPrice)
+      };
+    }
+
+    const order = readOrder();
     const details = document.getElementById("orderDetails");
     const payButton = document.getElementById("payButton");
     const message = document.getElementById("paymentMessage");
     const qrSection = document.getElementById("qrSection");
     const submitButton = document.getElementById("submitUTR");
-
     let paymentSubmitted = false;
-
 
     function showMessage(text) {
       message.hidden = false;
       message.textContent = text;
     }
 
+    const validOrder = Boolean(
+      order.orderId && order.name &&
+      /^[0-9]{10}$/.test(String(order.phone || "")) &&
+      order.fileNames.length > 0 &&
+      order.filePaths.length === order.fileNames.length &&
+      Number.isInteger(order.totalPages) && order.totalPages > 0 &&
+      Number.isInteger(order.copies) && order.copies > 0 &&
+      Number.isFinite(order.totalPrice) && order.totalPrice > 0 &&
+      ["Black & White","Colour"].includes(order.printType) &&
+      ["Single Side","Double Side"].includes(order.printSide)
+    );
 
-    // Check order
-
-    if (
-      !order ||
-      !order.orderId ||
-      !order.name ||
-      !/^[0-9]{10}$/.test(String(order.phone)) ||
-      !Array.isArray(order.fileNames) ||
-      !Number.isInteger(Number(order.totalPages)) ||
-      !Number.isInteger(Number(order.copies)) ||
-      !Number.isFinite(Number(order.totalPrice)) ||
-      Number(order.totalPrice) <= 0
-    ) {
-
-      details.textContent =
-        "Valid order nahi mila. Pehle order form bharein.";
-
+    if (!validOrder) {
+      details.textContent = "Valid order nahi mila ya order data adhura hai. Please order page se dobara order banayein.";
       payButton.disabled = true;
-
+      showMessage("Order details missing hain. Back to Order par tap karke dobara try karein.");
     } else {
-
-      const rows = [
-        ["Order ID", order.orderId],
-        ["Name", order.name],
-        ["Total Pages", order.totalPages],
-        ["Print Type", order.printType],
-        ["Printing Side", order.printSide],
-        ["Copies", order.copies],
-        ["Total Amount", "₹" + Number(order.totalPrice).toFixed(2)]
-      ];
-
-      rows.forEach(function(item, index) {
-
-        const row = document.createElement("div");
-        row.className = "row";
-
-        const label = document.createElement("span");
-        label.className = "label";
-        label.textContent = item[0];
-
-        const value = document.createElement("span");
-
-        value.className =
-          index === rows.length - 1
-            ? "value total"
-            : "value";
-
-        value.textContent = item[1];
-
-        row.append(label, value);
-        details.appendChild(row);
-
+      [
+        ["Order ID",order.orderId],["Name",order.name],
+        ["Files",order.fileNames.join(", ")],["Total Pages",order.totalPages],
+        ["Print Type",order.printType],["Printing Side",order.printSide],
+        ["Copies",order.copies],["Total Amount","₹"+order.totalPrice.toFixed(2)]
+      ].forEach((item,index) => {
+        const row=document.createElement("div"); row.className="row";
+        const label=document.createElement("span"); label.className="label"; label.textContent=item[0];
+        const value=document.createElement("span");
+        value.className=index===7?"value total":"value"; value.textContent=item[1];
+        row.append(label,value); details.appendChild(row);
       });
-
     }
-
-
-    // Generate QR
 
     function generateQR() {
-
-      if (!order) return;
-
-      const amount = Number(order.totalPrice).toFixed(2);
-
-      const upiLink = "upi://pay?" + new URLSearchParams({
-        pa: UPI_ID,
-        pn: UPI_NAME,
-        am: amount,
-        cu: "INR",
-        tn: "Order " + order.orderId
+      if (!validOrder) return;
+      const amount=order.totalPrice.toFixed(2);
+      const upiLink="upi://pay?"+new URLSearchParams({
+        pa:UPI_ID,pn:UPI_NAME,am:amount,cu:"INR",tn:"Order "+order.orderId
       }).toString();
-
-      const qrURL =
-        "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" +
-        encodeURIComponent(upiLink);
-
-      document.getElementById("qrImage").src = qrURL;
-
-      document.getElementById("qrAmount").textContent =
-        "Pay exactly ₹" + amount;
-
-      document.getElementById("openUPI").onclick = function() {
-        window.location.href = upiLink;
-      };
-
-      qrSection.hidden = false;
-
-      payButton.disabled = true;
-      payButton.textContent = "QR Generated";
-
+      document.getElementById("qrImage").src=
+        "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data="+encodeURIComponent(upiLink);
+      document.getElementById("qrAmount").textContent="Pay exactly ₹"+amount;
+      document.getElementById("openUPI").onclick=()=>{ window.location.href=upiLink; };
+      qrSection.hidden=false; payButton.disabled=true; payButton.textContent="QR Generated";
     }
+    payButton.addEventListener("click",generateQR);
 
-    payButton.addEventListener("click", generateQR);
-
-
-    // Submit UTR to Firebase
-
-    submitButton.addEventListener("click", async function() {
-
-      if (!order || paymentSubmitted) return;
-
-      const utr = document.getElementById("utr").value.trim();
-
+    submitButton.addEventListener("click",async()=>{
+      if (!validOrder || paymentSubmitted) return;
+      const utr=document.getElementById("utr").value.trim();
       if (!/^[A-Za-z0-9]{8,30}$/.test(utr)) {
-
-        showMessage(
-          "Kripya valid Transaction Reference / UTR enter karein."
-        );
-
+        showMessage("Kripya valid Transaction Reference / UTR enter karein (8–30 letters/numbers).");
         return;
       }
-
-      submitButton.disabled = true;
-      submitButton.textContent = "Saving...";
-
+      submitButton.disabled=true; submitButton.textContent="Saving...";
       try {
-
-        if (!auth.currentUser) {
-          await signInAnonymously(auth);
-        }
-
-        await addDoc(collection(db, "orders"), {
-
-          orderId: String(order.orderId),
-          name: String(order.name),
-          phone: String(order.phone),
-          fileNames: order.fileNames.map(String),
-          totalPages: Number(order.totalPages),
-          printType: String(order.printType),
-          printSide: String(order.printSide),
-          copies: Number(order.copies),
-          totalPrice: Number(order.totalPrice),
-          utr: utr,
-          paymentStatus: "PENDING",
-          createdAt: serverTimestamp()
-
+        if (!auth.currentUser) await signInAnonymously(auth);
+        await addDoc(collection(db,"orders"),{
+          orderId:String(order.orderId),name:String(order.name),phone:String(order.phone),
+          fileNames:order.fileNames.map(String),filePaths:order.filePaths.map(String),
+          totalPages:order.totalPages,printType:String(order.printType),
+          printSide:String(order.printSide),copies:order.copies,totalPrice:order.totalPrice,
+          utr:utr,paymentStatus:"PENDING",orderStatus:"PENDING",
+          createdAt:serverTimestamp()
         });
-
-        paymentSubmitted = true;
-
-        showMessage(
-          "Order Firebase mein save ho gaya! Payment PENDING hai. " +
-          "PhonePe mein payment verify hone ke baad hi Paid maana jayega."
-        );
-
-        submitButton.textContent = "Submitted";
-
-      } catch (error) {
-
+        paymentSubmitted=true;
+        showMessage("Order Firebase mein save ho gaya! Payment status PENDING hai. PhonePe transaction verify hone ke baad hi Paid maana jayega.");
+        submitButton.textContent="Submitted";
+      } catch(error) {
         console.error(error);
-
-        showMessage(
-          "Order save nahi hua. Error: " + error.message
-        );
-
-        submitButton.disabled = false;
-        submitButton.textContent = "Retry Submit";
-
+        showMessage("Order save nahi hua. Error: "+(error.message||"Unknown error"));
+        submitButton.disabled=false; submitButton.textContent="Retry Submit";
       }
-
     });
 
-
-    // Back button
-
-    document.getElementById("backButton").addEventListener("click", function() {
-
-      window.location.href = "confirmation.html";
-
+    document.getElementById("backButton").addEventListener("click",()=>{
+      window.location.href="confirmation.html";
     });
-
   </script>
-
 </body>
-          </html>
+  </html>
+  
