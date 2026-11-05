@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Smart Printing - Admin Dashboard</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f3f5f9;
+  color: #222;
+}
+
+header {
+  background: #174ea6;
+  color: white;
+  padding: 20px;
+}
+
+.header-content {
+  max-width: 1100px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+header h2 {
+  margin: 0;
+}
+
+button {
+  border: none;
+  padding: 11px 16px;
+  border-radius: 7px;
+  background: #174ea6;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+.logout {
+  background: #d93025;
+}
+
+main {
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
+}
+
+.welcome {
+  margin: 10px 0 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+}
+
+.card {
+  background: white;
+  padding: 18px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  border-left: 4px solid #174ea6;
+}
+
+.card p {
+  color: #666;
+  font-size: 13px;
+  margin: 0 0 12px;
+}
+
+.card h2 {
+  margin: 0;
+  color: #174ea6;
+  font-size: 25px;
+  overflow-wrap: anywhere;
+}
+
+.section {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 22px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+
+.section h3 {
+  margin-top: 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 650px;
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+  font-size: 13px;
+}
+
+th {
+  background: #f2f5fa;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+.status {
+  display: inline-block;
+  padding: 5px 8px;
+  border-radius: 5px;
+  background: #fff3cd;
+  font-size: 11px;
+}
+
+.message {
+  padding: 12px;
+  text-align: center;
+  color: #555;
+}
+
+.note {
+  color: #777;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+@media(max-width:750px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media(max-width:400px) {
+  main {
+    padding: 12px;
+  }
+
+  .grid {
+    gap: 10px;
+  }
+
+  .card {
+    padding: 13px;
+  }
+
+  .card h2 {
+    font-size: 21px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-content">
+    <h2>🖨️ Smart Printing Admin</h2>
+    <button class="logout" id="logoutBtn">Logout</button>
+  </div>
+</header>
+
+<main>
+
+  <div class="welcome">
+    <h2>Dashboard Overview</h2>
+    <p id="adminEmail">Checking Admin...</p>
+    <p id="lastUpdated" class="note"></p>
+  </div>
+
+  <div class="grid">
+
+    <div class="card">
+      <p>Total Orders</p>
+      <h2 id="totalOrders">-</h2>
+    </div>
+
+    <div class="card">
+      <p>Today's Orders</p>
+      <h2 id="todayOrders">-</h2>
+    </div>
+
+    <div class="card">
+      <p>Pending Orders</p>
+      <h2 id="pendingOrders">-</h2>
+    </div>
+
+    <div class="card">
+      <p>Accepted Orders</p>
+      <h2 id="acceptedOrders">-</h2>
+    </div>
+
+    <div class="card">
+      <p>Printing Orders</p>
+      <h2 id="printingOrders">-</h2>
+    </div>
+
+    <div class="card">
+      <p>Completed Orders</p>
+      <h2 id="completedOrders">-</h2>
+    </div>
+
+    <div class="card">
+      <p>Rejected Orders</p>
+      <h2 id="rejectedOrders">-</h2>
+    </div>
+
+    <div class="card">
+      <p>Pending Payments</p>
+      <h2 id="pendingPayments">-</h2>
+    </div>
+
+    <div class="card">
+      <p>Total Revenue</p>
+      <h2 id="totalRevenue">₹-</h2>
+    </div>
+
+    <div class="card">
+      <p>Today's Revenue</p>
+      <h2 id="todayRevenue">₹-</h2>
+    </div>
+
+    <div class="card">
+      <p>Total Commission</p>
+      <h2 id="totalCommission">₹-</h2>
+    </div>
+
+  </div>
+
+  <div class="section">
+    <h3>Recent Orders</h3>
+
+    <div id="ordersMessage" class="message">
+      Loading orders...
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Phone</th>
+            <th>Amount</th>
+            <th>Payment</th>
+            <th>Order Status</th>
+          </tr>
+        </thead>
+
+        <tbody id="recentOrders"></tbody>
+      </table>
+    </div>
+
+    <button id="refreshBtn">Refresh Dashboard</button>
+  </div>
+
+  <p class="note">
+    Revenue is calculated from orders marked PAID.
+    Commission will be calculated after shop cost and commission
+    settings are implemented in a later phase.
+  </p>
+
+</main>
+
+<script type="module">
+
+import { auth, db } from "./firebase.js";
+
+import {
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+  collection,
+  getDocs,
+  query,
+  orderBy
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const ADMIN_UID = "ibK3XWMUEYQIbBhPmGQRnW72MZg1";
+
+const $ = id => document.getElementById(id);
+
+let currentUser = null;
+let loading = false;
+
+function money(value) {
+  return "₹" + Number(value || 0).toLocaleString("en-IN");
+}
+
+function getDate(value) {
+  if (!value) return null;
+
+  if (typeof value.toDate === "function") {
+    return value.toDate();
+  }
+
+  return null;
+}
+
+function setText(id, value) {
+  $(id).textContent = value;
+}
+
+function showError(error) {
+  $("ordersMessage").textContent =
+    "Error: " + error.message;
+}
+
+async function loadDashboard() {
+
+  if (!currentUser || loading) return;
+
+  loading = true;
+  $("refreshBtn").disabled = true;
+  $("ordersMessage").textContent = "Loading dashboard...";
+
+  try {
+
+    const ordersQuery = query(
+      collection(db, "orders"),
+      orderBy("createdAt", "desc")
+    );
+
+    const snapshot = await getDocs(ordersQuery);
+
+    const orders = snapshot.docs.map(d => ({
+      id: d.id,
+      ...d.data()
+    }));
+
+    const now = new Date();
+
+    const todayStart = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    );
+
+    let todayCount = 0;
+    let pending = 0;
+    let accepted = 0;
+    let printing = 0;
+    let completed = 0;
+    let rejected = 0;
+    let pendingPayment = 0;
+
+    let totalRevenue = 0;
+    let todayRevenue = 0;
+
+    for (const order of orders) {
+
+      const orderStatus = order.orderStatus || "PENDING";
+      const paymentStatus = order.paymentStatus || "PENDING";
+
+      const createdAt = getDate(order.createdAt);
+
+      if (createdAt && createdAt >= todayStart) {
+        todayCount++;
+      }
+
+      if (orderStatus === "PENDING") pending++;
+      if (orderStatus === "ACCEPTED") accepted++;
+      if (orderStatus === "PRINTING") printing++;
+      if (orderStatus === "COMPLETED") completed++;
+      if (orderStatus === "REJECTED") rejected++;
+
+      if (paymentStatus !== "PAID") {
+        pendingPayment++;
+      }
+
+      if (paymentStatus === "PAID") {
+
+        const amount = Number(order.totalPrice) || 0;
+
+        totalRevenue += amount;
+
+        if (createdAt && createdAt >= todayStart) {
+          todayRevenue += amount;
+        }
+
+      }
+
+    }
+
+    setText("totalOrders", orders.length);
+    setText("todayOrders", todayCount);
+    setText("pendingOrders", pending);
+    setText("acceptedOrders", accepted);
+    setText("printingOrders", printing);
+    setText("completedOrders", completed);
+    setText("rejectedOrders", rejected);
+    setText("pendingPayments", pendingPayment);
+
+    setText("totalRevenue", money(totalRevenue));
+    setText("todayRevenue", money(todayRevenue));
+
+    // Commission is not configured yet.
+    setText("totalCommission", "Not configured");
+
+    const recent = orders.slice(0, 10);
+    const tbody = $("recentOrders");
+
+    tbody.replaceChildren();
+
+    if (recent.length === 0) {
+
+      $("ordersMessage").textContent = "No orders found.";
+
+    } else {
+
+      $("ordersMessage").textContent =
+        "Showing latest " + recent.length + " orders.";
+
+      recent.forEach(order => {
+
+        const row = document.createElement("tr");
+
+        const values = [
+          order.orderId || order.id,
+          order.name || "-",
+          order.phone || "-",
+          money(order.totalPrice),
+          order.paymentStatus || "PENDING",
+          order.orderStatus || "PENDING"
+        ];
+
+        values.forEach(value => {
+
+          const cell = document.createElement("td");
+          cell.textContent = value;
+          row.appendChild(cell);
+
+        });
+
+        tbody.appendChild(row);
+
+      });
+
+    }
+
+    setText(
+      "lastUpdated",
+      "Last updated: " + now.toLocaleString("en-IN")
+    );
+
+  } catch (error) {
+
+    showError(error);
+
+  } finally {
+
+    loading = false;
+    $("refreshBtn").disabled = false;
+
+  }
+
+}
+
+
+// AUTHENTICATION CHECK
+
+onAuthStateChanged(auth, async user => {
+
+  if (!user || user.uid !== ADMIN_UID) {
+
+    if (user) {
+      await signOut(auth);
+    }
+
+    window.location.replace("admin.html");
+    return;
+
+  }
+
+  currentUser = user;
+
+  setText("adminEmail", user.email || "Admin");
+
+  await loadDashboard();
+
+});
+
+
+// REFRESH
+
+$("refreshBtn").addEventListener("click", loadDashboard);
+
+
+// LOGOUT
+
+$("logoutBtn").addEventListener("click", async () => {
+
+  $("logoutBtn").disabled = true;
+
+  try {
+
+    await signOut(auth);
+    window.location.replace("admin.html");
+
+  } catch (error) {
+
+    alert("Logout failed: " + error.message);
+    $("logoutBtn").disabled = false;
+
+  }
+
+});
+
+</script>
+
+</body>
+  </html>
