@@ -7,9 +7,7 @@
   <title>Smart Printing</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -18,7 +16,6 @@
       color: #172033;
     }
 
-    /* Header */
     header {
       background: #155eef;
       color: white;
@@ -41,7 +38,6 @@
       padding: 0 14px;
     }
 
-    /* Main Card */
     .card {
       background: white;
       padding: 20px;
@@ -89,8 +85,7 @@
       font-weight: bold;
       cursor: pointer;
       transition: transform 0.2s ease,
-                  box-shadow 0.2s ease,
-                  background 0.2s ease;
+                  box-shadow 0.2s ease;
     }
 
     button:not(:disabled):hover {
@@ -129,15 +124,77 @@
                   border-color 0.3s ease;
     }
 
-    .error {
-      color: #b42318;
+    .error { color: #b42318; }
+    .ok { color: #067647; }
+
+    /* Running Boy Animation */
+
+    .runner-box {
+      display: none;
+      margin-top: 16px;
+      padding: 15px 10px;
+      background: #eef4ff;
+      border: 1px solid #d5e3ff;
+      border-radius: 12px;
+      text-align: center;
+      overflow: hidden;
     }
 
-    .ok {
-      color: #067647;
+    .runner-box.active {
+      display: block;
+      animation: fadeIn 0.4s ease;
     }
 
-    /* Animations */
+    .runner-track {
+      height: 58px;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 2px dashed #b5c8f5;
+    }
+
+    .runner {
+      position: absolute;
+      left: -75px;
+      bottom: 5px;
+      font-size: 30px;
+      white-space: nowrap;
+    }
+
+    .runner-box.active.running .runner {
+      animation: runBoy 2.2s linear infinite;
+    }
+
+    .sticker {
+      position: absolute;
+      font-size: 20px;
+    }
+
+    .sticker-one {
+      left: 18%;
+      top: 2px;
+      animation: stickerFloat 1.8s ease-in-out infinite;
+    }
+
+    .sticker-two {
+      right: 20%;
+      top: 2px;
+    }
+
+    .sticker-three {
+      right: 5%;
+      bottom: 5px;
+      animation: stickerFloat 1.4s ease-in-out infinite;
+    }
+
+    #runnerText {
+      margin: 10px 0 0;
+      color: #155eef;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    /* Keyframes */
+
     @keyframes headerFade {
       from {
         opacity: 0;
@@ -161,30 +218,32 @@
     }
 
     @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
     @keyframes logoFloat {
-      0%, 100% {
-        transform: translateY(0);
-      }
-      50% {
-        transform: translateY(-3px);
-      }
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
     }
 
-    /* Accessibility */
+    @keyframes runBoy {
+      from { left: -75px; }
+      to { left: calc(100% + 75px); }
+    }
+
+    @keyframes stickerFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation: none !important;
         transition: none !important;
-        scroll-behavior: auto !important;
       }
+
+      .runner { left: 40%; }
     }
   </style>
 </head>
@@ -217,6 +276,20 @@
         <p id="fileStatus">Abhi koi file select nahi hui.</p>
         <p id="pageCount"><strong>Total Pages:</strong> 0</p>
         <p id="totalPrice"><strong>Total Price:</strong> ₹0</p>
+      </div>
+
+      <!-- Running Boy -->
+      <div id="runnerBox" class="runner-box" aria-live="polite">
+        <div class="runner-track">
+          <span class="sticker sticker-one">⭐</span>
+          <span class="sticker sticker-two">🖨️</span>
+          <span class="runner">🏃‍♂️📄</span>
+          <span class="sticker sticker-three">✨</span>
+        </div>
+
+        <p id="runnerText">
+          Aapki file ka intezar hai...
+        </p>
       </div>
 
       <label for="type">Print Type</label>
@@ -309,7 +382,6 @@ const PDFJS_CDNS = [
 const PDF_WORKER =
   `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJS_VERSION}/pdf.worker.min.js`;
 
-
 const fileInput = document.getElementById("file");
 const copiesInput = document.getElementById("copies");
 const typeInput = document.getElementById("type");
@@ -323,6 +395,9 @@ const submitBtn = document.getElementById("submitBtn");
 const result = document.getElementById("result");
 const form = document.getElementById("printForm");
 
+const runnerBox = document.getElementById("runnerBox");
+const runnerText = document.getElementById("runnerText");
+
 let totalPages = 0;
 let counting = false;
 let uploading = false;
@@ -332,6 +407,24 @@ let selectionToken = 0;
 function showMessage(message, className = "") {
   result.className = className;
   result.textContent = message;
+}
+
+
+function showRunner(message) {
+  runnerBox.classList.add("active", "running");
+  runnerText.textContent = message;
+}
+
+
+function finishRunner(message) {
+  runnerBox.classList.add("active");
+  runnerBox.classList.remove("running");
+  runnerText.textContent = message;
+}
+
+
+function hideRunner() {
+  runnerBox.classList.remove("active", "running");
 }
 
 
@@ -436,12 +529,15 @@ async function countPages() {
 
     submitBtn.disabled = true;
     counting = false;
+    hideRunner();
 
     return;
   }
 
   counting = true;
   submitBtn.disabled = true;
+
+  showRunner("🏃‍♂️ Aapki files check karne daud raha hoon...");
 
   pageDisplay.textContent =
     "Pages count ho rahe hain...";
@@ -530,6 +626,10 @@ async function countPages() {
 
     showMessage("Page counting successful.", "ok");
 
+    finishRunner(
+      "🎉 Files ready! Ab aap print order bana sakte hain."
+    );
+
   } catch (error) {
 
     if (token !== selectionToken) return;
@@ -548,6 +648,10 @@ async function countPages() {
       "File read nahi ho paayi.";
 
     showMessage(error.message, "error");
+
+    finishRunner(
+      "⚠️ File check nahi ho paayi. Dobara select karein."
+    );
 
   } finally {
 
@@ -620,9 +724,12 @@ form.addEventListener("submit", async (event) => {
 
   uploading = true;
   submitBtn.disabled = true;
-  submitBtn.textContent = "Order process ho raha hai...";
 
-  let uploadedPaths = [];
+  submitBtn.textContent =
+    "Order process ho raha hai...";
+
+  showRunner("🏃‍♂️ Aapki files upload kar raha hoon...");
+
 
   try {
 
@@ -665,7 +772,6 @@ form.addEventListener("submit", async (event) => {
 
       filePaths.push(path);
       fileNames.push(file.name);
-      uploadedPaths.push(path);
     }
 
 
@@ -737,6 +843,8 @@ form.addEventListener("submit", async (event) => {
 
     // STEP 6: REDIRECT
 
+    finishRunner("🎉 Upload complete! Order ready hai.");
+
     showMessage("Order successfully saved!", "ok");
 
     window.location.href = "confirmation.html";
@@ -752,8 +860,9 @@ form.addEventListener("submit", async (event) => {
       "error"
     );
 
-    // Uploaded files may remain in storage if Firestore save fails.
-    // Cleanup can be added after testing.
+    finishRunner(
+      "⚠️ Upload ya order save nahi hua. Dobara try karein."
+    );
 
     uploading = false;
 
@@ -775,4 +884,4 @@ priceDisplay.innerHTML =
 </script>
 
 </body>
-                            </html>
+  </html>
