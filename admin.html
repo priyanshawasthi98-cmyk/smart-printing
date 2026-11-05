@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Smart Printing - Admin Security</title>
+<title>Smart Printing - Admin Login</title>
 
 <style>
 * {
@@ -84,10 +84,6 @@ button:disabled {
   background: #16834a;
 }
 
-.logout {
-  background: #d93025;
-}
-
 .message {
   text-align: center;
   margin-top: 15px;
@@ -104,7 +100,7 @@ button:disabled {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 .status {
@@ -129,14 +125,16 @@ button:disabled {
 
 <div class="container">
 
-  <!-- LOGIN SECTION -->
+  <!-- ADMIN LOGIN -->
 
   <div class="card" id="loginBox">
 
     <h1>🖨️ Smart Printing</h1>
+
     <div class="subtitle">Admin Secure Login</div>
 
     <label>Email Address</label>
+
     <input
       type="email"
       id="email"
@@ -145,6 +143,7 @@ button:disabled {
     >
 
     <label>Password</label>
+
     <input
       type="password"
       id="password"
@@ -152,7 +151,9 @@ button:disabled {
       autocomplete="current-password"
     >
 
-    <button id="loginBtn">Login Securely</button>
+    <button id="loginBtn">
+      Login Securely
+    </button>
 
     <button id="resetBtn" class="reset">
       Forgot Password?
@@ -167,7 +168,7 @@ button:disabled {
   </div>
 
 
-  <!-- ADMIN SECTION -->
+  <!-- ADMIN VERIFIED -->
 
   <div class="card hidden" id="adminBox">
 
@@ -178,9 +179,11 @@ button:disabled {
     </div>
 
     <p><b>Admin Email:</b></p>
+
     <p id="adminEmail"></p>
 
     <p><b>Admin UID:</b></p>
+
     <p id="adminUID" style="overflow-wrap:anywhere;"></p>
 
     <p id="sessionStatus" class="message success">
@@ -191,7 +194,7 @@ button:disabled {
       Open Admin Dashboard
     </button>
 
-    <button id="logoutBtn" class="logout">
+    <button id="logoutBtn" style="background:#d93025;">
       Logout
     </button>
 
@@ -235,7 +238,7 @@ const dashboardBtn = document.getElementById("dashboardBtn");
 const loginMessage = document.getElementById("loginMessage");
 
 
-// MESSAGE FUNCTION
+// MESSAGE
 
 function showMessage(text, type = "") {
 
@@ -245,18 +248,26 @@ function showMessage(text, type = "") {
 }
 
 
-// FIREBASE ERROR MESSAGES
+// ERROR HANDLING
 
 function friendlyError(error) {
 
   const errors = {
+
     "auth/invalid-email": "Invalid email address.",
+
     "auth/user-not-found": "Admin account not found.",
+
     "auth/wrong-password": "Incorrect password.",
+
     "auth/invalid-credential": "Incorrect email or password.",
+
     "auth/too-many-requests": "Too many attempts. Try again later.",
+
     "auth/network-request-failed": "Internet connection failed.",
+
     "auth/user-disabled": "This account is disabled."
+
   };
 
   return errors[error.code] || error.message;
@@ -264,7 +275,7 @@ function friendlyError(error) {
 }
 
 
-// LOGIN
+// ADMIN LOGIN
 
 loginBtn.addEventListener("click", async () => {
 
@@ -272,11 +283,15 @@ loginBtn.addEventListener("click", async () => {
   const password = passwordInput.value;
 
   if (!email || !password) {
+
     showMessage("Enter email and password.", "error");
+
     return;
+
   }
 
   loginBtn.disabled = true;
+
   showMessage("Checking admin credentials...");
 
   try {
@@ -299,13 +314,20 @@ loginBtn.addEventListener("click", async () => {
       );
 
       return;
+
     }
 
-    showMessage("Admin login successful.", "success");
+    showMessage(
+      "Admin login successful.",
+      "success"
+    );
 
   } catch (error) {
 
-    showMessage(friendlyError(error), "error");
+    showMessage(
+      friendlyError(error),
+      "error"
+    );
 
   } finally {
 
@@ -323,11 +345,18 @@ resetBtn.addEventListener("click", async () => {
   const email = emailInput.value.trim();
 
   if (!email) {
-    showMessage("Enter your admin email first.", "error");
+
+    showMessage(
+      "Enter your admin email first.",
+      "error"
+    );
+
     return;
+
   }
 
   resetBtn.disabled = true;
+
   showMessage("Sending password reset email...");
 
   try {
@@ -341,7 +370,10 @@ resetBtn.addEventListener("click", async () => {
 
   } catch (error) {
 
-    showMessage(friendlyError(error), "error");
+    showMessage(
+      friendlyError(error),
+      "error"
+    );
 
   } finally {
 
@@ -359,6 +391,7 @@ onAuthStateChanged(auth, async (user) => {
   if (user && user.uid === ADMIN_UID) {
 
     loginBox.classList.add("hidden");
+
     adminBox.classList.remove("hidden");
 
     document.getElementById("adminEmail").textContent =
@@ -373,10 +406,13 @@ onAuthStateChanged(auth, async (user) => {
   } else {
 
     loginBox.classList.remove("hidden");
+
     adminBox.classList.add("hidden");
 
     if (user && user.uid !== ADMIN_UID) {
+
       await signOut(auth);
+
     }
 
   }
@@ -384,7 +420,7 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 
-// OPEN DASHBOARD
+// OPEN ADMIN DASHBOARD
 
 dashboardBtn.addEventListener("click", () => {
 
@@ -403,6 +439,8 @@ logoutBtn.addEventListener("click", async () => {
 
     await signOut(auth);
 
+    showMessage("Logged out successfully.", "success");
+
   } catch (error) {
 
     alert("Logout failed: " + friendlyError(error));
@@ -418,4 +456,4 @@ logoutBtn.addEventListener("click", async () => {
 </script>
 
 </body>
-  </html>
+      </html>
