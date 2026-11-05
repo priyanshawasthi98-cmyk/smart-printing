@@ -3,56 +3,350 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#7048e8">
   <title>Payment - Smart Printing</title>
 
   <style>
-    body{margin:0;padding:20px;font-family:Arial,sans-serif;background:#f2f5fa;color:#172033}
-    header{background:#155eef;color:white;text-align:center;padding:25px 15px;border-radius:15px}
-    main{max-width:500px;margin:25px auto}
-    .card{background:white;padding:22px;border-radius:15px;box-shadow:0 3px 12px #00000010}
-    .row{display:flex;justify-content:space-between;gap:15px;padding:13px 0;border-bottom:1px solid #eee}
-    .label{color:#667085}.value{font-weight:bold;text-align:right;overflow-wrap:anywhere}
-    .total{color:#155eef;font-size:24px}
-    button{width:100%;padding:14px;margin-top:15px;border:0;border-radius:8px;font-size:16px;font-weight:bold;cursor:pointer}
-    button:disabled{opacity:.6;cursor:not-allowed}
-    .pay{background:#155eef;color:white}.back{background:#e8efff;color:#155eef}
-    .note{color:#667085;font-size:13px;line-height:1.6}
-    #qrSection{text-align:center;margin-top:20px;padding:15px;background:#f8faff;border-radius:12px}
-    #qrImage{width:230px;max-width:100%;display:block;margin:15px auto}
-    input{width:100%;box-sizing:border-box;padding:13px;border:1px solid #ccc;border-radius:8px;font-size:16px;margin-top:8px}
-    #paymentMessage{margin-top:15px;padding:12px;background:#fff4e5;border-radius:8px;line-height:1.6;overflow-wrap:anywhere}
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      color: #172033;
+      background: linear-gradient(135deg, #f3eaff, #e8f4ff, #fff0f6);
+      background-size: 300% 300%;
+      animation: backgroundMove 12s ease infinite;
+      overflow-x: hidden;
+    }
+
+    @keyframes backgroundMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    header {
+      background: linear-gradient(120deg, #7048e8, #155eef, #e84393);
+      background-size: 200% 200%;
+      animation: gradientMove 6s ease infinite;
+      color: white;
+      text-align: center;
+      padding: 25px 15px;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px #7048e844;
+      position: relative;
+      overflow: hidden;
+    }
+
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    header h1 {
+      margin: 8px 0;
+      font-size: 27px;
+    }
+
+    .stickers {
+      font-size: 25px;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .stickers span {
+      display: inline-block;
+      animation: float 2.5s ease-in-out infinite;
+    }
+
+    .stickers span:nth-child(2) { animation-delay: .5s; }
+    .stickers span:nth-child(3) { animation-delay: 1s; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(-5deg); }
+      50% { transform: translateY(-9px) rotate(8deg); }
+    }
+
+    main {
+      max-width: 500px;
+      margin: 25px auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    .card {
+      background: white;
+      padding: 22px;
+      border-radius: 20px;
+      box-shadow: 0 8px 30px #00000012;
+      animation: cardAppear .7s ease both;
+    }
+
+    @keyframes cardAppear {
+      from {
+        opacity: 0;
+        transform: translateY(25px) scale(.97);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .payment-icon {
+      text-align: center;
+      font-size: 48px;
+      margin: 5px 0 15px;
+      animation: float 2.5s ease-in-out infinite;
+    }
+
+    h2 {
+      color: #7048e8;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      padding: 13px 0;
+      border-bottom: 1px solid #eee;
+      animation: rowAppear .5s ease both;
+    }
+
+    .row:nth-child(2) { animation-delay: .1s; }
+    .row:nth-child(3) { animation-delay: .2s; }
+    .row:nth-child(4) { animation-delay: .3s; }
+    .row:nth-child(5) { animation-delay: .4s; }
+    .row:nth-child(6) { animation-delay: .5s; }
+    .row:nth-child(7) { animation-delay: .6s; }
+    .row:nth-child(8) { animation-delay: .7s; }
+
+    @keyframes rowAppear {
+      from {
+        opacity: 0;
+        transform: translateX(-12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .label {
+      color: #667085;
+    }
+
+    .value {
+      font-weight: bold;
+      text-align: right;
+      overflow-wrap: anywhere;
+    }
+
+    .total {
+      color: #7048e8;
+      font-size: 24px;
+    }
+
+    .price-box {
+      background: linear-gradient(120deg, #f0eaff, #e7f2ff);
+      border-radius: 12px;
+      padding: 5px 12px;
+      margin-top: 8px;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      margin-top: 15px;
+      border: 0;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: .25s;
+    }
+
+    button:active {
+      transform: scale(.97);
+    }
+
+    button:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
+    .pay {
+      background: linear-gradient(120deg, #7048e8, #155eef);
+      color: white;
+      box-shadow: 0 5px 15px #7048e844;
+    }
+
+    .pay:not(:disabled):hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px #7048e855;
+    }
+
+    .back {
+      background: #f0eaff;
+      color: #7048e8;
+    }
+
+    .note {
+      color: #667085;
+      font-size: 13px;
+      line-height: 1.6;
+      background: #fff8e7;
+      padding: 12px;
+      border-radius: 10px;
+      margin-top: 18px;
+    }
+
+    #qrSection {
+      text-align: center;
+      margin-top: 20px;
+      padding: 18px;
+      background: linear-gradient(135deg, #f8faff, #f5edff);
+      border: 1px solid #e5dcff;
+      border-radius: 16px;
+      animation: cardAppear .5s ease both;
+    }
+
+    #qrImage {
+      width: 230px;
+      max-width: 100%;
+      display: block;
+      margin: 15px auto;
+      padding: 10px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px #7048e833;
+      animation: qrAppear .6s ease both;
+    }
+
+    @keyframes qrAppear {
+      from { opacity: 0; transform: scale(.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 13px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      margin-top: 8px;
+      outline: none;
+      transition: .2s;
+    }
+
+    input:focus {
+      border-color: #7048e8;
+      box-shadow: 0 0 0 3px #7048e822;
+    }
+
+    #paymentMessage {
+      margin-top: 15px;
+      padding: 12px;
+      background: #fff4e5;
+      border-radius: 8px;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+      animation: cardAppear .4s ease;
+    }
+
+    .floating {
+      position: fixed;
+      font-size: 23px;
+      pointer-events: none;
+      animation: float 4s ease-in-out infinite;
+      opacity: .6;
+      z-index: 0;
+    }
+
+    .f1 { top: 20%; left: 3%; }
+    .f2 { top: 55%; right: 3%; animation-delay: 1s; }
+    .f3 { bottom: 12%; left: 7%; animation-delay: 2s; }
+
+    #confetti {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+      }
+    }
   </style>
 </head>
 
 <body>
+
+  <canvas id="confetti"></canvas>
+
+  <div class="floating f1">🌟</div>
+  <div class="floating f2">🎈</div>
+  <div class="floating f3">✨</div>
+
   <header>
-    <h1>🖨️ Smart Printing</h1>
-    <p>UPI Payment</p>
+    <div class="stickers">
+      <span>🎉</span>
+      <span>🖨️</span>
+      <span>💳</span>
+    </div>
+
+    <h1>Smart Printing</h1>
+    <p>Secure UPI Payment</p>
   </header>
 
   <main>
     <div class="card">
-      <h2>💳 Payment Summary</h2>
 
-      <div id="orderDetails">Order details load ho rahi hain...</div>
+      <div class="payment-icon">💳</div>
+
+      <h2>Payment Summary</h2>
+
+      <div id="orderDetails">
+        Order details load ho rahi hain...
+      </div>
 
       <button class="pay" id="payButton" type="button">
         Generate Payment QR
       </button>
 
       <section id="qrSection" hidden>
-        <h3>Scan &amp; Pay</h3>
+
+        <h3>📱 Scan &amp; Pay</h3>
+
         <p id="qrAmount"></p>
 
         <img id="qrImage" alt="UPI Payment QR Code">
 
-        <p>UPI ID: 9770981980@ybl</p>
+        <p><b>UPI ID: 9770981980@ybl</b></p>
 
         <button class="pay" id="openUPI" type="button">
-          Open UPI App
+          📲 Open UPI App
         </button>
 
-        <label for="utr"><b>Payment UTR / Transaction ID</b></label>
+        <label for="utr">
+          <b>Payment UTR / Transaction ID</b>
+        </label>
 
         <input
           id="utr"
@@ -65,22 +359,25 @@
         <button class="pay" id="submitUTR" type="button">
           Submit Payment Reference
         </button>
+
       </section>
 
       <button class="back" id="backButton" type="button">
-        Back to Order
+        ← Back to Order
       </button>
 
       <div id="paymentMessage" hidden></div>
 
       <p class="note">
-        UTR submit karne se payment automatically verify nahi hota.
+        ⚠️ UTR submit karne se payment automatically verify nahi hota.
         Payment verify hone ke baad hi Admin payment ko Paid mark karega.
       </p>
+
     </div>
   </main>
 
   <script type="module">
+
     import { db, auth } from "./firebase.js";
 
     import {
@@ -181,6 +478,7 @@
     );
 
     if (!validOrder) {
+
       details.textContent =
         "Valid order nahi mila ya order data adhura hai. Please order page se dobara order banayein.";
 
@@ -189,7 +487,9 @@
       showMessage(
         "Order details missing hain. Back to Order par tap karke dobara try karein."
       );
+
     } else {
+
       [
         ["Order ID", order.orderId],
         ["Name", order.name],
@@ -200,8 +500,13 @@
         ["Copies", order.copies],
         ["Total Amount", "₹" + order.totalPrice.toFixed(2)]
       ].forEach((item, index) => {
+
         const row = document.createElement("div");
         row.className = "row";
+
+        if (index === 7) {
+          row.classList.add("price-box");
+        }
 
         const label = document.createElement("span");
         label.className = "label";
@@ -213,10 +518,13 @@
 
         row.append(label, value);
         details.appendChild(row);
+
       });
+
     }
 
     function generateQR() {
+
       if (!validOrder) return;
 
       const amount = order.totalPrice.toFixed(2);
@@ -243,6 +551,8 @@
       qrSection.hidden = false;
       payButton.disabled = true;
       payButton.textContent = "QR Generated";
+
+      startConfetti();
     }
 
     payButton.addEventListener("click", generateQR);
@@ -259,14 +569,17 @@
 
     // UTR ko existing Order mein update karna
     submitButton.addEventListener("click", async () => {
+
       if (!validOrder || paymentSubmitted) return;
 
       const utr = document.getElementById("utr").value.trim();
 
       if (!/^[A-Za-z0-9]{8,30}$/.test(utr)) {
+
         showMessage(
           "Kripya valid UTR enter karein (8–30 letters/numbers)."
         );
+
         return;
       }
 
@@ -274,6 +587,7 @@
       submitButton.textContent = "Saving...";
 
       try {
+
         const user = await waitForAuth();
 
         if (!user) {
@@ -329,6 +643,7 @@
         submitButton.textContent = "UTR Submitted";
 
       } catch (error) {
+
         console.error(error);
 
         showMessage(
@@ -337,13 +652,122 @@
 
         submitButton.disabled = false;
         submitButton.textContent = "Retry Submit";
+
       }
+
     });
 
     document.getElementById("backButton").addEventListener("click", () => {
       window.location.href = "confirmation.html";
     });
 
+    // Confetti animation
+    function startConfetti() {
+
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        return;
+      }
+
+      const canvas = document.getElementById("confetti");
+      const ctx = canvas.getContext("2d");
+
+      if (!ctx) return;
+
+      let pieces = [];
+      let startTime = performance.now();
+      let animationId;
+
+      function resize() {
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+        canvas.width = window.innerWidth * dpr;
+        canvas.height = window.innerHeight * dpr;
+
+        canvas.style.width = window.innerWidth + "px";
+        canvas.style.height = window.innerHeight + "px";
+
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      resize();
+      window.addEventListener("resize", resize);
+
+      const colors = [
+        "#ff4757",
+        "#ffa502",
+        "#2ed573",
+        "#1e90ff",
+        "#a55eea",
+        "#ff6bcb",
+        "#f9ca24"
+      ];
+
+      for (let i = 0; i < 90; i++) {
+
+        pieces.push({
+          x: Math.random() * window.innerWidth,
+          y: Math.random() * -window.innerHeight,
+          size: Math.random() * 7 + 4,
+          speed: Math.random() * 3 + 2,
+          rotation: Math.random() * 360,
+          spin: Math.random() * 5 - 2.5,
+          color: colors[Math.floor(Math.random() * colors.length)]
+        });
+
+      }
+
+      function animate(now) {
+
+        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+        pieces.forEach(p => {
+
+          p.y += p.speed;
+          p.rotation += p.spin;
+          p.x += Math.sin(p.y / 30) * 1.2;
+
+          ctx.save();
+
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rotation * Math.PI / 180);
+
+          ctx.fillStyle = p.color;
+          ctx.fillRect(
+            -p.size / 2,
+            -p.size / 2,
+            p.size,
+            p.size * .65
+          );
+
+          ctx.restore();
+
+          if (p.y > window.innerHeight + 20) {
+            p.y = -20;
+            p.x = Math.random() * window.innerWidth;
+          }
+
+        });
+
+        if (now - startTime < 4000) {
+
+          animationId = requestAnimationFrame(animate);
+
+        } else {
+
+          cancelAnimationFrame(animationId);
+
+          ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+          window.removeEventListener("resize", resize);
+
+        }
+
+      }
+
+      animationId = requestAnimationFrame(animate);
+    }
+
   </script>
+
 </body>
-        </html>
+  </html>
