@@ -3,40 +3,329 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#155eef">
+  <meta name="theme-color" content="#7048e8">
   <title>Order Confirmation - Smart Printing</title>
+
   <style>
-    * { box-sizing: border-box; }
-    body { margin: 0; padding: 20px; font-family: Arial, sans-serif; background: #f2f5fa; color: #172033; }
-    header { background: #155eef; color: white; text-align: center; padding: 25px 15px; border-radius: 15px; }
-    main { max-width: 500px; margin: 25px auto; }
-    .card { background: white; padding: 22px; border-radius: 15px; box-shadow: 0 3px 12px #00000010; }
-    .row { display: flex; justify-content: space-between; gap: 15px; padding: 13px 0; border-bottom: 1px solid #eee; }
-    .label { color: #667085; }
-    .value { font-weight: bold; text-align: right; overflow-wrap: anywhere; }
-    .total { font-size: 22px; color: #155eef; }
-    button { width: 100%; padding: 14px; margin-top: 15px; border: 0; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; }
-    button:disabled { opacity: .5; cursor: not-allowed; }
-    .confirm { background: #155eef; color: white; }
-    .edit { background: #e8efff; color: #155eef; }
-    .note { color: #667085; font-size: 13px; line-height: 1.5; }
-    .error { color: #b42318; line-height: 1.5; }
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #f3eaff, #e8f4ff, #fff0f6);
+      background-size: 300% 300%;
+      animation: backgroundMove 12s ease infinite;
+      color: #172033;
+      overflow-x: hidden;
+    }
+
+    @keyframes backgroundMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    header {
+      background: linear-gradient(120deg, #7048e8, #155eef, #e84393);
+      background-size: 200% 200%;
+      animation: gradientMove 6s ease infinite;
+      color: white;
+      text-align: center;
+      padding: 25px 15px;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px #7048e844;
+      position: relative;
+      overflow: hidden;
+    }
+
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    header h1 {
+      margin: 8px 0;
+      font-size: 28px;
+    }
+
+    header p {
+      margin-bottom: 5px;
+    }
+
+    main {
+      max-width: 500px;
+      margin: 25px auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    .card {
+      background: white;
+      padding: 22px;
+      border-radius: 20px;
+      box-shadow: 0 8px 30px #00000012;
+      animation: cardAppear .8s ease both;
+    }
+
+    @keyframes cardAppear {
+      from {
+        opacity: 0;
+        transform: translateY(25px) scale(.97);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .success-area {
+      text-align: center;
+      padding: 15px 0 20px;
+    }
+
+    .success-icon {
+      width: 85px;
+      height: 85px;
+      margin: auto;
+      background: linear-gradient(135deg, #12c875, #00a878);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 48px;
+      box-shadow: 0 8px 25px #12c87555;
+      animation: pop 1s ease, pulse 2s infinite 1s;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0); }
+      70% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 8px 25px #12c87544; }
+      50% { box-shadow: 0 8px 35px #12c87599; }
+    }
+
+    .success-area h2 {
+      color: #159b63;
+      margin-bottom: 5px;
+    }
+
+    .success-area p {
+      color: #667085;
+      font-size: 14px;
+    }
+
+    .sticker {
+      font-size: 25px;
+      display: inline-block;
+      animation: float 2.5s ease-in-out infinite;
+      margin: 0 5px;
+    }
+
+    .sticker:nth-child(2) {
+      animation-delay: .5s;
+    }
+
+    .sticker:nth-child(3) {
+      animation-delay: 1s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(-5deg); }
+      50% { transform: translateY(-10px) rotate(8deg); }
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      padding: 13px 0;
+      border-bottom: 1px solid #eee;
+      animation: rowAppear .5s ease both;
+    }
+
+    .row:nth-child(2) { animation-delay: .1s; }
+    .row:nth-child(3) { animation-delay: .2s; }
+    .row:nth-child(4) { animation-delay: .3s; }
+    .row:nth-child(5) { animation-delay: .4s; }
+    .row:nth-child(6) { animation-delay: .5s; }
+    .row:nth-child(7) { animation-delay: .6s; }
+    .row:nth-child(8) { animation-delay: .7s; }
+
+    @keyframes rowAppear {
+      from {
+        opacity: 0;
+        transform: translateX(-12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .label {
+      color: #667085;
+    }
+
+    .value {
+      font-weight: bold;
+      text-align: right;
+      overflow-wrap: anywhere;
+    }
+
+    .total {
+      font-size: 22px;
+      color: #7048e8;
+    }
+
+    .price-box {
+      background: linear-gradient(120deg, #f0eaff, #e7f2ff);
+      border-radius: 12px;
+      padding: 5px 12px;
+      margin-top: 8px;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      margin-top: 15px;
+      border: 0;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: .25s;
+    }
+
+    button:active {
+      transform: scale(.97);
+    }
+
+    button:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    .confirm {
+      background: linear-gradient(120deg, #7048e8, #155eef);
+      color: white;
+      box-shadow: 0 5px 15px #7048e844;
+    }
+
+    .edit {
+      background: #f0eaff;
+      color: #7048e8;
+    }
+
+    .confirm:not(:disabled):hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px #7048e855;
+    }
+
+    .note {
+      color: #667085;
+      font-size: 13px;
+      line-height: 1.6;
+      background: #fff8e7;
+      padding: 12px;
+      border-radius: 10px;
+      margin-top: 18px;
+    }
+
+    .error {
+      color: #b42318;
+      line-height: 1.5;
+    }
+
+    #confetti {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .floating {
+      position: fixed;
+      font-size: 22px;
+      pointer-events: none;
+      animation: float 4s ease-in-out infinite;
+      opacity: .65;
+      z-index: 0;
+    }
+
+    .f1 { top: 18%; left: 4%; }
+    .f2 { top: 55%; right: 4%; animation-delay: 1s; }
+    .f3 { bottom: 12%; left: 8%; animation-delay: 2s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+      }
+    }
   </style>
 </head>
+
 <body>
+
+<canvas id="confetti"></canvas>
+
+<div class="floating f1">🌟</div>
+<div class="floating f2">🎈</div>
+<div class="floating f3">✨</div>
+
 <header>
-  <h1>🖨️ Smart Printing</h1>
-  <p>Order ki details check karein</p>
+  <div class="sticker">🎉</div>
+  <div class="sticker">🖨️</div>
+  <div class="sticker">🎊</div>
+
+  <h1>Smart Printing</h1>
+  <p>Your Printing Journey Starts Here!</p>
 </header>
+
 <main>
   <div class="card">
+
+    <div class="success-area">
+      <div class="success-icon">✓</div>
+      <h2>Order Details Ready!</h2>
+      <p>Please check your order details before proceeding.</p>
+    </div>
+
     <h2>🧾 Order Summary</h2>
-    <div id="orderDetails" aria-live="polite">Order details load ho rahi hain...</div>
-    <button class="edit" id="editButton" type="button">✏️ Edit Order</button>
-    <button class="confirm" id="confirmButton" type="button" disabled>✅ Confirm Order</button>
-    <p class="note">Note: Confirm karne par payment page khulega. UTR bharna payment ka proof nahi hai; shop ko print shuru karne se pehle payment verify karna hoga.</p>
+
+    <div id="orderDetails" aria-live="polite">
+      Order details load ho rahi hain...
+    </div>
+
+    <button class="edit" id="editButton" type="button">
+      ✏️ Edit Order
+    </button>
+
+    <button class="confirm" id="confirmButton" type="button" disabled>
+      ✅ Confirm Order
+    </button>
+
+    <p class="note">
+      ⚠️ Note: Confirm karne par payment page khulega.
+      UTR bharna payment ka proof nahi hai.
+      Shop ko print shuru karne se pehle payment verify karna hoga.
+    </p>
+
   </div>
 </main>
+
 <script>
 (() => {
   "use strict";
@@ -53,9 +342,8 @@
     }
   }
 
-  // Current index.html stores each value under its own sessionStorage key.
-  // The older demo stored one combined object under smartPrintingOrder.
   const legacy = readJSON("smartPrintingOrder", null);
+
   const order = legacy || {
     orderId: sessionStorage.getItem("orderId"),
     name: sessionStorage.getItem("name"),
@@ -83,9 +371,15 @@
     order.totalPrice !== "";
 
   if (!valid) {
-    details.textContent = "Order details nahi mili. Kripya pehle order form dobara bharein.";
+    details.textContent =
+      "Order details nahi mili. Kripya pehle order form dobara bharein.";
+
     details.className = "error";
+
+    document.querySelector(".success-area").style.display = "none";
+
   } else {
+
     const rows = [
       ["Order ID", order.orderId],
       ["Name", order.name],
@@ -98,18 +392,29 @@
     ];
 
     rows.forEach((item, index) => {
+
       const row = document.createElement("div");
       row.className = "row";
+
+      if (index === 7) {
+        row.classList.add("price-box");
+      }
+
       const label = document.createElement("span");
       label.className = "label";
       label.textContent = item[0];
+
       const value = document.createElement("span");
       value.className = index === 7 ? "value total" : "value";
       value.textContent = String(item[1]);
+
       row.append(label, value);
       details.appendChild(row);
     });
+
     confirmButton.disabled = false;
+
+    startConfetti();
   }
 
   document.getElementById("editButton").addEventListener("click", () => {
@@ -120,7 +425,92 @@
     if (!valid) return;
     window.location.href = "payment.html";
   });
+
+  // Lightweight colourful confetti animation
+  function startConfetti() {
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
+    const canvas = document.getElementById("confetti");
+    const ctx = canvas.getContext("2d");
+
+    if (!ctx) return;
+
+    let pieces = [];
+    let animationId;
+    let startTime = performance.now();
+
+    function resize() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      canvas.style.width = window.innerWidth + "px";
+      canvas.style.height = window.innerHeight + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    resize();
+    window.addEventListener("resize", resize);
+
+    const colors = [
+      "#ff4757",
+      "#ffa502",
+      "#2ed573",
+      "#1e90ff",
+      "#a55eea",
+      "#ff6bcb",
+      "#f9ca24"
+    ];
+
+    for (let i = 0; i < 90; i++) {
+      pieces.push({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * -window.innerHeight,
+        size: Math.random() * 7 + 4,
+        speed: Math.random() * 3 + 2,
+        rotation: Math.random() * 360,
+        spin: Math.random() * 5 - 2.5,
+        color: colors[Math.floor(Math.random() * colors.length)]
+      });
+    }
+
+    function animate(now) {
+      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+      pieces.forEach(p => {
+        p.y += p.speed;
+        p.rotation += p.spin;
+        p.x += Math.sin(p.y / 30) * 1.2;
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rotation * Math.PI / 180);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * .65);
+        ctx.restore();
+
+        if (p.y > window.innerHeight + 20) {
+          p.y = -20;
+          p.x = Math.random() * window.innerWidth;
+        }
+      });
+
+      if (now - startTime < 5000) {
+        animationId = requestAnimationFrame(animate);
+      } else {
+        cancelAnimationFrame(animationId);
+        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        window.removeEventListener("resize", resize);
+      }
+    }
+
+    animationId = requestAnimationFrame(animate);
+  }
+
 })();
 </script>
+
 </body>
-</html>
+  </html>
