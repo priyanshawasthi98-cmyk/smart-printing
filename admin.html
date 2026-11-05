@@ -1,100 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smart Printing - Admin Dashboard</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    * { box-sizing: border-box; }
+<title>Smart Printing - Admin Security</title>
 
-    body {
-      margin: 0;
-      padding: 15px;
-      font-family: Arial, sans-serif;
-      background: #f3f5f9;
-      color: #222;
-    }
+<style>
+* {
+  box-sizing: border-box;
+}
 
-    .container {
-      max-width: 1000px;
-      margin: auto;
-    }
+body {
+  margin: 0;
+  padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #102b55, #174ea6, #3478d4);
+}
 
-    h1 {
-      text-align: center;
-      color: #174ea6;
-    }
+.container {
+  width: 100%;
+  max-width: 430px;
+}
 
-    .box {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      margin: 15px 0;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
+.card {
+  background: white;
+  padding: 28px;
+  border-radius: 18px;
+  box-shadow: 0 10px 35px rgba(0,0,0,0.2);
+}
 
-    input, button, select {
-      width: 100%;
-      padding: 12px;
-      margin: 7px 0;
-      border: 1px solid #ccc;
-      border-radius: 7px;
-      font-size: 15px;
-    }
+h1 {
+  text-align: center;
+  color: #174ea6;
+  margin-bottom: 5px;
+}
 
-    button {
-      background: #174ea6;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
+.subtitle {
+  text-align: center;
+  color: #777;
+  margin-bottom: 25px;
+}
 
-    button:disabled {
-      background: #999;
-      cursor: not-allowed;
-    }
+label {
+  display: block;
+  margin-top: 15px;
+  font-weight: bold;
+  font-size: 14px;
+}
 
-    .logout { background: #d93025; }
+input {
+  width: 100%;
+  padding: 13px;
+  margin-top: 7px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+}
 
-    .order {
-      background: white;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      padding: 15px;
-      margin: 15px 0;
-      overflow-wrap: anywhere;
-    }
+button {
+  width: 100%;
+  padding: 13px;
+  margin-top: 18px;
+  border: none;
+  border-radius: 8px;
+  background: #174ea6;
+  color: white;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+}
 
-    .order h3 { color: #174ea6; }
+button:disabled {
+  background: #999;
+  cursor: not-allowed;
+}
 
-    .message {
-      text-align: center;
-      margin: 10px 0;
-      font-weight: bold;
-      overflow-wrap: anywhere;
-    }
+.reset {
+  background: #16834a;
+}
 
-    .success { color: green; }
-    .error { color: red; }
+.logout {
+  background: #d93025;
+}
 
-    .note {
-      font-size: 13px;
-      color: #666;
-    }
-  </style>
+.message {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.success {
+  color: green;
+}
+
+.error {
+  color: red;
+}
+
+.hidden {
+  display: none;
+}
+
+.status {
+  padding: 12px;
+  background: #e8f5e9;
+  border-radius: 8px;
+  color: #16733a;
+  text-align: center;
+  margin-top: 15px;
+}
+
+.note {
+  text-align: center;
+  font-size: 12px;
+  color: #777;
+  margin-top: 20px;
+}
+</style>
 </head>
 
 <body>
 
 <div class="container">
 
-  <h1>Smart Printing</h1>
-  <h2 style="text-align:center;">Admin Dashboard</h2>
+  <!-- LOGIN SECTION -->
 
-  <div class="box" id="loginBox">
-    <h3>Admin Login</h3>
+  <div class="card" id="loginBox">
 
+    <h1>🖨️ Smart Printing</h1>
+    <div class="subtitle">Admin Secure Login</div>
+
+    <label>Email Address</label>
     <input
       type="email"
       id="email"
@@ -102,364 +144,276 @@
       autocomplete="username"
     >
 
+    <label>Password</label>
     <input
       type="password"
       id="password"
-      placeholder="Password"
+      placeholder="Enter Password"
       autocomplete="current-password"
     >
 
-    <button id="loginBtn" type="button">Login</button>
+    <button id="loginBtn">Login Securely</button>
+
+    <button id="resetBtn" class="reset">
+      Forgot Password?
+    </button>
 
     <div id="loginMessage" class="message"></div>
+
+    <div class="note">
+      Authorized Admin Access Only
+    </div>
+
   </div>
 
-  <div id="dashboard" style="display:none;">
 
-    <div class="box">
-      <h3>All Orders</h3>
+  <!-- ADMIN SECTION -->
 
-      <button id="refreshBtn" type="button">Refresh Orders</button>
-      <button id="logoutBtn" class="logout" type="button">Logout</button>
+  <div class="card hidden" id="adminBox">
 
-      <div id="message" class="message"></div>
-      <div id="orders">Loading orders...</div>
+    <h1>Admin Verified</h1>
+
+    <div class="status">
+      🟢 Admin Session Active
     </div>
+
+    <p><b>Admin Email:</b></p>
+    <p id="adminEmail"></p>
+
+    <p><b>Admin UID:</b></p>
+    <p id="adminUID" style="overflow-wrap:anywhere;"></p>
+
+    <p id="sessionStatus" class="message success">
+      Session Active
+    </p>
+
+    <button id="dashboardBtn">
+      Open Admin Dashboard
+    </button>
+
+    <button id="logoutBtn" class="logout">
+      Logout
+    </button>
 
   </div>
 
 </div>
 
+
 <script type="module">
 
-  import { auth, db } from "./firebase.js";
+import { auth } from "./firebase.js";
 
-  import {
-    signInWithEmailAndPassword,
-    signOut,
-    onAuthStateChanged
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-  import {
-    collection,
-    getDocs,
-    query,
-    orderBy,
-    doc,
-    updateDoc,
-    serverTimestamp,
-    deleteField
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  sendPasswordResetEmail,
+  setPersistence,
+  browserLocalPersistence
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 
-  // ADMIN UID
-  const ADMIN_UID = "ibK3XWMUEYQIbBhPmGQRnW72MZg1";
+// ADMIN UID
+
+const ADMIN_UID = "ibK3XWMUEYQIbBhPmGQRnW72MZg1";
 
 
-  const loginBox = document.getElementById("loginBox");
-  const dashboard = document.getElementById("dashboard");
+// ELEMENTS
 
-  const loginBtn = document.getElementById("loginBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
-  const refreshBtn = document.getElementById("refreshBtn");
+const loginBox = document.getElementById("loginBox");
+const adminBox = document.getElementById("adminBox");
 
-  const loginMessage = document.getElementById("loginMessage");
-  const message = document.getElementById("message");
-  const ordersDiv = document.getElementById("orders");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+
+const loginBtn = document.getElementById("loginBtn");
+const resetBtn = document.getElementById("resetBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const dashboardBtn = document.getElementById("dashboardBtn");
+
+const loginMessage = document.getElementById("loginMessage");
 
 
-  function showMessage(element, text, type = "") {
-    element.textContent = text;
-    element.className = "message " + type;
+// MESSAGE FUNCTION
+
+function showMessage(text, type = "") {
+
+  loginMessage.textContent = text;
+  loginMessage.className = "message " + type;
+
+}
+
+
+// FIREBASE ERROR MESSAGES
+
+function friendlyError(error) {
+
+  const errors = {
+    "auth/invalid-email": "Invalid email address.",
+    "auth/user-not-found": "Admin account not found.",
+    "auth/wrong-password": "Incorrect password.",
+    "auth/invalid-credential": "Incorrect email or password.",
+    "auth/too-many-requests": "Too many attempts. Try again later.",
+    "auth/network-request-failed": "Internet connection failed.",
+    "auth/user-disabled": "This account is disabled."
+  };
+
+  return errors[error.code] || error.message;
+
+}
+
+
+// LOGIN
+
+loginBtn.addEventListener("click", async () => {
+
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+
+  if (!email || !password) {
+    showMessage("Enter email and password.", "error");
+    return;
   }
 
+  loginBtn.disabled = true;
+  showMessage("Checking admin credentials...");
 
-  // ADMIN LOGIN
-  loginBtn.addEventListener("click", async () => {
+  try {
 
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
+    await setPersistence(auth, browserLocalPersistence);
 
-    if (!email || !password) {
-      showMessage(loginMessage, "Enter email and password.", "error");
-      return;
-    }
+    const result = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
 
-    loginBtn.disabled = true;
-    showMessage(loginMessage, "Logging in...");
-
-    try {
-
-      const result = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-
-      if (result.user.uid !== ADMIN_UID) {
-
-        await signOut(auth);
-
-        showMessage(
-          loginMessage,
-          "Access denied. This account is not an admin.",
-          "error"
-        );
-
-        return;
-      }
-
-      showMessage(loginMessage, "Login successful.", "success");
-
-    } catch (error) {
-
-      showMessage(loginMessage, error.message, "error");
-
-    } finally {
-
-      loginBtn.disabled = false;
-
-    }
-
-  });
-
-
-  // AUTH CHECK
-  onAuthStateChanged(auth, async (user) => {
-
-    if (user && user.uid === ADMIN_UID) {
-
-      loginBox.style.display = "none";
-      dashboard.style.display = "block";
-
-      await loadOrders();
-
-    } else {
-
-      loginBox.style.display = "block";
-      dashboard.style.display = "none";
-
-    }
-
-  });
-
-
-  // LOAD ORDERS
-  async function loadOrders() {
-
-    ordersDiv.textContent = "Loading orders...";
-    showMessage(message, "");
-
-    try {
-
-      const ordersQuery = query(
-        collection(db, "orders"),
-        orderBy("createdAt", "desc")
-      );
-
-      const snapshot = await getDocs(ordersQuery);
-
-      if (snapshot.empty) {
-
-        ordersDiv.textContent = "No orders found.";
-        return;
-
-      }
-
-      ordersDiv.innerHTML = "";
-
-      snapshot.forEach((orderDoc) => {
-
-        const order = orderDoc.data();
-
-        const card = document.createElement("div");
-        card.className = "order";
-
-        const heading = document.createElement("h3");
-        heading.textContent =
-          "Order ID: " + (order.orderId || orderDoc.id);
-
-        card.appendChild(heading);
-
-
-        function addDetail(label, value) {
-
-          const p = document.createElement("p");
-
-          p.textContent = label + ": " +
-            (value === undefined || value === null ? "-" : value);
-
-          card.appendChild(p);
-
-        }
-
-
-        addDetail("Customer", order.name);
-        addDetail("Phone", order.phone);
-
-        addDetail(
-          "Files",
-          Array.isArray(order.fileNames)
-            ? order.fileNames.join(", ")
-            : "-"
-        );
-
-        addDetail("Total Pages", order.totalPages);
-        addDetail("Print Type", order.printType);
-        addDetail("Print Side", order.printSide);
-        addDetail("Copies", order.copies);
-        addDetail("Total Amount", "₹" + order.totalPrice);
-        addDetail("UTR", order.utr);
-        addDetail("Payment Status", order.paymentStatus);
-        addDetail("Order Status", order.orderStatus || "PENDING");
-
-
-        // PAYMENT STATUS
-        const paymentLabel = document.createElement("label");
-        paymentLabel.textContent = "Payment Status";
-        card.appendChild(paymentLabel);
-
-        const paymentSelect = document.createElement("select");
-
-        ["PENDING", "PAID"].forEach((status) => {
-
-          const option = document.createElement("option");
-
-          option.value = status;
-          option.textContent = status;
-
-          if (status === (order.paymentStatus || "PENDING")) {
-            option.selected = true;
-          }
-
-          paymentSelect.appendChild(option);
-
-        });
-
-        card.appendChild(paymentSelect);
-
-
-        // ORDER STATUS
-        const orderLabel = document.createElement("label");
-        orderLabel.textContent = "Order Status";
-        card.appendChild(orderLabel);
-
-        const orderSelect = document.createElement("select");
-
-        ["PENDING", "ACCEPTED", "REJECTED"].forEach((status) => {
-
-          const option = document.createElement("option");
-
-          option.value = status;
-          option.textContent = status;
-
-          if (status === (order.orderStatus || "PENDING")) {
-            option.selected = true;
-          }
-
-          orderSelect.appendChild(option);
-
-        });
-
-        card.appendChild(orderSelect);
-
-
-        // UPDATE BUTTON
-        const updateButton = document.createElement("button");
-        updateButton.textContent = "Update Order";
-
-        updateButton.addEventListener("click", async () => {
-
-          const newPaymentStatus = paymentSelect.value;
-          const newOrderStatus = orderSelect.value;
-
-          if (
-            newPaymentStatus === "PAID" &&
-            order.paymentStatus !== "PAID"
-          ) {
-
-            const confirmed = confirm(
-              "Have you verified this payment in PhonePe?"
-            );
-
-            if (!confirmed) return;
-
-          }
-
-
-          updateButton.disabled = true;
-          updateButton.textContent = "Updating...";
-
-          try {
-
-            const updateData = {
-              paymentStatus: newPaymentStatus,
-              orderStatus: newOrderStatus
-            };
-
-            if (newOrderStatus === "COMPLETED") {
-              updateData.completedAt = serverTimestamp();
-            } else {
-              updateData.completedAt = deleteField();
-            }
-
-            await updateDoc(
-              doc(db, "orders", orderDoc.id),
-              updateData
-            );
-
-            showMessage(
-              message,
-              "Order updated successfully.",
-              "success"
-            );
-
-            await loadOrders();
-
-          } catch (error) {
-
-            alert("Update failed: " + error.message);
-
-            updateButton.disabled = false;
-            updateButton.textContent = "Update Order";
-
-          }
-
-        });
-
-        card.appendChild(updateButton);
-        ordersDiv.appendChild(card);
-
-      });
-
-    } catch (error) {
-
-      ordersDiv.textContent =
-        "Error loading orders: " + error.message;
-
-    }
-
-  }
-
-
-  // REFRESH ORDERS
-  refreshBtn.addEventListener("click", loadOrders);
-
-
-  // LOGOUT
-  logoutBtn.addEventListener("click", async () => {
-
-    try {
+    if (result.user.uid !== ADMIN_UID) {
 
       await signOut(auth);
 
-    } catch (error) {
+      showMessage(
+        "Access denied. Unauthorized account.",
+        "error"
+      );
 
-      alert("Logout failed: " + error.message);
-
+      return;
     }
 
-  });
+    showMessage("Admin login successful.", "success");
+
+  } catch (error) {
+
+    showMessage(friendlyError(error), "error");
+
+  } finally {
+
+    loginBtn.disabled = false;
+
+  }
+
+});
+
+
+// FORGOT PASSWORD
+
+resetBtn.addEventListener("click", async () => {
+
+  const email = emailInput.value.trim();
+
+  if (!email) {
+    showMessage("Enter your admin email first.", "error");
+    return;
+  }
+
+  resetBtn.disabled = true;
+  showMessage("Sending password reset email...");
+
+  try {
+
+    await sendPasswordResetEmail(auth, email);
+
+    showMessage(
+      "Password reset email sent. Check your inbox.",
+      "success"
+    );
+
+  } catch (error) {
+
+    showMessage(friendlyError(error), "error");
+
+  } finally {
+
+    resetBtn.disabled = false;
+
+  }
+
+});
+
+
+// AUTH SESSION MONITOR
+
+onAuthStateChanged(auth, async (user) => {
+
+  if (user && user.uid === ADMIN_UID) {
+
+    loginBox.classList.add("hidden");
+    adminBox.classList.remove("hidden");
+
+    document.getElementById("adminEmail").textContent =
+      user.email || "Admin";
+
+    document.getElementById("adminUID").textContent =
+      user.uid;
+
+    document.getElementById("sessionStatus").textContent =
+      "Session Active";
+
+  } else {
+
+    loginBox.classList.remove("hidden");
+    adminBox.classList.add("hidden");
+
+    if (user && user.uid !== ADMIN_UID) {
+      await signOut(auth);
+    }
+
+  }
+
+});
+
+
+// OPEN DASHBOARD
+
+dashboardBtn.addEventListener("click", () => {
+
+  window.location.href = "admin-dashboard.html";
+
+});
+
+
+// LOGOUT
+
+logoutBtn.addEventListener("click", async () => {
+
+  logoutBtn.disabled = true;
+
+  try {
+
+    await signOut(auth);
+
+  } catch (error) {
+
+    alert("Logout failed: " + friendlyError(error));
+
+  } finally {
+
+    logoutBtn.disabled = false;
+
+  }
+
+});
 
 </script>
 
