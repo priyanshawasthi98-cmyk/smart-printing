@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,17 @@
 <title>Smart Printing - Admin Dashboard</title>
 
 <style>
+:root {
+  --primary: #174ea6;
+  --primary-light: #eaf1ff;
+  --danger: #d93025;
+  --success: #188038;
+  --warning: #f9ab00;
+  --background: #f3f5f9;
+  --text: #202124;
+  --muted: #6b7280;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -14,18 +26,19 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: #f3f5f9;
-  color: #222;
+  background: var(--background);
+  color: var(--text);
 }
 
 header {
-  background: #174ea6;
+  background: linear-gradient(120deg, #123b80, #2872d5);
   color: white;
   padding: 20px;
+  box-shadow: 0 3px 12px rgba(0,0,0,.12);
 }
 
 .header-content {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: auto;
   display: flex;
   justify-content: space-between;
@@ -41,11 +54,21 @@ header h2 {
 button {
   border: none;
   padding: 11px 16px;
-  border-radius: 7px;
-  background: #174ea6;
+  border-radius: 8px;
+  background: var(--primary);
   color: white;
   cursor: pointer;
   font-size: 14px;
+  transition: transform .2s, opacity .2s, box-shadow .2s;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 12px rgba(0,0,0,.15);
+}
+
+button:active:not(:disabled) {
+  transform: scale(.97);
 }
 
 button:disabled {
@@ -54,17 +77,28 @@ button:disabled {
 }
 
 .logout {
-  background: #d93025;
+  background: var(--danger);
 }
 
 main {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: auto;
-  padding: 20px;
+  padding: 22px;
 }
 
 .welcome {
-  margin: 10px 0 20px;
+  margin: 10px 0 22px;
+  animation: fadeUp .5s ease both;
+}
+
+.welcome h2 {
+  margin-bottom: 7px;
+}
+
+.note {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
 }
 
 .grid {
@@ -76,34 +110,74 @@ main {
 .card {
   background: white;
   padding: 18px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,.06);
-  border-left: 4px solid #174ea6;
+  border-radius: 13px;
+  box-shadow: 0 3px 12px rgba(0,0,0,.05);
+  border-left: 4px solid var(--primary);
+  transition: transform .25s, box-shadow .25s;
+  animation: fadeUp .5s ease both;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,.09);
 }
 
 .card p {
-  color: #666;
+  color: var(--muted);
   font-size: 13px;
   margin: 0 0 12px;
 }
 
 .card h2 {
   margin: 0;
-  color: #174ea6;
+  color: var(--primary);
   font-size: 25px;
   overflow-wrap: anywhere;
 }
 
+.card:nth-child(2) { animation-delay: .04s; }
+.card:nth-child(3) { animation-delay: .08s; }
+.card:nth-child(4) { animation-delay: .12s; }
+.card:nth-child(5) { animation-delay: .16s; }
+.card:nth-child(6) { animation-delay: .20s; }
+.card:nth-child(7) { animation-delay: .24s; }
+.card:nth-child(8) { animation-delay: .28s; }
+.card:nth-child(9) { animation-delay: .32s; }
+.card:nth-child(10) { animation-delay: .36s; }
+.card:nth-child(11) { animation-delay: .40s; }
+
 .section {
   background: white;
   padding: 20px;
-  border-radius: 12px;
+  border-radius: 13px;
   margin-top: 22px;
-  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  box-shadow: 0 3px 12px rgba(0,0,0,.05);
+  animation: fadeUp .5s ease both;
 }
 
 .section h3 {
   margin-top: 0;
+}
+
+.manage-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+  border-left: 4px solid #188038;
+}
+
+.manage-section p {
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 0;
+}
+
+.manage-btn {
+  background: linear-gradient(120deg, #174ea6, #2872d5);
+  padding: 13px 20px;
+  font-weight: bold;
 }
 
 table {
@@ -113,7 +187,7 @@ table {
 }
 
 th, td {
-  padding: 12px;
+  padding: 13px;
   text-align: left;
   border-bottom: 1px solid #eee;
   font-size: 13px;
@@ -125,52 +199,129 @@ th {
 
 .table-wrap {
   overflow-x: auto;
+  border-radius: 8px;
 }
 
 .status {
   display: inline-block;
-  padding: 5px 8px;
-  border-radius: 5px;
+  padding: 5px 9px;
+  border-radius: 6px;
   background: #fff3cd;
+  color: #856404;
   font-size: 11px;
+  font-weight: bold;
 }
 
 .message {
   padding: 12px;
   text-align: center;
-  color: #555;
+  color: var(--muted);
 }
 
-.note {
-  color: #777;
-  font-size: 12px;
-  line-height: 1.5;
+.refresh-btn {
+  margin-top: 16px;
 }
 
-@media(max-width:750px) {
+.loading-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  background: var(--primary);
+  border-radius: 50%;
+  margin: 0 2px;
+  animation: bounce .7s infinite alternate;
+}
+
+.loading-dot:nth-child(2) {
+  animation-delay: .2s;
+}
+
+.loading-dot:nth-child(3) {
+  animation-delay: .4s;
+}
+
+.footer-note {
+  margin-top: 20px;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce {
+  to {
+    opacity: .3;
+    transform: translateY(-5px);
+  }
+}
+
+@media(max-width:850px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media(max-width:600px) {
+  main {
+    padding: 13px;
+  }
+
   .grid {
     grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media(max-width:400px) {
-  main {
-    padding: 12px;
-  }
-
-  .grid {
     gap: 10px;
   }
 
   .card {
-    padding: 13px;
+    padding: 14px;
   }
 
   .card h2 {
     font-size: 21px;
   }
+
+  .section {
+    padding: 15px;
+  }
+
+  header {
+    padding: 16px;
+  }
+
+  header h2 {
+    font-size: 19px;
+  }
+
+  .manage-section {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .manage-btn {
+    width: 100%;
+  }
+}
+
+@media(max-width:350px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media(prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
 }
 </style>
+
 </head>
 
 <body>
@@ -189,6 +340,8 @@ th {
     <p id="adminEmail">Checking Admin...</p>
     <p id="lastUpdated" class="note"></p>
   </div>
+
+  <!-- DASHBOARD STATISTICS -->
 
   <div class="grid">
 
@@ -249,7 +402,25 @@ th {
 
   </div>
 
+  <!-- ORDER MANAGEMENT NAVIGATION -->
+
+  <div class="section manage-section">
+
+    <div>
+      <h3>📦 Order Management</h3>
+      <p>Manage customer orders, update statuses and handle deleted orders.</p>
+    </div>
+
+    <button class="manage-btn" id="manageOrdersBtn">
+      Manage All Orders →
+    </button>
+
+  </div>
+
+  <!-- RECENT ORDERS -->
+
   <div class="section">
+
     <h3>Recent Orders</h3>
 
     <div id="ordersMessage" class="message">
@@ -257,6 +428,7 @@ th {
     </div>
 
     <div class="table-wrap">
+
       <table>
         <thead>
           <tr>
@@ -270,13 +442,18 @@ th {
         </thead>
 
         <tbody id="recentOrders"></tbody>
+
       </table>
+
     </div>
 
-    <button id="refreshBtn">Refresh Dashboard</button>
+    <button class="refresh-btn" id="refreshBtn">
+      ↻ Refresh Dashboard
+    </button>
+
   </div>
 
-  <p class="note">
+  <p class="note footer-note">
     Revenue is calculated from orders marked PAID.
     Commission will be calculated after shop cost and commission
     settings are implemented in a later phase.
@@ -327,7 +504,7 @@ function setText(id, value) {
 
 function showError(error) {
   $("ordersMessage").textContent =
-    "Error: " + error.message;
+    "Error loading orders: " + error.message;
 }
 
 async function loadDashboard() {
@@ -335,6 +512,7 @@ async function loadDashboard() {
   if (!currentUser || loading) return;
 
   loading = true;
+
   $("refreshBtn").disabled = true;
   $("ordersMessage").textContent = "Loading dashboard...";
 
@@ -418,8 +596,9 @@ async function loadDashboard() {
     setText("totalRevenue", money(totalRevenue));
     setText("todayRevenue", money(todayRevenue));
 
-    // Commission is not configured yet.
     setText("totalCommission", "Not configured");
+
+    // RECENT ORDERS
 
     const recent = orders.slice(0, 10);
     const tbody = $("recentOrders");
@@ -505,9 +684,18 @@ onAuthStateChanged(auth, async user => {
 });
 
 
-// REFRESH
+// REFRESH DASHBOARD
 
 $("refreshBtn").addEventListener("click", loadDashboard);
+
+
+// OPEN ORDER MANAGEMENT
+
+$("manageOrdersBtn").addEventListener("click", () => {
+
+  window.location.href = "order-management.html";
+
+});
 
 
 // LOGOUT
@@ -519,11 +707,13 @@ $("logoutBtn").addEventListener("click", async () => {
   try {
 
     await signOut(auth);
+
     window.location.replace("admin.html");
 
   } catch (error) {
 
     alert("Logout failed: " + error.message);
+
     $("logoutBtn").disabled = false;
 
   }
