@@ -7,7 +7,9 @@
   <title>Smart Printing</title>
 
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -16,11 +18,21 @@
       color: #172033;
     }
 
+    /* Header */
     header {
       background: #155eef;
       color: white;
       text-align: center;
       padding: 28px 15px;
+      animation: headerFade 0.7s ease both;
+    }
+
+    header h1 {
+      animation: logoFloat 2.5s ease-in-out infinite;
+    }
+
+    header p {
+      animation: fadeIn 1s ease both;
     }
 
     main {
@@ -29,11 +41,18 @@
       padding: 0 14px;
     }
 
+    /* Main Card */
     .card {
       background: white;
       padding: 20px;
       border-radius: 15px;
       box-shadow: 0 3px 12px #00000010;
+      animation: cardEnter 0.8s ease both;
+      transition: box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      box-shadow: 0 8px 24px #00000012;
     }
 
     label {
@@ -52,6 +71,14 @@
     input, select {
       border: 1px solid #ccc;
       background: white;
+      transition: border-color 0.25s ease,
+                  box-shadow 0.25s ease;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #155eef;
+      box-shadow: 0 0 0 3px #155eef18;
     }
 
     button {
@@ -61,6 +88,18 @@
       color: white;
       font-weight: bold;
       cursor: pointer;
+      transition: transform 0.2s ease,
+                  box-shadow 0.2s ease,
+                  background 0.2s ease;
+    }
+
+    button:not(:disabled):hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 12px #155eef30;
+    }
+
+    button:not(:disabled):active {
+      transform: scale(0.98);
     }
 
     button:disabled {
@@ -86,10 +125,67 @@
       border-radius: 10px;
       padding: 12px;
       margin-top: 14px;
+      transition: background 0.3s ease,
+                  border-color 0.3s ease;
     }
 
-    .error { color: #b42318; }
-    .ok { color: #067647; }
+    .error {
+      color: #b42318;
+    }
+
+    .ok {
+      color: #067647;
+    }
+
+    /* Animations */
+    @keyframes headerFade {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes cardEnter {
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes logoFloat {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-3px);
+      }
+    }
+
+    /* Accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+      }
+    }
   </style>
 </head>
 
@@ -200,7 +296,6 @@ import {
 import {
   signInAnonymously
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
 
 "use strict";
 
@@ -680,4 +775,4 @@ priceDisplay.innerHTML =
 </script>
 
 </body>
-          </html>
+                            </html>
