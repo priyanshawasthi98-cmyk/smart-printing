@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment Management | Smart Printing</title>
+
+<style>
+:root {
+  --bg: #f4f7fb;
+  --card: #ffffff;
+  --text: #172033;
+  --muted: #718096;
+  --primary: #635bff;
+  --green: #16a36a;
+  --red: #e34b5f;
+  --orange: #e69a24;
+  --border: #e8edf5;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+button, input, select, textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+}
+
+.header {
+  background: #fff;
+  padding: 17px 5%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 3px 18px #00000008;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.brand {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.header-actions {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 10px 15px;
+  border-radius: 10px;
+  font-weight: 700;
+  transition: .2s;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(.96);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-dark {
+  background: #202b43;
+  color: white;
+}
+
+.btn-green {
+  background: var(--green);
+  color: white;
+}
+
+.btn-red {
+  background: var(--red);
+  color: white;
+}
+
+.btn-light {
+  background: #edf0ff;
+  color: var(--primary);
+}
+
+.container {
+  max-width: 1450px;
+  padding: 25px 4%;
+  margin: auto;
+}
+
+.hero {
+  background: linear-gradient(120deg, #292d73, #655cff, #8b5cf6);
+  color: white;
+  border-radius: 22px;
+  padding: 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 25px;
+}
+
+.hero h1 {
+  font-size: 27px;
+  margin-bottom: 9px;
+}
+
+.hero p {
+  color: #e3e4ff;
+  line-height: 1.5;
+}
+
+.hero-art {
+  font-size: 65px;
+  position: relative;
+  animation: float 3s ease-in-out infinite;
+  min-width: 100px;
+  text-align: center;
+}
+
+.coin {
+  position: absolute;
+  font-size: 28px;
+  animation: coinFloat 2.5s ease-in-out infinite;
+}
+
+.coin.one {
+  top: -17px;
+  left: -15px;
+}
+
+.coin.two {
+  right: -10px;
+  bottom: -5px;
+  animation-delay: .7s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(-4deg); }
+  50% { transform: translateY(-12px) rotate(4deg); }
+}
+
+@keyframes coinFloat {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-15px) rotate(20deg); }
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.stat-card {
+  background: var(--card);
+  padding: 20px;
+  border-radius: 17px;
+  border: 1px solid var(--border);
+  transition: .25s;
+  animation: appear .5s ease both;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px #26345c12;
+}
+
+.stat-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-icon {
+  width: 43px;
+  height: 43px;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+}
+
+.stat-card h2 {
+  font-size: 25px;
+  margin-top: 15px;
+}
+
+.stat-card p {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 5px;
+}
+
+.purple { background: #eeedff; }
+.yellow { background: #fff5dd; }
+.green { background: #e3f9ef; }
+.red { background: #ffebee; }
+
+.panel {
+  background: #fff;
+  padding: 22px;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  margin-bottom: 22px;
+}
+
+.panel-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.panel-heading h2 {
+  font-size: 19px;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 17px;
+}
+
+.control {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  outline: none;
+  background: #fff;
+  min-width: 0;
+}
+
+.control:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px #635bff15;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 850px;
+}
+
+th, td {
+  padding: 14px 12px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  font-size: 13px;
+}
+
+th {
+  background: #f8f9fd;
+  color: #667085;
+  font-size: 12px;
+}
+
+tbody tr {
+  transition: .2s;
+}
+
+tbody tr:hover {
+  background: #f8f9ff;
+}
+
+.amount {
+  font-weight: 800;
+  color: #172033;
+}
+
+.badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.badge.pending {
+  background: #fff3d5;
+  color: #a66b00;
+}
+
+.badge.paid {
+  background: #dcf8e9;
+  color: #087c48;
+}
+
+.badge.rejected {
+  background: #ffe5e9;
+  color: #bd3045;
+}
+
+.action-btn {
+  padding: 7px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  background: #eeedff;
+  color: var(--primary);
+}
+
+.empty {
+  text-align: center;
+  padding: 35px;
+  color: var(--muted);
+}
+
+.empty-icon {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+.message {
+  padding: 12px 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  display: none;
+  font-size: 14px;
+}
+
+.message.error {
+  background: #ffe9ec;
+  color: #b42338;
+}
+
+.message.success {
+  background: #e1f8eb;
+  color: #087c48;
+}
+
+.loader {
+  text-align: center;
+  padding: 35px;
+  color: var(--muted);
+}
+
+.spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid #e4e5ff;
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  margin: 0 auto 12px;
+  animation: spin .8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes appear {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* MODAL */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: #111827a8;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  z-index: 100;
+}
+
+.modal-overlay.show {
+  display: flex;
+  animation: appear .2s ease;
+}
+
+.modal {
+  background: white;
+  width: 100%;
+  max-width: 510px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 20px;
+  padding: 23px;
+  animation: modalIn .3s ease;
+}
+
+@keyframes modalIn {
+  from { transform: translateY(25px) scale(.96); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.modal h2 {
+  margin-bottom: 17px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.detail-row span:first-child {
+  color: var(--muted);
+}
+
+.detail-row strong {
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.modal-actions button {
+  flex: 1;
+}
+
+.modal textarea {
+  width: 100%;
+  min-height: 90px;
+  resize: vertical;
+  margin-top: 12px;
+}
+
+.note {
+  background: #fff7e5;
+  color: #805600;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  margin-top: 15px;
+}
+
+.success-animation {
+  display: none;
+  text-align: center;
+  padding: 25px 10px;
+}
+
+.success-animation.show {
+  display: block;
+  animation: appear .4s ease;
+}
+
+.success-animation .big-check {
+  font-size: 65px;
+  animation: pop .5s ease;
+}
+
+@keyframes pop {
+  0% { transform: scale(.2); }
+  70% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.footer {
+  text-align: center;
+  padding: 25px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+@media(max-width: 900px) {
+  .stats { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media(max-width: 600px) {
+  .header {
+    padding: 13px 4%;
+  }
+
+  .brand { font-size: 16px; }
+
+  .header-actions .btn {
+    padding: 9px;
+    font-size: 11px;
+  }
+
+  .container {
+    padding: 17px 3%;
+  }
+
+  .hero {
+    padding: 21px;
+  }
+
+  .hero h1 { font-size: 21px; }
+  .hero-art { font-size: 48px; }
+
+  .stats {
+    gap: 10px;
+  }
+
+  .stat-card {
+    padding: 14px;
+  }
+
+  .stat-card h2 {
+    font-size: 21px;
+  }
+
+  .controls {
+    grid-template-columns: 1fr;
+  }
+
+  .panel {
+    padding: 15px;
+  }
+}
+
+@media(prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+  <div class="brand">🖨️ Smart Printing</div>
+
+  <div class="header-actions">
+    <button class="btn btn-light" onclick="goDashboard()">← Dashboard</button>
+    <button class="btn btn-dark" id="logoutBtn">Logout</button>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="hero">
+    <div>
+      <h1>💳 Payment Management</h1>
+      <p>Manage customer payments, verify UTR numbers and track collections.</p>
+      <p style="margin-top:12px;font-size:12px;">Secure manual payment verification system</p>
+    </div>
+
+    <div class="hero-art">
+      🧑‍💼
+      <span class="coin one">🪙</span>
+      <span class="coin two">💰</span>
+    </div>
+  </section>
+
+  <div id="message" class="message"></div>
+
+  <section class="stats">
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <span>Total Payments</span>
+        <div class="stat-icon purple">💳</div>
+      </div>
+      <h2 id="totalPayments">0</h2>
+      <p>All customer orders</p>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <span>Pending Payments</span>
+        <div class="stat-icon yellow">⏳</div>
+      </div>
+      <h2 id="pendingPayments">0</h2>
+      <p>Awaiting verification</p>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <span>Verified Payments</span>
+        <div class="stat-icon green">✅</div>
+      </div>
+      <h2 id="paidPayments">0</h2>
+      <p>Manually verified</p>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <span>Total Collection</span>
+        <div class="stat-icon green">💰</div>
+      </div>
+      <h2 id="totalCollection">₹0</h2>
+      <p>Verified payments only</p>
+    </div>
+
+  </section>
+
+  <section class="panel">
+    <div class="panel-heading">
+      <h2>📋 All Payments</h2>
+      <button class="btn btn-light" id="refreshBtn">↻ Refresh</button>
+    </div>
+
+    <div class="controls">
+      <input
+        type="search"
+        id="searchInput"
+        class="control"
+        placeholder="🔍 Search Order ID, Name or UTR..."
+      >
+
+      <select id="statusFilter" class="control">
+        <option value="ALL">All Payment Status</option>
+        <option value="PENDING">Pending</option>
+        <option value="PAID">Paid</option>
+        <option value="REJECTED">Rejected</option>
+      </select>
+
+      <select id="utrFilter" class="control">
+        <option value="ALL">All UTR Records</option>
+        <option value="SUBMITTED">UTR Submitted</option>
+        <option value="NOT_SUBMITTED">UTR Not Submitted</option>
+      </select>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ORDER ID</th>
+            <th>CUSTOMER</th>
+            <th>AMOUNT</th>
+            <th>UTR NUMBER</th>
+            <th>PAYMENT STATUS</th>
+            <th>ORDER DATE</th>
+            <th>ACTION</th>
+          </tr>
+        </thead>
+
+        <tbody id="paymentTable">
+          <tr>
+            <td colspan="7">
+              <div class="loader">
+                <div class="spinner"></div>
+                Loading payments...
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="note">
+    ⚠️ <strong>Important:</strong> Customer द्वारा UTR submit करने का मतलब payment successful होना नहीं है।
+    Admin को अपने PhonePe/UPI transaction history में actual transaction verify करने के बाद ही PAID करना है।
+  </div>
+
+</main>
+
+<footer class="footer">
+  Smart Printing Kiosk Network · Admin Payment Panel
+</footer>
+
+
+<!-- PAYMENT DETAILS MODAL -->
+
+<div class="modal-overlay" id="detailsOverlay">
+  <div class="modal">
+    <h2>💳 Payment Details</h2>
+
+    <div id="paymentDetails"></div>
+
+    <div class="note">
+      Verify the amount, UTR and actual bank/UPI transaction before approving payment.
+    </div>
+
+    <div class="modal-actions" id="paymentActions">
+      <button class="btn btn-light" onclick="closeDetails()">Close</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- REJECTION MODAL -->
+
+<div class="modal-overlay" id="rejectOverlay">
+  <div class="modal">
+    <h2>❌ Reject Payment</h2>
+    <p style="color:#718096;font-size:13px;">
+      Rejection का सही कारण लिखें।
+    </p>
+
+    <textarea
+      id="rejectReason"
+      class="control"
+      placeholder="Enter rejection reason..."
+    ></textarea>
+
+    <div class="modal-actions">
+      <button class="btn btn-light" onclick="closeReject()">Cancel</button>
+      <button class="btn btn-red" id="confirmRejectBtn">Reject Payment</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- SUCCESS MODAL -->
+
+<div class="modal-overlay" id="successOverlay">
+  <div class="modal success-animation show">
+    <div class="big-check">🎉</div>
+    <h2 style="text-align:center;color:#16a36a;">Payment Verified!</h2>
+    <p style="text-align:center;color:#718096;margin-top:10px;">
+      Payment status successfully updated.
+    </p>
+    <div style="text-align:center;font-size:35px;margin-top:15px;">
+      💰 🪙 💸
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-green" onclick="closeSuccess()">Continue</button>
+    </div>
+  </div>
+</div>
+
+
+<script type="module">
+
+import { auth, db } from "./firebase.js";
+
+import {
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+  collection,
+  getDocs,
+  doc,
+  updateDoc,
+  serverTimestamp,
+  arrayUnion
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+const ADMIN_UID = "ibK3XWMUEYQIbBhPmGQRnW72MZg1";
+
+let allPayments = [];
+let selectedPayment = null;
+let rejectPaymentId = null;
+let loading = false;
+
+const $ = id => document.getElementById(id);
+
+const paymentTable = $("paymentTable");
+
+
+function showMessage(text, type = "success") {
+  const box = $("message");
+
+  box.textContent = text;
+  box.className = "message " + type;
+  box.style.display = "block";
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+
+  setTimeout(() => {
+    box.style.display = "none";
+  }, 4500);
+}
+
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
+}
+
+
+function money(value) {
+  return "₹" + Number(value || 0).toLocaleString("en-IN", {
+    maximumFractionDigits: 2
+  });
+}
+
+
+function getDate(value) {
+  if (!value) return "-";
+
+  try {
+    const date = value.toDate ? value.toDate() : new Date(value);
+
+    if (isNaN(date.getTime())) return "-";
+
+    return date.toLocaleString("en-IN");
+  } catch {
+    return "-";
+  }
+}
+
+
+function normalizedStatus(status) {
+  const value = String(status || "PENDING").toUpperCase();
+
+  if (value === "PAID") return "PAID";
+  if (value === "REJECTED") return "REJECTED";
+
+  return "PENDING";
+}
+
+
+function statusBadge(status) {
+  const value = normalizedStatus(status);
+
+  return `<span class="badge ${value.toLowerCase()}">${value}</span>`;
+}
+
+
+function getOrderId(payment) {
+  return payment.orderId || payment.id || "-";
+}
+
+
+// AUTHENTICATION
+
+onAuthStateChanged(auth, async user => {
+
+  if (!user) {
+    location.replace("admin.html");
+    return;
+  }
+
+  if (user.uid !== ADMIN_UID) {
+    await signOut(auth);
+    location.replace("admin.html");
+    return;
+  }
+
+  await loadPayments();
+
+});
+
+
+async function loadPayments() {
+
+  if (loading) return;
+
+  loading = true;
+
+  paymentTable.innerHTML = `
+    <tr>
+      <td colspan="7">
+        <div class="loader">
+          <div class="spinner"></div>
+          Loading payments...
+        </div>
+      </td>
+    </tr>
+  `;
+
+  try {
+
+    const snapshot = await getDocs(collection(db, "orders"));
+
+    allPayments = snapshot.docs.map(item => ({
+      id: item.id,
+      ...item.data()
+    }));
+
+    allPayments.sort((a, b) => {
+      const dateA = a.createdAt?.toMillis?.() || 0;
+      const dateB = b.createdAt?.toMillis?.() || 0;
+      return dateB - dateA;
+    });
+
+    updateStats();
+    renderPayments();
+
+  } catch (error) {
+
+    console.error(error);
+
+    paymentTable.innerHTML = `
+      <tr>
+        <td colspan="7" class="empty">
+          ❌ Payments load nahi ho paye.<br>
+          ${escapeHTML(error.message)}
+        </td>
+      </tr>
+    `;
+
+    showMessage("Payments load karne mein error: " + error.message, "error");
+
+  } finally {
+    loading = false;
+  }
+}
+
+
+// STATISTICS
+
+function updateStats() {
+
+  const total = allPayments.length;
+
+  const pending = allPayments.filter(
+    p => normalizedStatus(p.paymentStatus) === "PENDING"
+  );
+
+  const paid = allPayments.filter(
+    p => normalizedStatus(p.paymentStatus) === "PAID"
+  );
+
+  const rejected = allPayments.filter(
+    p => normalizedStatus(p.paymentStatus) === "REJECTED"
+  );
+
+  const collectionAmount = paid.reduce(
+    (sum, p) => sum + Number(p.totalPrice || 0),
+    0
+  );
+
+  $("totalPayments").textContent = total;
+  $("pendingPayments").textContent = pending.length;
+  $("paidPayments").textContent = paid.length;
+  $("totalCollection").textContent = money(collectionAmount);
+
+}
+
+
+// RENDER TABLE
+
+function renderPayments() {
+
+  const search = $("searchInput").value.trim().toLowerCase();
+  const status = $("statusFilter").value;
+  const utrFilter = $("utrFilter").value;
+
+  let filtered = allPayments.filter(payment => {
+
+    const orderId = getOrderId(payment).toLowerCase();
+    const name = String(payment.name || "").toLowerCase();
+    const utr = String(payment.utr || "").toLowerCase();
+
+    const matchesSearch =
+      orderId.includes(search) ||
+      name.includes(search) ||
+      utr.includes(search) ||
+      payment.id.toLowerCase().includes(search);
+
+    const matchesStatus =
+      status === "ALL" ||
+      normalizedStatus(payment.paymentStatus) === status;
+
+    const hasUTR = Boolean(String(payment.utr || "").trim());
+
+    const matchesUTR =
+      utrFilter === "ALL" ||
+      (utrFilter === "SUBMITTED" && hasUTR) ||
+      (utrFilter === "NOT_SUBMITTED" && !hasUTR);
+
+    return matchesSearch && matchesStatus && matchesUTR;
+
+  });
+
+  if (!filtered.length) {
+
+    paymentTable.innerHTML = `
+      <tr>
+        <td colspan="7" class="empty">
+          <div class="empty-icon">💳</div>
+          No payment records found.
+        </td>
+      </tr>
+    `;
+
+    return;
+  }
+
+  paymentTable.innerHTML = filtered.map(payment => {
+
+    const orderId = escapeHTML(getOrderId(payment));
+    const name = escapeHTML(payment.name || "Customer");
+    const utr = escapeHTML(payment.utr || "Not Submitted");
+    const amount = money(payment.totalPrice);
+    const date = escapeHTML(getDate(payment.createdAt));
+    const badge = statusBadge(payment.paymentStatus);
+
+    return `
+      <tr>
+        <td><strong>${orderId}</strong></td>
+        <td>${name}</td>
+        <td class="amount">${amount}</td>
+        <td>${utr}</td>
+        <td>${badge}</td>
+        <td>${date}</td>
+        <td>
+          <button class="action-btn" data-view="${escapeHTML(payment.id)}">
+            View Details
+          </button>
+        </td>
+      </tr>
+    `;
+
+  }).join("");
+
+}
+
+
+// PAYMENT DETAILS
+
+function openDetails(id) {
+
+  const payment = allPayments.find(p => p.id === id);
+
+  if (!payment) {
+    showMessage("Payment record nahi mila.", "error");
+    return;
+  }
+
+  selectedPayment = payment;
+
+  const status = normalizedStatus(payment.paymentStatus);
+
+  $("paymentDetails").innerHTML = `
+
+    <div class="detail-row">
+      <span>Order ID</span>
+      <strong>${escapeHTML(getOrderId(payment))}</strong>
+    </div>
+
+    <div class="detail-row">
+      <span>Customer</span>
+      <strong>${escapeHTML(payment.name || "-")}</strong>
+    </div>
+
+    <div class="detail-row">
+      <span>Phone</span>
+      <strong>${escapeHTML(payment.phone || "-")}</strong>
+    </div>
+
+    
