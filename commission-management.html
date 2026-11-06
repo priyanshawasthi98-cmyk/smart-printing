@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Commission & Earnings | Smart Printing</title>
+
+<style>
+:root {
+  --bg:#0b1120;
+  --panel:#131d30;
+  --card:#19263c;
+  --border:#293951;
+  --text:#f1f5f9;
+  --muted:#9aabc1;
+  --green:#22c55e;
+  --blue:#38bdf8;
+  --yellow:#fbbf24;
+  --red:#fb7185;
+}
+
+* { box-sizing:border-box; }
+
+body {
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+button,input {
+  font:inherit;
+}
+
+header {
+  padding:20px;
+  background:#101a2d;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:12px;
+}
+
+.brand {
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.logo {
+  width:46px;
+  height:46px;
+  display:grid;
+  place-items:center;
+  border-radius:14px;
+  background:linear-gradient(135deg,#16a34a,#0ea5e9);
+  font-size:25px;
+  animation:float 3s infinite ease-in-out;
+}
+
+@keyframes float {
+  50% { transform:translateY(-5px); }
+}
+
+h1 { font-size:20px; margin:0; }
+.subtitle { color:var(--muted); font-size:12px; margin-top:5px; }
+
+button {
+  border:0;
+  padding:11px 15px;
+  border-radius:9px;
+  cursor:pointer;
+  font-weight:700;
+  transition:.2s;
+}
+
+button:hover {
+  transform:translateY(-2px);
+  filter:brightness(1.1);
+}
+
+.primary { background:#2563eb; color:white; }
+.success { background:#15803d; color:white; }
+.danger { background:#be123c; color:white; }
+.secondary { background:#334155; color:white; }
+
+.container {
+  max-width:1250px;
+  margin:auto;
+  padding:22px;
+}
+
+.welcome {
+  padding:25px;
+  border-radius:18px;
+  background:linear-gradient(120deg,#123b37,#14335c,#29265d);
+  margin-bottom:22px;
+  position:relative;
+  overflow:hidden;
+}
+
+.welcome h2 { margin:0 0 8px; }
+.welcome p { color:#cbd5e1; margin:0; }
+
+.coin {
+  position:absolute;
+  right:35px;
+  top:20px;
+  font-size:65px;
+  animation:spin 6s linear infinite;
+}
+
+@keyframes spin {
+  from { transform:rotateY(0deg); }
+  to { transform:rotateY(360deg); }
+}
+
+.grid {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:15px;
+  margin-bottom:22px;
+}
+
+.card {
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:15px;
+  padding:19px;
+  animation:appear .5s ease both;
+}
+
+@keyframes appear {
+  from { opacity:0; transform:translateY(12px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+.card-icon { font-size:26px; }
+.card-label { color:var(--muted); font-size:13px; margin-top:12px; }
+.card-value { font-size:25px; font-weight:800; margin-top:7px; }
+.green { color:var(--green); }
+.blue { color:var(--blue); }
+.yellow { color:var(--yellow); }
+.red { color:var(--red); }
+
+.section {
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:15px;
+  padding:20px;
+  margin-bottom:20px;
+}
+
+.section h3 { margin:0 0 16px; }
+
+.form-row {
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  align-items:end;
+}
+
+.field {
+  flex:1;
+  min-width:180px;
+}
+
+label {
+  display:block;
+  color:var(--muted);
+  font-size:13px;
+  margin-bottom:7px;
+}
+
+input {
+  width:100%;
+  padding:12px;
+  border-radius:9px;
+  border:1px solid var(--border);
+  background:#0b1425;
+  color:white;
+  outline:none;
+}
+
+input:focus { border-color:var(--blue); }
+
+.note {
+  color:var(--muted);
+  font-size:12px;
+  margin-top:12px;
+  line-height:1.6;
+}
+
+.table-wrap { overflow-x:auto; }
+
+table {
+  width:100%;
+  border-collapse:collapse;
+  min-width:650px;
+}
+
+th,td {
+  padding:13px 11px;
+  text-align:left;
+  border-bottom:1px solid var(--border);
+  font-size:13px;
+}
+
+th { color:var(--muted); font-weight:600; }
+
+.badge {
+  padding:5px 9px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:bold;
+  background:#334155;
+}
+
+.badge.paid { color:#86efac; background:#14532d; }
+.badge.pending { color:#fde68a; background:#713f12; }
+
+.tabs {
+  display:flex;
+  gap:9px;
+  flex-wrap:wrap;
+  margin-bottom:16px;
+}
+
+.tab {
+  background:#25344c;
+  color:#cbd5e1;
+}
+
+.tab.active {
+  background:#2563eb;
+  color:white;
+}
+
+.message {
+  margin:12px 0;
+  font-size:13px;
+  color:var(--yellow);
+}
+
+.empty {
+  text-align:center;
+  color:var(--muted);
+  padding:25px;
+}
+
+footer {
+  text-align:center;
+  padding:25px;
+  color:var(--muted);
+  font-size:12px;
+}
+
+@media(max-width:900px) {
+  .grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+
+@media(max-width:520px) {
+  .container { padding:13px; }
+  header { padding:15px; }
+  .grid { gap:10px; }
+  .card { padding:14px; }
+  .card-value { font-size:20px; }
+  .coin { opacity:.25; right:15px; }
+  .welcome { padding:20px; }
+  .section { padding:15px; }
+}
+
+@media(prefers-reduced-motion:reduce) {
+  *,*::before,*::after {
+    animation-duration:.01ms !important;
+    transition-duration:.01ms !important;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">
+    <div class="logo">₹</div>
+    <div>
+      <h1>Commission & Earnings</h1>
+      <div class="subtitle">Smart Printing Admin Panel · Phase 7</div>
+    </div>
+  </div>
+
+  <button class="secondary" id="backBtn">← Dashboard</button>
+</header>
+
+<main class="container">
+
+  <div class="welcome">
+    <h2>💰 Earnings Control Center</h2>
+    <p>Platform commission, shop earnings aur payouts ek hi jagah manage karein.</p>
+    <div class="coin">🪙</div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="card-icon">💵</div>
+      <div class="card-label">Platform Earnings</div>
+      <div class="card-value green" id="platformEarnings">₹0</div>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">🏪</div>
+      <div class="card-label">Shop Earnings</div>
+      <div class="card-value blue" id="shopEarnings">₹0</div>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">⏳</div>
+      <div class="card-label">Pending Shop Payout</div>
+      <div class="card-value yellow" id="pendingPayout">₹0</div>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">✅</div>
+      <div class="card-label">Total Paid Payout</div>
+      <div class="card-value green" id="paidPayout">₹0</div>
+    </div>
+  </div>
+
+  <!-- COMMISSION SETTINGS -->
+  <section class="section">
+    <h3>⚙️ Commission Settings</h3>
+
+    <div class="form-row">
+      <div class="field">
+        <label>Platform Commission (%)</label>
+        <input type="number" id="commissionRate" min="0" max="100"
+          step="0.01" value="10">
+      </div>
+
+      <button class="primary" id="saveRateBtn">Save Commission</button>
+    </div>
+
+    <div class="note">
+      Default commission 10% hai. Aap ise 5%, 8%, 10%, 15% ya apni
+      zaroorat ke hisaab se change kar sakte hain.
+      Nayi rate future calculations par apply hogi. Purane orders ki
+      commission history ko change nahi kiya jayega.
+    </div>
+
+    <div class="message" id="settingsMessage"></div>
+  </section>
+
+  <!-- SHOP EARNINGS -->
+  <section class="section">
+    <h3>🏪 Shop-wise Earnings</h3>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Shop</th>
+            <th>Paid Orders</th>
+            <th>Order Revenue</th>
+            <th>Platform Commission</th>
+            <th>Shop Earning</th>
+            <th>Paid Payout</th>
+            <th>Pending</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="shopTable">
+          <tr><td colspan="8" class="empty">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- PAYOUTS -->
+  <section class="section">
+    <h3>💸 Shop Payout Management</h3>
+
+    <div class="form-row">
+      <div class="field">
+        <label>Shop Name</label>
+        <input id="payoutShop" readonly placeholder="Select a shop from above">
+      </div>
+
+      <div class="field">
+        <label>Payout Amount (₹)</label>
+        <input id="payoutAmount" type="number" min="0.01" step="0.01"
+          placeholder="Enter amount">
+      </div>
+
+      <div class="field">
+        <label>Payment Reference / UTR</label>
+        <input id="payoutReference" placeholder="Optional reference">
+      </div>
+
+      <button class="success" id="createPayoutBtn">Create Payout</button>
+    </div>
+
+    <div class="note">
+      Payout create karne se payment automatically nahi hota.
+      Shop ko actual payment karne ke baad hi payout ko Paid mark karein.
+    </div>
+
+    <div class="message" id="payoutMessage"></div>
+  </section>
+
+  <!-- HISTORY -->
+  <section class="section">
+    <h3>📜 Payout History</h3>
+
+    <div class="tabs">
+      <button class="tab active" data-filter="ALL">All</button>
+      <button class="tab" data-filter="PENDING">Pending</button>
+      <button class="tab" data-filter="PAID">Paid</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Shop</th>
+            <th>Amount</th>
+            <th>Reference</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="payoutTable">
+          <tr><td colspan="6" class="empty">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ORDER COMMISSION HISTORY -->
+  <section class="section">
+    <h3>🧾 Order-wise Commission History</h3>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Shop</th>
+            <th>Order Revenue</th>
+            <th>Commission Rate</th>
+            <th>Platform Earning</th>
+            <th>Shop Earning</th>
+            <th>Payment</th>
+          </tr>
+        </thead>
+        <tbody id="orderTable">
+          <tr><td colspan="7" class="empty">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  Smart Printing Network · Commission & Earnings Management
+</footer>
+
+<script type="module">
+import { auth, db } from "./firebase.js";
+
+import {
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  addDoc,
+  updateDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const ADMIN_UID = "ibK3XWMUEYQIbBhPmGQRnW72MZg1";
+
+const $ = id => document.getElementById(id);
+
+let currentAdmin = null;
+let currentRate = 10;
+let shops = [];
+let orders = [];
+let payouts = [];
+let selectedShop = null;
+let payoutFilter = "ALL";
+
+const money = value =>
+  "₹" + Number(value || 0).toLocaleString("en-IN", {
+    minimumFractionDigits:2,
+    maximumFractionDigits:2
+  });
+
+const safe = value =>
+  String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  })[char]);
+
+function message(id,text,isError=false) {
+  const el = $(id);
+  el.textContent = text;
+  el.style.color = isError ? "#fb7185" : "#22c55e";
+}
+
+function getShopForOrder(order) {
+  const id = order.shopId || order.assignedShopId || "";
+  const name = order.shopName || order.assignedShopName || "";
+
+  return shops.find(s => s.id === id) ||
+    shops.find(s => name && s.shopName === name) ||
+    null;
+}
+
+function orderRevenue(order) {
+  const value = Number(order.totalPrice || 0);
+  return Number.isFinite(value) ? Math.max(0,value) : 0;
+}
+
+function isPaid(order) {
+  return String(order.paymentStatus || "").toUpperCase() === "PAID";
+}
+
+function getOrderRate(order) {
+  const savedRate = Number(order.commissionRate);
+  return Number.isFinite(savedRate) && savedRate >= 0 && savedRate <= 100
+    ? savedRate
+    : currentRate;
+}
+
+function calculate() {
+  const paidOrders = orders.filter(isPaid);
+
+  const rows = shops.map(shop => {
+    const shopOrders = paidOrders.filter(order =>
+      getShopForOrder(order)?.id === shop.id
+    );
+
+    let revenue = 0;
+    let platform = 0;
+    let shopEarn = 0;
+
+    shopOrders.forEach(order => {
+      const total = orderRevenue(order);
+      const rate = getOrderRate(order);
+
+      revenue += total;
+      platform += total * rate / 100;
+      shopEarn += total - (total * rate / 100);
+    });
+
+    const paid = payouts
+      .filter(p => p.shopId === shop.id &&
+        String(p.status).toUpperCase() === "PAID")
+      .reduce((sum,p) => sum + Number(p.amount || 0),0);
+
+    const pending = Math.max(0,shopEarn - paid);
+
+    return {
+      shop,
+      count:shopOrders.length,
+      revenue,
+      platform,
+      shopEarn,
+      paid,
+      pending
+    };
+  });
+
+  const totalPlatform = rows.reduce((s,r) => s + r.platform,0);
+  const totalShop = rows.reduce((s,r) => s + r.shopEarn,0);
+  const totalPaid = payouts
+    .filter(p => String(p.status).toUpperCase() === "PAID")
+    .reduce((s,p) => s + Number(p.amount || 0),0);
+
+  const totalPending = rows.reduce((s,r) => s + r.pending,0);
+
+  $("platformEarnings").textContent = money(totalPlatform);
+  $("shopEarnings").textContent = money(totalShop);
+  $("pendingPayout").textContent = money(totalPending);
+  $("paidPayout").textContent = money(totalPaid);
+
+  renderShops(rows);
+  renderOrders();
+  renderPayouts();
+}
+
+function renderShops(rows) {
+  const body = $("shopTable");
+
+  if (!rows.length) {
+    body.innerHTML = `<tr><td colspan="8" class="empty">
+      No shops found. Add shops in Shop Management first.
+    </td></tr>`;
+    return;
+  }
+
+  body.innerHTML = rows.map(r => `
+    <tr>
+      <td><b>${safe(r.shop.shopName || "Unnamed Shop")}</b></td>
+      <td>${r.count}</td>
+      <td>${money(r.revenue)}</td>
+      <td class="green">${money(r.platform)}</td>
+      <td class="blue">${money(r.shopEarn)}</td>
+      <td>${money(r.paid)}</td>
+      <td class="yellow">${money(r.pending)}</td>
+      <td>
+        <button class="primary select-shop"
+          data-id="${safe(r.shop.id)}"
+          data-pending="${r.pending}">
+          Select
+        </button>
+      </td>
+    </tr>
+  `).join("");
+
+  body.querySelectorAll(".select-shop").forEach(btn => {
+    btn.addEventListener("click",() => {
+      selectedShop = shops.find(s => s.id === btn.dataset.id);
+      $("payoutShop").value = selectedShop?.shopName || "";
+      $("payoutAmount").value = Number(btn.dataset.pending).toFixed(2);
+      $("payoutAmount").max = Number(btn.dataset.pending).toFixed(2);
+      message("payoutMessage","Shop selected. Enter payout details.");
+    });
+  });
+}
+
+function renderOrders() {
+  const body = $("orderTable");
+
+  const paidOrders = orders.filter(isPaid);
+
+  if (!paidOrders.length) {
+    body.innerHTML = `<tr><td colspan="7" class="empty">
+      No paid orders available.
+    </td></tr>`;
+    return;
+  }
+
+  body.innerHTML = paidOrders.map(order => {
+    const total = orderRevenue(order);
+    const rate = getOrderRate(order);
+    const commission = total * rate / 100;
+    const shop = getShopForOrder(order);
+
+    return `
+      <tr>
+        <td>${safe(order.orderId || order.id)}</td>
+        <td>${safe(shop?.shopName || order.shopName || "Not assigned")}</td>
+        <td>${money(total)}</td>
+        <td>${rate}%</td>
+        <td class="green">${money(commission)}</td>
+        <td class="blue">${money(total-commission)}</td>
+        <td><span class="badge paid">PAID</span></td>
+      </tr>
+    `;
+  }).join("");
+}
+
+function renderPayouts() {
+  const body = $("payoutTable");
+
+  const list = [...payouts]
+    .filter(p => payoutFilter === "ALL" ||
+      String(p.status).toUpperCase() === payoutFilter)
+    .sort((a,b) => {
+      const ad = a.createdAt?.toDate?.()?.getTime?.() || 0;
+      const bd = b.createdAt?.toDate?.()?.getTime?.() || 0;
+      return bd-ad;
+    });
+
+  if (!list.length) {
+    body.innerHTML = `<tr><td colspan="6" class="empty">
+      No payout records found.
+    </td></tr>`;
+    return;
+  }
+
+  body.innerHTML = list.map(p => {
+    const paid = String(p.status).toUpperCase() === "PAID";
+
+    let date = "—";
+    if (p.createdAt?.toDate) {
+      date = p.createdAt.toDate().toLocaleDateString("en-IN");
+    }
+
+    return `
+      <tr>
+        <td>${date}</td>
+        <td>${safe(p.shopName)}</td>
+        <td>${money(p.amount)}</td>
+        <td>${safe(p.reference || "—")}</td>
+        <td>
+          <span class="badge ${paid ? "paid":"pending"}">
+            ${paid ? "PAID":"PENDING"}
+          </span>
+        </td>
+        <td>
+          ${!paid ? `
+            <button class="success mark-paid" data-id="${safe(p.id)}">
+              Mark Paid
+            </button>
+          ` : "Completed"}
+        </td>
+      </tr>
+    `;
+  }).join("");
+
+  body.querySelectorAll(".mark-paid").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const confirmed = confirm(
+        "Kya aapne shop ko sach mein payment kar diya hai?"
+      );
+
+      if (!confirmed) return;
+
+      try {
+        btn.disabled = true;
+
+        await updateDoc(doc(db,"shopPayouts",btn.dataset.id),{
+          status:"PAID",
+          paidAt:serverTimestamp(),
+          paidBy:currentAdmin.uid,
+          updatedAt:serverTimestamp()
+        });
+
+        message("payoutMessage","Payout successfully marked as PAID.");
+        await loadData();
+
+      } catch(error) {
+        console.error(error);
+        alert("Payout update failed: " + error.message);
+        btn.disabled = false;
+      }
+    });
+  });
+}
+
+async function loadSettings() {
+  const ref = doc(db,"settings","commission");
+  const snap = await getDoc(ref);
+
+  if (snap.exists()) {
+    const value = Number(snap.data().rate);
+    if (Number.isFinite(value) && value >= 0 && value <= 100) {
+      currentRate = value;
+    }
+  }
+
+  $("commissionRate").value = currentRate;
+}
+
+async function loadData() {
+  try {
+    const [shopSnap,orderSnap,payoutSnap] = await Promise.all([
+      getDocs(collection(db,"shops")),
+      getDocs(collection(db,"orders")),
+      getDocs(collection(db,"shopPayouts"))
+    ]);
+
+    shops = shopSnap.docs.map(d => ({id:d.id,...d.data()}));
+    orders = orderSnap.docs.map(d => ({id:d.id,...d.data()}));
+    payouts = payoutSnap.docs.map(d => ({id:d.id,...d.data()}));
+
+    calculate();
+
+  } catch(error) {
+    console.error(error);
+    alert("Data load error: " + error.message);
+  }
+}
+
+$("saveRateBtn").addEventListener("click",async () => {
+  const rate = Number($("commissionRate").value);
+
+  if (!Number.isFinite(rate) || rate < 0 || rate > 100) {
+    message("settingsMessage","Commission 0 se 100 ke beech honi chahiye.",true);
+    return;
+  }
+
+  try {
+    $("saveRateBtn").disabled = true;
+
+    await setDoc(doc(db,"settings","commission"),{
+      rate,
+      updatedAt:serverTimestamp(),
+      updatedBy:currentAdmin.uid
+    });
+
+    currentRate = rate;
+    message("settingsMessage","Commission rate successfully saved.");
+    calculate();
+
+  } catch(error) {
+    console.error(error);
+    message("settingsMessage","Save failed: " + error.message,true);
+  } finally {
+    $("saveRateBtn").disabled = false;
+  }
+});
+
+$("createPayoutBtn").addEventListener("click",async () => {
+  if (!selectedShop) {
+    message("payoutMessage","Pehle Shop-wise table se shop select karein.",true);
+    return;
+  }
+
+  const amount = Number($("payoutAmount").value);
+  const reference = $("payoutReference").value.trim();
+
+  const shopRow = calculateShop(selectedShop.id);
+
+  if (!Number.isFinite(amount) || amount <= 0) {
+    message("payoutMessage","Valid payout amount enter karein.",true);
+    return;
+  }
+
+  if (amount > shopRow.pending + 0.001) {
+    message("payoutMessage",
+      "Payout amount pending balance se zyada nahi ho sakta.",true);
+    return;
+  }
+
+  if (!confirm(
+    `Create ₹${amount.toFixed(2)} payout for ${selectedShop.shopName}?`
+  )) return;
+
+  try {
+    $("createPayoutBtn").disabled = true;
+
+    await addDoc(collection(db,"shopPayouts"),{
+      shopId:selectedShop.id,
+      shopName:selectedShop.shopName || "Unnamed Shop",
+      amount,
+      reference,
+      status:"PENDING",
+      createdAt:serverTimestamp(),
+      createdBy:currentAdmin.uid
+    });
+
+    $("payoutAmount").value = "";
+    $("payoutReference").value = "";
+
+    message("payoutMessage","Payout record created. Actual payment abhi pending hai.");
+    await loadData(
