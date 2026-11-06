@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>College Management | Smart Printing</title>
+
+<style>
+:root {
+  --primary:#635bff;
+  --dark:#202b43;
+  --green:#16a36a;
+  --red:#e34b5f;
+  --bg:#f4f7fb;
+  --text:#172033;
+  --muted:#718096;
+  --border:#e8edf5;
+}
+
+* {
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body {
+  font-family:Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+button,input,select,textarea {
+  font:inherit;
+}
+
+button {
+  cursor:pointer;
+  border:0;
+}
+
+.header {
+  background:white;
+  padding:16px 5%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  box-shadow:0 3px 18px #00000008;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+.brand {
+  font-size:20px;
+  font-weight:800;
+  color:var(--primary);
+}
+
+.header-actions {
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.btn {
+  padding:10px 15px;
+  border-radius:10px;
+  font-weight:700;
+  transition:.2s;
+}
+
+.btn:hover {
+  transform:translateY(-2px);
+}
+
+.btn-primary {background:var(--primary);color:white}
+.btn-green {background:var(--green);color:white}
+.btn-dark {background:var(--dark);color:white}
+.btn-light {background:#eeedff;color:var(--primary)}
+
+.container {
+  max-width:1450px;
+  padding:25px 4%;
+  margin:auto;
+}
+
+.hero {
+  background:linear-gradient(120deg,#24275e,#635bff,#9363ed);
+  color:white;
+  padding:28px;
+  border-radius:22px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:20px;
+  margin-bottom:25px;
+  overflow:hidden;
+}
+
+.hero h1 {
+  font-size:27px;
+  margin-bottom:10px;
+}
+
+.hero p {
+  color:#e4e4ff;
+  line-height:1.5;
+}
+
+.hero-art {
+  font-size:65px;
+  min-width:120px;
+  text-align:center;
+  position:relative;
+  animation:float 3s ease-in-out infinite;
+}
+
+.coin {
+  position:absolute;
+  font-size:27px;
+  animation:coinFloat 2.5s ease-in-out infinite;
+}
+
+.coin.one {top:-15px;left:-5px}
+.coin.two {bottom:-10px;right:-5px;animation-delay:.8s}
+
+@keyframes float {
+  0%,100% {transform:translateY(0) rotate(-3deg)}
+  50% {transform:translateY(-12px) rotate(3deg)}
+}
+
+@keyframes coinFloat {
+  0%,100% {transform:translateY(0) rotate(0)}
+  50% {transform:translateY(-15px) rotate(20deg)}
+}
+
+.stats {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:15px;
+  margin-bottom:25px;
+}
+
+.stat-card {
+  background:white;
+  padding:20px;
+  border:1px solid var(--border);
+  border-radius:17px;
+  transition:.25s;
+  animation:appear .5s ease both;
+}
+
+.stat-card:hover {
+  transform:translateY(-5px);
+  box-shadow:0 12px 25px #26345c12;
+}
+
+.stat-top {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+}
+
+.stat-icon {
+  width:43px;
+  height:43px;
+  display:grid;
+  place-items:center;
+  border-radius:13px;
+  font-size:22px;
+}
+
+.purple {background:#eeedff}
+.green {background:#e3f9ef}
+.yellow {background:#fff5dd}
+.red-bg {background:#ffebee}
+
+.stat-card h2 {
+  margin-top:15px;
+  font-size:25px;
+}
+
+.stat-card p {
+  margin-top:5px;
+  color:var(--muted);
+  font-size:13px;
+}
+
+.panel {
+  background:white;
+  border:1px solid var(--border);
+  padding:22px;
+  border-radius:18px;
+  margin-bottom:22px;
+}
+
+.panel-heading {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:18px;
+}
+
+.panel-heading h2 {font-size:19px}
+
+.controls {
+  display:grid;
+  grid-template-columns:2fr 1fr;
+  gap:12px;
+  margin-bottom:17px;
+}
+
+.control {
+  width:100%;
+  padding:12px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  outline:none;
+  background:white;
+  min-width:0;
+}
+
+.control:focus {
+  border-color:var(--primary);
+  box-shadow:0 0 0 3px #635bff15;
+}
+
+.college-grid {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:16px;
+}
+
+.college-card {
+  background:white;
+  border:1px solid var(--border);
+  border-radius:17px;
+  padding:18px;
+  transition:.25s;
+  animation:appear .4s ease both;
+  min-width:0;
+}
+
+.college-card:hover {
+  transform:translateY(-5px);
+  box-shadow:0 12px 25px #26345c12;
+}
+
+.college-head {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.college-icon {
+  width:48px;
+  height:48px;
+  background:#eeedff;
+  display:grid;
+  place-items:center;
+  border-radius:14px;
+  font-size:25px;
+}
+
+.college-card h3 {
+  margin-top:13px;
+  font-size:17px;
+  overflow-wrap:anywhere;
+}
+
+.college-meta {
+  color:var(--muted);
+  font-size:13px;
+  margin-top:8px;
+  line-height:1.7;
+  overflow-wrap:anywhere;
+}
+
+.badge {
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+.badge.active {
+  background:#dcf8e9;
+  color:#087c48;
+}
+
+.badge.inactive {
+  background:#ffe5e9;
+  color:#bd3045;
+}
+
+.college-stats {
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:14px;
+  padding-top:13px;
+  border-top:1px solid var(--border);
+  font-size:12px;
+  color:var(--muted);
+}
+
+.college-stats strong {color:var(--text)}
+
+.card-actions {
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  margin-top:15px;
+}
+
+.card-actions button {
+  padding:8px 10px;
+  border-radius:8px;
+  font-size:11px;
+  font-weight:700;
+}
+
+.view-btn {background:#eeedff;color:var(--primary)}
+.edit-btn {background:#fff3d5;color:#986400}
+.delete-btn {background:#ffe5e9;color:#bd3045}
+.restore-btn {background:#dcf8e9;color:#087c48}
+
+.empty {
+  grid-column:1/-1;
+  text-align:center;
+  padding:35px;
+  color:var(--muted);
+}
+
+.empty div {
+  font-size:42px;
+  margin-bottom:10px;
+}
+
+.message {
+  display:none;
+  padding:13px;
+  border-radius:10px;
+  margin-bottom:15px;
+  font-size:14px;
+}
+
+.message.error {background:#ffe9ec;color:#b42338}
+.message.success {background:#e1f8eb;color:#087c48}
+
+.modal-overlay {
+  position:fixed;
+  inset:0;
+  background:#111827a8;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:15px;
+  z-index:100;
+}
+
+.modal-overlay.show {
+  display:flex;
+  animation:appear .2s ease;
+}
+
+.modal {
+  background:white;
+  width:100%;
+  max-width:570px;
+  max-height:90vh;
+  overflow-y:auto;
+  border-radius:20px;
+  padding:23px;
+  animation:modalIn .3s ease;
+}
+
+@keyframes modalIn {
+  from {transform:translateY(25px) scale(.96);opacity:0}
+  to {transform:translateY(0) scale(1);opacity:1}
+}
+
+.modal h2 {margin-bottom:18px}
+
+.form-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:13px;
+}
+
+.field {min-width:0}
+.field.full {grid-column:1/-1}
+
+.field label {
+  display:block;
+  font-size:12px;
+  font-weight:700;
+  margin-bottom:7px;
+  color:#566176;
+}
+
+.modal-actions {
+  display:flex;
+  gap:10px;
+  margin-top:20px;
+  flex-wrap:wrap;
+}
+
+.modal-actions button {flex:1}
+
+.detail-row {
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px 0;
+  border-bottom:1px solid var(--border);
+  font-size:13px;
+}
+
+.detail-row span:first-child {color:var(--muted)}
+.detail-row strong {text-align:right;overflow-wrap:anywhere}
+
+.spinner {
+  width:30px;
+  height:30px;
+  border:3px solid #e4e5ff;
+  border-top-color:var(--primary);
+  border-radius:50%;
+  margin:0 auto 12px;
+  animation:spin .8s linear infinite;
+}
+
+@keyframes spin {to {transform:rotate(360deg)}}
+
+@keyframes appear {
+  from {opacity:0;transform:translateY(12px)}
+  to {opacity:1;transform:translateY(0)}
+}
+
+.note {
+  background:#fff7e5;
+  color:#805600;
+  padding:13px;
+  border-radius:10px;
+  font-size:12px;
+  line-height:1.5;
+  margin-top:15px;
+}
+
+.footer {
+  text-align:center;
+  padding:25px;
+  color:var(--muted);
+  font-size:12px;
+}
+
+@media(max-width:1000px) {
+  .college-grid {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stats {grid-template-columns:repeat(2,1fr)}
+}
+
+@media(max-width:600px) {
+  .header {padding:13px 4%}
+  .brand {font-size:16px}
+  .header-actions .btn {padding:9px;font-size:11px}
+  .container {padding:17px 3%}
+  .hero {padding:20px}
+  .hero h1 {font-size:21px}
+  .hero-art {font-size:47px;min-width:75px}
+  .stats {gap:10px}
+  .stat-card {padding:14px}
+  .stat-card h2 {font-size:21px}
+  .college-grid {grid-template-columns:1fr}
+  .controls {grid-template-columns:1fr}
+  .panel {padding:15px}
+  .form-grid {grid-template-columns:1fr}
+  .field.full {grid-column:auto}
+}
+
+@media(prefers-reduced-motion:reduce) {
+  *,*::before,*::after {
+    animation-duration:.01ms!important;
+    transition-duration:.01ms!important;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+  <div class="brand">🖨️ Smart Printing</div>
+  <div class="header-actions">
+    <button class="btn btn-light" onclick="goDashboard()">← Dashboard</button>
+    <button class="btn btn-dark" id="logoutBtn">Logout</button>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="hero">
+    <div>
+      <h1>🏫 College Management</h1>
+      <p>Manage colleges, coordinators, partner shops and college performance.</p>
+      <p style="margin-top:12px;font-size:12px">Building a smarter campus printing network.</p>
+    </div>
+    <div class="hero-art">
+      🏫
+      <span class="coin one">🎓</span>
+      <span class="coin two">💰</span>
+    </div>
+  </section>
+
+  <div id="message" class="message"></div>
+
+  <section class="stats">
+
+    <div class="stat-card">
+      <div class="stat-top">
+        Total Colleges
+        <span class="stat-icon purple">🏫</span>
+      </div>
+      <h2 id="totalColleges">0</h2>
+      <p>All registered colleges</p>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        Active Colleges
+        <span class="stat-icon green">🟢</span>
+      </div>
+      <h2 id="activeColleges">0</h2>
+      <p>Currently active</p>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        Inactive Colleges
+        <span class="stat-icon red-bg">⛔</span>
+      </div>
+      <h2 id="inactiveColleges">0</h2>
+      <p>Inactive or archived</p>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        Total Orders
+        <span class="stat-icon yellow">📦</span>
+      </div>
+      <h2 id="totalCollegeOrders">0</h2>
+      <p>Orders linked to colleges</p>
+    </div>
+
+  </section>
+
+  <section class="panel">
+
+    <div class="panel-heading">
+      <h2>🏫 All Colleges</h2>
+      <button class="btn btn-primary" id="addCollegeBtn">＋ Add College</button>
+    </div>
+
+    <div class="controls">
+      <input
+        type="search"
+        id="searchInput"
+        class="control"
+        placeholder="🔍 Search college, coordinator, city..."
+      >
+
+      <select id="statusFilter" class="control">
+        <option value="ALL">All Colleges</option>
+        <option value="ACTIVE">Active Colleges</option>
+        <option value="INACTIVE">Inactive Colleges</option>
+      </select>
+    </div>
+
+    <div id="collegeGrid" class="college-grid">
+      <div class="empty">
+        <div class="spinner"></div>
+        Loading colleges...
+      </div>
+    </div>
+
+  </section>
+
+  <div class="note">
+    ⚠️ College deactivate karne par record permanently delete nahi hoga.
+    Purane orders safe rahenge. Restore option se college dobara active kiya ja sakta hai.
+  </div>
+
+</main>
+
+<footer class="footer">
+  Smart Printing Kiosk Network · College Management
+</footer>
+
+
+<!-- ADD / EDIT MODAL -->
+
+<div class="modal-overlay" id="formOverlay">
+  <div class="modal">
+    <h2 id="formTitle">🏫 Add New College</h2>
+
+    <form id="collegeForm">
+
+      <div class="form-grid">
+
+        <div class="field full">
+          <label>College Name *</label>
+          <input class="control" id="collegeName" required maxlength="150"
+                 placeholder="Enter college name">
+        </div>
+
+        <div class="field">
+          <label>College Code (Optional)</label>
+          <input class="control" id="collegeCode" maxlength="50"
+                 placeholder="College code">
+        </div>
+
+        <div class="field">
+          <label>University</label>
+          <input class="control" id="university" maxlength="150"
+                 placeholder="University name">
+        </div>
+
+        <div class="field">
+          <label>Coordinator Name *</label>
+          <input class="control" id="coordinatorName" required maxlength="100"
+                 placeholder="Coordinator name">
+        </div>
+
+        <div class="field">
+          <label>Coordinator Phone *</label>
+          <input class="control" id="coordinatorPhone" required
+                 type="tel" inputmode="numeric" pattern="[0-9]{10}"
+                 maxlength="10" placeholder="10-digit number">
+        </div>
+
+        <div class="field full">
+          <label>Coordinator Email</label>
+          <input class="control" id="coordinatorEmail" type="email"
+                 maxlength="150" placeholder="coordinator@example.com">
+        </div>
+
+        <div class="field">
+          <label>City *</label>
+          <input class="control" id="city" required maxlength="80"
+                 placeholder="City">
+        </div>
+
+        <div class="field">
+          <label>State *</label>
+          <input class="control" id="state" required maxlength="80"
+                 placeholder="State">
+        </div>
+
+        <div class="field full">
+          <label>Full Address *</label>
+          <textarea class="control" id="address" required maxlength="500"
+                    placeholder="College address"></textarea>
+        </div>
+
+        <div class="field full">
+          <label>Partner Shop (Optional)</label>
+          <select class="control" id="shopId">
+            <option value="">No shop assigned</option>
+          </select>
+        </div>
+
+        <div class="field full">
+          <label>College Status</label>
+          <select class="control" id="collegeStatus">
+            <option value="ACTIVE">Active</option>
+            <option value="INACTIVE">Inactive</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-light" onclick="closeForm()">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="saveCollegeBtn">Save College</button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+
+<!-- DETAILS MODAL -->
+
+<div class="modal-overlay" id="detailsOverlay">
+  <div class="modal">
+    <h2>🏫 College Details</h2>
+    <div id="collegeDetails"></div>
+    <div class="modal-actions">
+      <button class="btn btn-light" onclick="closeDetails()">Close</button>
+    </div>
+  </div>
+</div>
+
+
+<script type="module">
+
+import { auth, db } from "./firebase.js";
+
+import {
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+  collection,
+  getDocs,
+  addDoc,
+  updateDoc,
+  doc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+const ADMIN_UID = "ibK3XWMUEYQIbBhPmGQRnW72MZg1";
+
+let colleges = [];
+let shops = [];
+let orders = [];
+let editingId = null;
+let loading = false;
+
+const $ = id => document.getElementById(id);
+
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  })[c]);
+}
+
+
+function money(value) {
+  return "₹" + Number(value || 0).toLocaleString("en-IN", {
+    maximumFractionDigits:2
+  });
+}
+
+
+function showMessage(text,type="success") {
+  const box=$("message");
+  box.textContent=text;
+  box.className="message "+type;
+  box.style.display="block";
+
+  window.scrollTo({top:0,behavior:"smooth"});
+
+  setTimeout(()=>{
+    box.style.display="none";
+  },4500);
+}
+
+
+function normalizeStatus(status) {
+  return String(status || "ACTIVE").toUpperCase();
+}
+
+
+function linkedOrders(college) {
+  return orders.filter(order =>
+    order.collegeId === college.id ||
+    (college.collegeName && order.collegeName === college.collegeName)
+  );
+}
+
+
+function collegeRevenue(college) {
+  return linkedOrders(college)
+    .filter(order => String(order.paymentStatus || "").toUpperCase() === "PAID")
+    .reduce((sum,order)=>sum+Number(order.totalPrice || 0),0);
+}
+
+
+// AUTH
+
+onAuthStateChanged(auth,async user=>{
+
+  if (!user) {
+    location.replace("admin.html");
+    return;
+  }
+
+  if (user.uid !== ADMIN_UID) {
+    await signOut(auth);
+    location.replace("admin.html");
+    return;
+  }
+
+  await loadData();
+
+});
+
+
+// LOAD DATA
+
+async function loadData() {
+
+  if (loading) return;
+  loading=true;
+
+  $("collegeGrid").innerHTML=`
+    <div class="empty">
+      <div class="spinner"></div>
+      Loading colleges...
+    </div>
+  `;
+
+  try {
+
+    const [collegeSnapshot,shopSnapshot,orderSnapshot]=await Promise.all([
+      getDocs(collection(db,"colleges")),
+      getDocs(collection(db,"shops")),
+      getDocs(collection(db,"orders"))
+    ]);
+
+    colleges=collegeSnapshot.docs.map(item=>({
+      id:item.id,
+      ...item.data()
+    }));
+
+    shops=shopSnapshot.docs.map(item=>({
+      id:item.id,
+      ...item.data()
+    }));
+
+    orders=orderSnapshot.docs.map(item=>({
+      id:item.id,
+      ...item.data()
+    }));
+
+    colleges.sort((a,b)=>{
+      const da=a.createdAt?.toMillis?.() || 0;
+      const dbb=b.createdAt?.toMillis?.() || 0;
+      return dbb-da;
+    });
+
+    updateStats();
+    renderColleges();
+
+  } catch(error) {
+
+    console.error(error);
+
+    $("collegeGrid").innerHTML=`
+      <div class="empty">
+        <div>❌</div>
+        Could not load colleges.<br>
+        ${escapeHTML(error.message)}
+      </div>
+    `;
+
+    showMessage("Data load error: "+error.message,"error");
+
+  } finally {
+    loading=false;
+  }
+
+}
+
+
+// STATISTICS
+
+function updateStats() {
+
+  const active=colleges.filter(
+    c=>normalizeStatus(c.status)==="ACTIVE"
+  );
+
+  const inactive=colleges.filter(
+    c=>normalizeStatus(c.status)!=="ACTIVE"
+  );
+
+  $("totalColleges").textContent=colleges.length;
+  $("activeColleges").textContent=active.length;
+  $("inactiveColleges").textContent=inactive.length;
+
+  const linkedCount=colleges.reduce(
+    (sum,college)=>sum+linkedOrders(college).length,0
+  );
+
+  $("totalCollegeOrders").textContent=linkedCount;
+
+}
+
+
+// SHOP OPTIONS
+
+function updateShopOptions(selected="") {
+
+  const select=$("shopId");
+
+  select.innerHTML=`
+    <option value="">No shop assigned</option>
+  `;
+
+  shops
+    .filter(shop=>normalizeStatus(shop.status)==="ACTIVE")
+    .forEach(shop=>{
+
+      const option=document.createElement("option");
+      option.value=shop.id;
+      option.textContent=shop.shopName || "Unnamed Shop";
+
+      if (shop.id===selected) option.selected=true;
+
+      select.appendChild(option);
+
+    });
+
+}
+
+
+// RENDER COLLEGES
+
+function renderColleges() {
+
+  const search=$("searchInput").value.trim().toLowerCase();
+  const filter=$("statusFilter").value;
+
+  const filtered=colleges.filter(college=>{
+
+    const text=[
+      college.collegeName,
+      college.collegeCode,
+      college.university,
+      college.coordinatorName,
+      college.coordinatorPhone,
+      college.city,
+      college.state,
+      college.address
+    ].join(" ").toLowerCase();
+
+    const matchesSearch=text.includes(search);
+    const status=normalizeStatus(college.status);
+
+    const matchesStatus=
+      filter==="ALL" ||
+      (filter==="ACTIVE" && status==="ACTIVE") ||
+      (filter==="INACTIVE" && status!=="ACTIVE");
+
+    return matchesSearch && matchesStatus;
+
+  });
+
+  if (!filtered.length) {
+
+    $("collegeGrid").innerHTML=`
+      <div class="empty">
+        <div>🏫</div>
+        No colleges found.<br>
+        Add your first college.
+      </div>
+    `;
+
+    return;
+  }
+
+  $("collegeGrid").innerHTML=filtered.map(college=>{
+
+    const active=normalizeStatus(college.status)==="ACTIVE";
+    const linked=linkedOrders(college);
+    const revenue=collegeRevenue(college);
+
+    const assignedShop=shops.find(
+      shop=>shop.id===college.shopId
+    );
+
+    return `
+      <article class="college-card">
+
+        <div class="college-head">
+          <div class="college-icon">🏫</div>
+
+          <span class="badge ${active?"active":"inactive"}">
+            ${active?"ACTIVE":"INACTIVE"}
+          </span>
+        </div>
+
+        <h3>${escapeHTML(college.collegeName || "Un
