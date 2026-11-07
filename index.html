@@ -5,883 +5,326 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#155eef">
   <title>Smart Printing</title>
-
   <style>
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f2f5fa;
-      color: #172033;
-    }
-
-    header {
-      background: #155eef;
-      color: white;
-      text-align: center;
-      padding: 28px 15px;
-      animation: headerFade 0.7s ease both;
-    }
-
-    header h1 {
-      animation: logoFloat 2.5s ease-in-out infinite;
-    }
-
-    header p {
-      animation: fadeIn 1s ease both;
-    }
-
-    main {
-      max-width: 540px;
-      margin: 24px auto;
-      padding: 0 14px;
-    }
-
-    .card {
-      background: white;
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 3px 12px #00000010;
-      animation: cardEnter 0.8s ease both;
-      transition: box-shadow 0.3s ease;
-    }
-
-    .card:hover {
-      box-shadow: 0 8px 24px #00000012;
-    }
-
-    label {
-      display: block;
-      margin: 17px 0 8px;
-      font-weight: bold;
-    }
-
-    input, select, button {
-      width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      font-size: 16px;
-    }
-
-    input, select {
-      border: 1px solid #ccc;
-      background: white;
-      transition: border-color 0.25s ease,
-                  box-shadow 0.25s ease;
-    }
-
-    input:focus, select:focus {
-      outline: none;
-      border-color: #155eef;
-      box-shadow: 0 0 0 3px #155eef18;
-    }
-
-    button {
-      margin-top: 20px;
-      border: 0;
-      background: #155eef;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      transition: transform 0.2s ease,
-                  box-shadow 0.2s ease;
-    }
-
-    button:not(:disabled):hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 12px #155eef30;
-    }
-
-    button:not(:disabled):active {
-      transform: scale(0.98);
-    }
-
-    button:disabled {
-      background: #98a2b3;
-      cursor: not-allowed;
-    }
-
-    #result {
-      margin-top: 14px;
-      overflow-wrap: anywhere;
-      line-height: 1.5;
-    }
-
-    .note {
-      color: #667085;
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    .summary {
-      background: #f8fafc;
-      border: 1px solid #e4e7ec;
-      border-radius: 10px;
-      padding: 12px;
-      margin-top: 14px;
-      transition: background 0.3s ease,
-                  border-color 0.3s ease;
-    }
-
-    .error { color: #b42318; }
-    .ok { color: #067647; }
-
-    /* Running Boy Animation */
-
-    .runner-box {
-      display: none;
-      margin-top: 16px;
-      padding: 15px 10px;
-      background: #eef4ff;
-      border: 1px solid #d5e3ff;
-      border-radius: 12px;
-      text-align: center;
-      overflow: hidden;
-    }
-
-    .runner-box.active {
-      display: block;
-      animation: fadeIn 0.4s ease;
-    }
-
-    .runner-track {
-      height: 58px;
-      position: relative;
-      overflow: hidden;
-      border-bottom: 2px dashed #b5c8f5;
-    }
-
-    .runner {
-      position: absolute;
-      left: -75px;
-      bottom: 5px;
-      font-size: 30px;
-      white-space: nowrap;
-    }
-
-    .runner-box.active.running .runner {
-      animation: runBoy 2.2s linear infinite;
-    }
-
-    .sticker {
-      position: absolute;
-      font-size: 20px;
-    }
-
-    .sticker-one {
-      left: 18%;
-      top: 2px;
-      animation: stickerFloat 1.8s ease-in-out infinite;
-    }
-
-    .sticker-two {
-      right: 20%;
-      top: 2px;
-    }
-
-    .sticker-three {
-      right: 5%;
-      bottom: 5px;
-      animation: stickerFloat 1.4s ease-in-out infinite;
-    }
-
-    #runnerText {
-      margin: 10px 0 0;
-      color: #155eef;
-      font-size: 14px;
-      font-weight: bold;
-    }
-
-    /* Keyframes */
-
-    @keyframes headerFade {
-      from {
-        opacity: 0;
-        transform: translateY(-10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes cardEnter {
-      from {
-        opacity: 0;
-        transform: translateY(15px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    @keyframes logoFloat {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-3px); }
-    }
-
-    @keyframes runBoy {
-      from { left: -75px; }
-      to { left: calc(100% + 75px); }
-    }
-
-    @keyframes stickerFloat {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-5px); }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation: none !important;
-        transition: none !important;
-      }
-
-      .runner { left: 40%; }
-    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,sans-serif;background:#f2f5fa;color:#172033}
+    header{background:#155eef;color:white;text-align:center;padding:28px 15px;animation:headerFade .7s ease both}
+    header h1{animation:logoFloat 2.5s ease-in-out infinite}
+    header p{animation:fadeIn 1s ease both}
+    main{max-width:540px;margin:24px auto;padding:0 14px}
+    .card{background:white;padding:20px;border-radius:15px;box-shadow:0 3px 12px #00000010;animation:cardEnter .8s ease both;transition:box-shadow .3s}
+    .card:hover{box-shadow:0 8px 24px #00000012}
+    label{display:block;margin:17px 0 8px;font-weight:bold}
+    input,select,button{width:100%;padding:12px;border-radius:8px;font-size:16px}
+    input,select{border:1px solid #ccc;background:white;transition:border-color .25s,box-shadow .25s}
+    input:focus,select:focus{outline:none;border-color:#155eef;box-shadow:0 0 0 3px #155eef18}
+    button{margin-top:20px;border:0;background:#155eef;color:white;font-weight:bold;cursor:pointer;transition:transform .2s,box-shadow .2s}
+    button:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 5px 12px #155eef30}
+    button:not(:disabled):active{transform:scale(.98)}
+    button:disabled{background:#98a2b3;cursor:not-allowed}
+    #result{margin-top:14px;overflow-wrap:anywhere;line-height:1.5}
+    .note{color:#667085;font-size:13px;line-height:1.5}
+    .summary{background:#f8fafc;border:1px solid #e4e7ec;border-radius:10px;padding:12px;margin-top:14px;transition:background .3s,border-color .3s}
+    .error{color:#b42318}.ok{color:#067647}
+    .runner-box{display:none;margin-top:16px;padding:15px 10px;background:#eef4ff;border:1px solid #d5e3ff;border-radius:12px;text-align:center;overflow:hidden}
+    .runner-box.active{display:block;animation:fadeIn .4s ease}
+    .runner-track{height:58px;position:relative;overflow:hidden;border-bottom:2px dashed #b5c8f5}
+    .runner{position:absolute;left:-75px;bottom:5px;font-size:30px;white-space:nowrap}
+    .runner-box.active.running .runner{animation:runBoy 2.2s linear infinite}
+    .sticker{position:absolute;font-size:20px}
+    .sticker-one{left:18%;top:2px;animation:stickerFloat 1.8s ease-in-out infinite}
+    .sticker-two{right:20%;top:2px}.sticker-three{right:5%;bottom:5px;animation:stickerFloat 1.4s ease-in-out infinite}
+    #runnerText{margin:10px 0 0;color:#155eef;font-size:14px;font-weight:bold}
+    .price-loading{font-size:12px;color:#667085;margin-top:8px}
+    @keyframes headerFade{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes cardEnter{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @keyframes logoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+    @keyframes runBoy{from{left:-75px}to{left:calc(100% + 75px)}}
+    @keyframes stickerFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.runner{left:40%}}
   </style>
 </head>
-
 <body>
-
 <header>
   <h1>🖨️ Smart Printing</h1>
   <p>Upload karo, print shop se collect karo!</p>
 </header>
-
 <main>
   <div class="card">
-
     <h2>Apna Print Order Banayein</h2>
-
     <form id="printForm">
-
       <label for="file">PDF ya Photo select karein</label>
-
-      <input
-        type="file"
-        id="file"
-        accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
-        multiple
-        required
-      >
-
+      <input type="file" id="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" multiple required>
       <div class="summary" aria-live="polite">
         <p id="fileStatus">Abhi koi file select nahi hui.</p>
         <p id="pageCount"><strong>Total Pages:</strong> 0</p>
         <p id="totalPrice"><strong>Total Price:</strong> ₹0</p>
+        <div id="priceInfo" class="price-loading">Latest website prices load ho rahe hain...</div>
       </div>
-
-      <!-- Running Boy -->
       <div id="runnerBox" class="runner-box" aria-live="polite">
         <div class="runner-track">
-          <span class="sticker sticker-one">⭐</span>
-          <span class="sticker sticker-two">🖨️</span>
-          <span class="runner">🏃‍♂️📄</span>
-          <span class="sticker sticker-three">✨</span>
+          <span class="sticker sticker-one">⭐</span><span class="sticker sticker-two">🖨️</span>
+          <span class="runner">🏃‍♂️📄</span><span class="sticker sticker-three">✨</span>
         </div>
-
-        <p id="runnerText">
-          Aapki file ka intezar hai...
-        </p>
+        <p id="runnerText">Aapki file ka intezar hai...</p>
       </div>
-
       <label for="type">Print Type</label>
-
-      <select id="type">
-        <option value="Black &amp; White">Black &amp; White</option>
-        <option value="Colour">Colour</option>
-      </select>
-
+      <select id="type"><option value="Black &amp; White">Black &amp; White</option><option value="Colour">Colour</option></select>
       <label for="side">Printing Side</label>
-
-      <select id="side">
-        <option value="Single Side">Single Side</option>
-        <option value="Double Side">Double Side</option>
-      </select>
-
+      <select id="side"><option value="Single Side">Single Side</option><option value="Double Side">Double Side</option></select>
       <label for="copies">Copies</label>
-
-      <input
-        type="number"
-        id="copies"
-        min="1"
-        max="1000"
-        step="1"
-        value="1"
-        required
-      >
-
+      <input type="number" id="copies" min="1" max="1000" step="1" value="1" required>
       <label for="name">Aapka Naam</label>
-
-      <input
-        type="text"
-        id="name"
-        maxlength="60"
-        placeholder="Apna naam likhein"
-        required
-      >
-
+      <input type="text" id="name" maxlength="60" placeholder="Apna naam likhein" required>
       <label for="phone">Mobile Number</label>
-
-      <input
-        type="tel"
-        id="phone"
-        inputmode="numeric"
-        pattern="[0-9]{10}"
-        maxlength="10"
-        placeholder="10 digit mobile number"
-        required
-      >
-
-      <button type="submit" id="submitBtn" disabled>
-        Continue to Order Confirmation
-      </button>
-
+      <input type="tel" id="phone" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" placeholder="10 digit mobile number" required>
+      <button type="submit" id="submitBtn" disabled>Continue to Order Confirmation</button>
     </form>
-
     <div id="result" aria-live="polite"></div>
-
-    <p class="note">
-      Order submit hone ke baad details Firestore mein save hongi.
-      Payment verify hone ke baad hi shop printing shuru karegi.
-    </p>
-
+    <p class="note">Order submit hone ke baad details Firestore mein save hongi. Payment verify hone ke baad hi shop printing shuru karegi.</p>
   </div>
 </main>
-
 <script type="module">
-
 import { db, auth, supabase } from "./firebase.js";
-
-import {
-  doc,
-  setDoc,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-import {
-  signInAnonymously
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { doc, setDoc, serverTimestamp, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 "use strict";
-
-const PDFJS_VERSION = "3.11.174";
-
-const PDFJS_CDNS = [
-  `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJS_VERSION}/pdf.min.js`,
-  `https://cdn.jsdelivr.net/npm/pdfjs-dist@${PDFJS_VERSION}/build/pdf.min.js`
+const PDFJS_VERSION="3.11.174";
+const PDFJS_CDNS=[
+ `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJS_VERSION}/pdf.min.js`,
+ `https://cdn.jsdelivr.net/npm/pdfjs-dist@${PDFJS_VERSION}/build/pdf.min.js`
 ];
+const PDF_WORKER=`https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJS_VERSION}/pdf.worker.min.js`;
+const DEFAULT_PRICES={bwSingle:2,bwDouble:3,colorSingle:10,colorDouble:15};
 
-const PDF_WORKER =
-  `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJS_VERSION}/pdf.worker.min.js`;
+const fileInput=document.getElementById("file");
+const copiesInput=document.getElementById("copies");
+const typeInput=document.getElementById("type");
+const sideInput=document.getElementById("side");
+const pageDisplay=document.getElementById("pageCount");
+const priceDisplay=document.getElementById("totalPrice");
+const fileStatus=document.getElementById("fileStatus");
+const submitBtn=document.getElementById("submitBtn");
+const result=document.getElementById("result");
+const form=document.getElementById("printForm");
+const runnerBox=document.getElementById("runnerBox");
+const runnerText=document.getElementById("runnerText");
+const priceInfo=document.getElementById("priceInfo");
 
-const fileInput = document.getElementById("file");
-const copiesInput = document.getElementById("copies");
-const typeInput = document.getElementById("type");
-const sideInput = document.getElementById("side");
+let totalPages=0,counting=false,uploading=false,selectionToken=0;
+let prices={...DEFAULT_PRICES};
+let pricingVersion="DEFAULT";
+let pricesLoaded=false;
 
-const pageDisplay = document.getElementById("pageCount");
-const priceDisplay = document.getElementById("totalPrice");
-const fileStatus = document.getElementById("fileStatus");
+function showMessage(message,className=""){result.className=className;result.textContent=message;}
+function showRunner(message){runnerBox.classList.add("active","running");runnerText.textContent=message;}
+function finishRunner(message){runnerBox.classList.add("active");runnerBox.classList.remove("running");runnerText.textContent=message;}
+function hideRunner(){runnerBox.classList.remove("active","running");}
 
-const submitBtn = document.getElementById("submitBtn");
-const result = document.getElementById("result");
-const form = document.getElementById("printForm");
-
-const runnerBox = document.getElementById("runnerBox");
-const runnerText = document.getElementById("runnerText");
-
-let totalPages = 0;
-let counting = false;
-let uploading = false;
-let selectionToken = 0;
-
-
-function showMessage(message, className = "") {
-  result.className = className;
-  result.textContent = message;
+function validPrice(value,fallback){
+  const n=Number(value);
+  return Number.isFinite(n)&&n>=0&&n<=100000? n:fallback;
 }
 
-
-function showRunner(message) {
-  runnerBox.classList.add("active", "running");
-  runnerText.textContent = message;
+// Admin panel publishes to Firestore: settings/pricing
+async function loadLivePrices(){
+  try{
+    const snap=await getDoc(doc(db,"settings","pricing"));
+    if(snap.exists()){
+      const data=snap.data();
+      prices={
+        bwSingle:validPrice(data.bwSingle,DEFAULT_PRICES.bwSingle),
+        bwDouble:validPrice(data.bwDouble,DEFAULT_PRICES.bwDouble),
+        colorSingle:validPrice(data.colorSingle,DEFAULT_PRICES.colorSingle),
+        colorDouble:validPrice(data.colorDouble,DEFAULT_PRICES.colorDouble)
+      };
+      pricingVersion=data.version || "LIVE";
+      priceInfo.textContent="✅ Latest prices loaded from website settings.";
+    }else{
+      prices={...DEFAULT_PRICES};
+      pricingVersion="DEFAULT";
+      priceInfo.textContent="Default prices active. Admin has not published custom prices yet.";
+    }
+  }catch(error){
+    console.error("Pricing load error:",error);
+    // Existing customer ordering remains usable with the published default rates.
+    prices={...DEFAULT_PRICES};
+    pricingVersion="DEFAULT_FALLBACK";
+    priceInfo.textContent="⚠️ Live prices load nahi hui; default rates dikhaye ja rahe hain. Order submit se pehle connection check karein.";
+  }
+  pricesLoaded=true;
+  calculatePrice();
 }
 
-
-function finishRunner(message) {
-  runnerBox.classList.add("active");
-  runnerBox.classList.remove("running");
-  runnerText.textContent = message;
-}
-
-
-function hideRunner() {
-  runnerBox.classList.remove("active", "running");
-}
-
-
-function loadScript(src) {
-  return new Promise((resolve, reject) => {
-    const script = document.createElement("script");
-
-    script.src = src;
-    script.async = true;
-    script.onload = resolve;
-
-    script.onerror = () => {
-      script.remove();
-      reject(new Error("PDF.js library load nahi hui."));
-    };
-
+function loadScript(src){
+  return new Promise((resolve,reject)=>{
+    const script=document.createElement("script");
+    script.src=src;script.async=true;script.onload=resolve;
+    script.onerror=()=>{script.remove();reject(new Error("PDF.js library load nahi hui."));};
     document.head.appendChild(script);
   });
 }
-
-
-async function ensurePdfJs() {
-
-  if (window.pdfjsLib) {
-    return window.pdfjsLib;
-  }
-
+async function ensurePdfJs(){
+  if(window.pdfjsLib)return window.pdfjsLib;
   let lastError;
-
-  for (const src of PDFJS_CDNS) {
-    try {
-      await loadScript(src);
-
-      if (window.pdfjsLib) {
-        return window.pdfjsLib;
-      }
-
-    } catch (error) {
-      lastError = error;
-    }
+  for(const src of PDFJS_CDNS){
+    try{await loadScript(src);if(window.pdfjsLib)return window.pdfjsLib;}
+    catch(error){lastError=error;}
   }
-
-  throw lastError ||
-    new Error("PDF.js load nahi ho paayi.");
+  throw lastError||new Error("PDF.js load nahi ho paayi.");
 }
 
-
-function calculatePrice() {
-
-  const copies = Number(copiesInput.value);
-
-  if (
-    totalPages <= 0 ||
-    !Number.isInteger(copies) ||
-    copies < 1 ||
-    copies > 1000
-  ) {
-    priceDisplay.innerHTML =
-      "<strong>Total Price:</strong> ₹0";
-
-    return 0;
+function currentRate(){
+  if(typeInput.value==="Black & White"){
+    return sideInput.value==="Single Side"?prices.bwSingle:prices.bwDouble;
   }
-
-  let rate;
-
-  if (typeInput.value === "Black & White") {
-    rate = sideInput.value === "Single Side" ? 2 : 3;
-  } else {
-    rate = sideInput.value === "Single Side" ? 10 : 15;
+  return sideInput.value==="Single Side"?prices.colorSingle:prices.colorDouble;
+}
+function calculatePrice(){
+  const copies=Number(copiesInput.value);
+  if(totalPages<=0||!Number.isInteger(copies)||copies<1||copies>1000){
+    priceDisplay.innerHTML="<strong>Total Price:</strong> ₹0";return 0;
   }
-
-  const billableUnits =
-    sideInput.value === "Single Side"
-      ? totalPages * copies
-      : Math.ceil(totalPages / 2) * copies;
-
-  const total = billableUnits * rate;
-
-  priceDisplay.innerHTML =
-    `<strong>Total Price:</strong> ₹${total}`;
-
+  const rate=currentRate();
+  const units=sideInput.value==="Single Side"?totalPages*copies:Math.ceil(totalPages/2)*copies;
+  const total=units*rate;
+  priceDisplay.innerHTML=`<strong>Total Price:</strong> ₹${total.toLocaleString("en-IN",{maximumFractionDigits:2})}`;
   return total;
 }
 
-
-async function countPages() {
-
-  const token = ++selectionToken;
-  const files = Array.from(fileInput.files || []);
-
-  totalPages = 0;
-  calculatePrice();
-  showMessage("");
-
-  if (files.length === 0) {
-
-    pageDisplay.innerHTML =
-      "<strong>Total Pages:</strong> 0";
-
-    fileStatus.textContent =
-      "Abhi koi file select nahi hui.";
-
-    submitBtn.disabled = true;
-    counting = false;
-    hideRunner();
-
-    return;
+async function countPages(){
+  const token=++selectionToken;
+  const files=Array.from(fileInput.files||[]);
+  totalPages=0;calculatePrice();showMessage("");
+  if(!files.length){
+    pageDisplay.innerHTML="<strong>Total Pages:</strong> 0";
+    fileStatus.textContent="Abhi koi file select nahi hui.";
+    submitBtn.disabled=true;counting=false;hideRunner();return;
   }
-
-  counting = true;
-  submitBtn.disabled = true;
-
+  counting=true;submitBtn.disabled=true;
   showRunner("🏃‍♂️ Aapki files check karne daud raha hoon...");
-
-  pageDisplay.textContent =
-    "Pages count ho rahe hain...";
-
-  priceDisplay.innerHTML =
-    "<strong>Total Price:</strong> Calculating...";
-
-  fileStatus.textContent =
-    `${files.length} file(s) selected.`;
-
-  try {
-
-    let count = 0;
-    let pdfLib = null;
-
-    for (const file of files) {
-
-      if (token !== selectionToken) return;
-
-      if (file.size <= 0) {
-        throw new Error(`${file.name}: file khaali hai.`);
-      }
-
-      if (file.size > 15 * 1024 * 1024) {
-        throw new Error(`${file.name}: file 15 MB se badi hai.`);
-      }
-
-      const extension =
-        file.name.split(".").pop().toLowerCase();
-
-      if (
-        extension === "pdf" ||
-        file.type === "application/pdf"
-      ) {
-
-        if (!pdfLib) {
-
-          pdfLib = await ensurePdfJs();
-
-          pdfLib.GlobalWorkerOptions.workerSrc =
-            PDF_WORKER;
-        }
-
-        const data =
-          new Uint8Array(await file.arrayBuffer());
-
-        const loadingTask =
-          pdfLib.getDocument({ data });
-
-        const pdf = await loadingTask.promise;
-
-        count += pdf.numPages;
-
-        await pdf.destroy();
-
-      } else if (
-        ["jpg", "jpeg", "png"].includes(extension) ||
-        ["image/jpeg", "image/png"].includes(file.type)
-      ) {
-
-        count += 1;
-
-      } else {
-
-        throw new Error(
-          `${file.name}: sirf PDF, JPG, JPEG aur PNG allowed hain.`
-        );
-      }
+  pageDisplay.textContent="Pages count ho rahe hain...";
+  priceDisplay.innerHTML="<strong>Total Price:</strong> Calculating...";
+  fileStatus.textContent=`${files.length} file(s) selected.`;
+  try{
+    let count=0,pdfLib=null;
+    for(const file of files){
+      if(token!==selectionToken)return;
+      if(file.size<=0)throw new Error(`${file.name}: file khaali hai.`);
+      if(file.size>15*1024*1024)throw new Error(`${file.name}: file 15 MB se badi hai.`);
+      const extension=file.name.split(".").pop().toLowerCase();
+      if(extension==="pdf"||file.type==="application/pdf"){
+        if(!pdfLib){pdfLib=await ensurePdfJs();pdfLib.GlobalWorkerOptions.workerSrc=PDF_WORKER;}
+        const data=new Uint8Array(await file.arrayBuffer());
+        const pdf=await pdfLib.getDocument({data}).promise;
+        count+=pdf.numPages;await pdf.destroy();
+      }else if(["jpg","jpeg","png"].includes(extension)||["image/jpeg","image/png"].includes(file.type)){
+        count+=1;
+      }else throw new Error(`${file.name}: sirf PDF, JPG, JPEG aur PNG allowed hain.`);
     }
-
-    if (token !== selectionToken) return;
-
-    if (count < 1) {
-      throw new Error("Pages count nahi ho paaye.");
-    }
-
-    totalPages = count;
-
-    pageDisplay.innerHTML =
-      `<strong>Total Pages (1 copy):</strong> ${totalPages}`;
-
+    if(token!==selectionToken)return;
+    if(count<1)throw new Error("Pages count nahi ho paaye.");
+    totalPages=count;
+    pageDisplay.innerHTML=`<strong>Total Pages (1 copy):</strong> ${totalPages}`;
     calculatePrice();
-
-    fileStatus.textContent =
-      `${files.length} file(s) successfully read.`;
-
-    showMessage("Page counting successful.", "ok");
-
-    finishRunner(
-      "🎉 Files ready! Ab aap print order bana sakte hain."
-    );
-
-  } catch (error) {
-
-    if (token !== selectionToken) return;
-
-    console.error(error);
-
-    totalPages = 0;
-
-    pageDisplay.innerHTML =
-      "<strong>Total Pages:</strong> 0";
-
-    priceDisplay.innerHTML =
-      "<strong>Total Price:</strong> ₹0";
-
-    fileStatus.textContent =
-      "File read nahi ho paayi.";
-
-    showMessage(error.message, "error");
-
-    finishRunner(
-      "⚠️ File check nahi ho paayi. Dobara select karein."
-    );
-
-  } finally {
-
-    if (token === selectionToken) {
-      counting = false;
-      submitBtn.disabled = totalPages <= 0 || uploading;
-    }
+    fileStatus.textContent=`${files.length} file(s) successfully read.`;
+    showMessage("Page counting successful.","ok");
+    finishRunner("🎉 Files ready! Ab aap print order bana sakte hain.");
+  }catch(error){
+    if(token!==selectionToken)return;
+    console.error(error);totalPages=0;
+    pageDisplay.innerHTML="<strong>Total Pages:</strong> 0";
+    priceDisplay.innerHTML="<strong>Total Price:</strong> ₹0";
+    fileStatus.textContent="File read nahi ho paayi.";
+    showMessage(error.message,"error");
+    finishRunner("⚠️ File check nahi ho paayi. Dobara select karein.");
+  }finally{
+    if(token===selectionToken){counting=false;submitBtn.disabled=totalPages<=0||uploading;}
   }
 }
 
+fileInput.addEventListener("change",countPages);
+copiesInput.addEventListener("input",calculatePrice);
+typeInput.addEventListener("change",calculatePrice);
+sideInput.addEventListener("change",calculatePrice);
 
-fileInput.addEventListener("change", countPages);
-copiesInput.addEventListener("input", calculatePrice);
-typeInput.addEventListener("change", calculatePrice);
-sideInput.addEventListener("change", calculatePrice);
-
-
-form.addEventListener("submit", async (event) => {
-
+form.addEventListener("submit",async event=>{
   event.preventDefault();
+  if(uploading)return;
+  const files=Array.from(fileInput.files||[]);
+  const name=document.getElementById("name").value.trim();
+  const phone=document.getElementById("phone").value.trim();
+  const copies=Number(copiesInput.value);
+  const totalPrice=calculatePrice();
 
-  if (uploading) return;
+  if(!pricesLoaded){showMessage("Pricing load hone ka wait karein.","error");return;}
+  if(counting){showMessage("Page counting complete hone ka wait karein.","error");return;}
+  if(!files.length||totalPages<=0){showMessage("Pehle valid PDF ya photo select karein.","error");return;}
+  if(!Number.isInteger(copies)||copies<1||copies>1000){showMessage("Copies 1 se 1000 ke beech honi chahiye.","error");return;}
+  if(!name){showMessage("Apna naam likhein.","error");return;}
+  if(!/^[0-9]{10}$/.test(phone)){showMessage("Sahi 10 digit mobile number likhein.","error");return;}
+  if(!Number.isFinite(totalPrice)||totalPrice<=0){showMessage("Price calculate nahi ho paayi.","error");return;}
 
-  const files = Array.from(fileInput.files || []);
-
-  const name =
-    document.getElementById("name").value.trim();
-
-  const phone =
-    document.getElementById("phone").value.trim();
-
-  const copies = Number(copiesInput.value);
-  const totalPrice = calculatePrice();
-
-
-  if (counting) {
-    showMessage("Page counting complete hone ka wait karein.", "error");
-    return;
-  }
-
-  if (!files.length || totalPages <= 0) {
-    showMessage("Pehle valid PDF ya photo select karein.", "error");
-    return;
-  }
-
-  if (
-    !Number.isInteger(copies) ||
-    copies < 1 ||
-    copies > 1000
-  ) {
-    showMessage("Copies 1 se 1000 ke beech honi chahiye.", "error");
-    return;
-  }
-
-  if (!name) {
-    showMessage("Apna naam likhein.", "error");
-    return;
-  }
-
-  if (!/^[0-9]{10}$/.test(phone)) {
-    showMessage("Sahi 10 digit mobile number likhein.", "error");
-    return;
-  }
-
-  if (!Number.isFinite(totalPrice) || totalPrice <= 0) {
-    showMessage("Price calculate nahi ho paayi.", "error");
-    return;
-  }
-
-
-  uploading = true;
-  submitBtn.disabled = true;
-
-  submitBtn.textContent =
-    "Order process ho raha hai...";
-
+  uploading=true;submitBtn.disabled=true;submitBtn.textContent="Order process ho raha hai...";
   showRunner("🏃‍♂️ Aapki files upload kar raha hoon...");
-
-
-  try {
-
-    // STEP 1: ANONYMOUS LOGIN
-
-    if (!auth.currentUser) {
-      await signInAnonymously(auth);
+  try{
+    if(!auth.currentUser)await signInAnonymously(auth);
+    const customerUid=auth.currentUser.uid;
+    const orderId="SP-"+Date.now();
+    const filePaths=[],fileNames=[];
+    for(const file of files){
+      const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+      const path=`${orderId}/${Date.now()}_${safeName}`;
+      const {error}=await supabase.storage.from("print-files").upload(path,file,{
+        cacheControl:"3600",upsert:false,contentType:file.type||"application/octet-stream"
+      });
+      if(error)throw error;
+      filePaths.push(path);fileNames.push(file.name);
     }
 
-    const customerUid = auth.currentUser.uid;
-
-
-    // STEP 2: CREATE ORDER ID
-
-    const orderId = "SP-" + Date.now();
-
-
-    // STEP 3: UPLOAD FILES
-
-    const filePaths = [];
-    const fileNames = [];
-
-    for (const file of files) {
-
-      const safeName =
-        file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-
-      const path =
-        `${orderId}/${Date.now()}_${safeName}`;
-
-      const { error } = await supabase.storage
-        .from("print-files")
-        .upload(path, file, {
-          cacheControl: "3600",
-          upsert: false,
-          contentType: file.type || "application/octet-stream"
-        });
-
-      if (error) throw error;
-
-      filePaths.push(path);
-      fileNames.push(file.name);
-    }
-
-
-    // STEP 4: SAVE ORDER IN FIRESTORE
-
-    const orderData = {
-
-      orderId: orderId,
-      uid: customerUid,
-
-      name: name,
-      phone: phone,
-
-      fileNames: fileNames,
-      filePaths: filePaths,
-
-      totalPages: totalPages * copies,
-
-      printType: typeInput.value,
-      printSide: sideInput.value,
-
-      copies: copies,
-      totalPrice: totalPrice,
-
-      utr: "",
-
-      paymentStatus: "PENDING",
-      orderStatus: "PENDING",
-
-      createdAt: serverTimestamp()
-
+    const orderData={
+      orderId,uid:customerUid,name,phone,fileNames,filePaths,
+      totalPages:totalPages*copies,
+      printType:typeInput.value,printSide:sideInput.value,copies,totalPrice,
+      // Save the exact prices used so later admin changes do not alter old orders.
+      unitPrice:currentRate(),
+      pricingVersion,
+      pricingSnapshot:{...prices},
+      utr:"",paymentStatus:"PENDING",orderStatus:"PENDING",
+      createdAt:serverTimestamp()
     };
+    await setDoc(doc(db,"orders",orderId),orderData);
 
-
-    await setDoc(
-      doc(db, "orders", orderId),
-      orderData
-    );
-
-
-    // STEP 5: SAVE SESSION DATA
-
-    sessionStorage.setItem("orderId", orderId);
-    sessionStorage.setItem("customerUid", customerUid);
-
-    sessionStorage.setItem("name", name);
-    sessionStorage.setItem("phone", phone);
-
-    sessionStorage.setItem(
-      "fileNames",
-      JSON.stringify(fileNames)
-    );
-
-    sessionStorage.setItem(
-      "filePaths",
-      JSON.stringify(filePaths)
-    );
-
-    sessionStorage.setItem(
-      "totalPages",
-      String(totalPages * copies)
-    );
-
-    sessionStorage.setItem("printType", typeInput.value);
-    sessionStorage.setItem("printSide", sideInput.value);
-    sessionStorage.setItem("copies", String(copies));
-    sessionStorage.setItem("totalPrice", String(totalPrice));
-
-
-    // STEP 6: REDIRECT
+    sessionStorage.setItem("orderId",orderId);
+    sessionStorage.setItem("customerUid",customerUid);
+    sessionStorage.setItem("name",name);
+    sessionStorage.setItem("phone",phone);
+    sessionStorage.setItem("fileNames",JSON.stringify(fileNames));
+    sessionStorage.setItem("filePaths",JSON.stringify(filePaths));
+    sessionStorage.setItem("totalPages",String(totalPages*copies));
+    sessionStorage.setItem("printType",typeInput.value);
+    sessionStorage.setItem("printSide",sideInput.value);
+    sessionStorage.setItem("copies",String(copies));
+    sessionStorage.setItem("totalPrice",String(totalPrice));
 
     finishRunner("🎉 Upload complete! Order ready hai.");
-
-    showMessage("Order successfully saved!", "ok");
-
-    window.location.href = "confirmation.html";
-
-
-  } catch (error) {
-
-    console.error("Order creation failed:", error);
-
-    showMessage(
-      "Order save nahi hua: " +
-      (error.message || "Unknown error"),
-      "error"
-    );
-
-    finishRunner(
-      "⚠️ Upload ya order save nahi hua. Dobara try karein."
-    );
-
-    uploading = false;
-
-    submitBtn.disabled = totalPages <= 0;
-
-    submitBtn.textContent =
-      "Continue to Order Confirmation";
+    showMessage("Order successfully saved!","ok");
+    window.location.href="confirmation.html";
+  }catch(error){
+    console.error("Order creation failed:",error);
+    showMessage("Order save nahi hua: "+(error.message||"Unknown error"),"error");
+    finishRunner("⚠️ Upload ya order save nahi hua. Dobara try karein.");
+    uploading=false;submitBtn.disabled=totalPages<=0;
+    submitBtn.textContent="Continue to Order Confirmation";
   }
-
 });
 
-
-pageDisplay.innerHTML =
-  "<strong>Total Pages:</strong> 0";
-
-priceDisplay.innerHTML =
-  "<strong>Total Price:</strong> ₹0";
-
+pageDisplay.innerHTML="<strong>Total Pages:</strong> 0";
+priceDisplay.innerHTML="<strong>Total Price:</strong> ₹0";
+loadLivePrices();
 </script>
-
 </body>
   </html>
+  
