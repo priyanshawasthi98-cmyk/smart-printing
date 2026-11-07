@@ -72,7 +72,7 @@
       <label for="type">Print Type</label>
       <select id="type"><option value="Black &amp; White">Black &amp; White</option><option value="Colour">Colour</option></select>
       <label for="side">Printing Side</label>
-      <select id="side"><option value="Single Side">Single Side</option><option value="Double Side">Double Side</option></select>
+      <select id="side" disabled><option value="Single Side">Single Side</option></select><p class="note">Version 1.0 mein abhi Single Side printing available hai.</p>
       <label for="copies">Copies</label>
       <input type="number" id="copies" min="1" max="1000" step="1" value="1" required>
       <label for="name">Aapka Naam</label>
@@ -98,6 +98,7 @@ const PDFJS_CDNS=[
 ];
 const PDF_WORKER=`https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJS_VERSION}/pdf.worker.min.js`;
 const DEFAULT_PRICES={bwSingle:2,bwDouble:3,colorSingle:10,colorDouble:15};
+const MAX_FILE_SIZE=15*1024*1024;
 
 const fileInput=document.getElementById("file");
 const copiesInput=document.getElementById("copies");
@@ -134,25 +135,32 @@ async function loadLivePrices(){
     const snap=await getDoc(doc(db,"settings","pricing"));
     if(snap.exists()){
       const data=snap.data();
+      if (!Number.isFinite(Number(data.bwSingle)) || Number(data.bwSingle) < 0 ||
+          !Number.isFinite(Number(data.colorSingle)) || Number(data.colorSingle) < 0) {
+        throw new Error("Pricing settings invalid hain.");
+      }
       prices={
-        bwSingle:validPrice(data.bwSingle,DEFAULT_PRICES.bwSingle),
+        bwSingle:Number(data.bwSingle),
         bwDouble:validPrice(data.bwDouble,DEFAULT_PRICES.bwDouble),
-        colorSingle:validPrice(data.colorSingle,DEFAULT_PRICES.colorSingle),
+        colorSingle:Number(data.colorSingle),
         colorDouble:validPrice(data.colorDouble,DEFAULT_PRICES.colorDouble)
       };
       pricingVersion=data.version || "LIVE";
       priceInfo.textContent="✅ Latest prices loaded from website settings.";
     }else{
+      // Initial public rates are used only until the admin publishes settings.
       prices={...DEFAULT_PRICES};
-      pricingVersion="DEFAULT";
-      priceInfo.textContent="Default prices active. Admin has not published custom prices yet.";
+      pricingVersion="INITIAL_DEFAULT";
+      priceInfo.textContent="Initial website rates: B&W ₹2/page, Colour ₹10/page.";
     }
   }catch(error){
     console.error("Pricing load error:",error);
-    // Existing customer ordering remains usable with the published default rates.
-    prices={...DEFAULT_PRICES};
-    pricingVersion="DEFAULT_FALLBACK";
-    priceInfo.textContent="⚠️ Live prices load nahi hui; default rates dikhaye ja rahe hain. Order submit se pehle connection check karein.";
+    // Fail closed: never accept an order using stale/default pricing when settings cannot be read.
+    pricesLoaded=false;
+    pricingVersion="UNAVAILABLE";
+    priceInfo.textContent="⚠️ Live pricing load nahi hui. Connection theek hone tak order submit nahi hoga.";
+    submitBtn.disabled=true;
+    return;
   }
   pricesLoaded=true;
   calculatePrice();
@@ -213,7 +221,7 @@ async function countPages(){
     for(const file of files){
       if(token!==selectionToken)return;
       if(file.size<=0)throw new Error(`${file.name}: file khaali hai.`);
-      if(file.size>15*1024*1024)throw new Error(`${file.name}: file 15 MB se badi hai.`);
+      if(file.size>MAX_FILE_SIZE)throw new Error(`${file.name}: file 15 MB se badi hai.`);
       const extension=file.name.split(".").pop().toLowerCase();
       if(extension==="pdf"||file.type==="application/pdf"){
         if(!pdfLib){pdfLib=await ensurePdfJs();pdfLib.GlobalWorkerOptions.workerSrc=PDF_WORKER;}
@@ -292,6 +300,8 @@ form.addEventListener("submit",async event=>{
       unitPrice:currentRate(),
       pricingVersion,
       pricingSnapshot:{...prices},
+      commissionPercent:2,
+      commissionAmount:Number((totalPrice*0.02).toFixed(2)),
       utr:"",paymentStatus:"PENDING",orderStatus:"PENDING",
       createdAt:serverTimestamp()
     };
@@ -327,4 +337,5 @@ loadLivePrices();
 </script>
 </body>
   </html>
+
   
