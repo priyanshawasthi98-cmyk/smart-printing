@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Customer Management - Smart Printing</title>
+
+<style>
+
+* {
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 18px;
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+.container {
+  max-width: 1200px;
+  margin: auto;
+}
+
+.header {
+  background: #172554;
+  color: white;
+  padding: 22px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  margin: 0 0 8px;
+}
+
+.header p {
+  margin: 0;
+  color: #cbd5e1;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: white;
+  padding: 18px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px #0000000a;
+}
+
+.stat-card p {
+  color: #64748b;
+  margin: 0 0 10px;
+  font-size: 14px;
+}
+
+.stat-card h2 {
+  margin: 0;
+  font-size: 25px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+input, select {
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+input {
+  flex: 1;
+  min-width: 180px;
+}
+
+button {
+  padding: 12px 17px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.refresh {
+  background: #2563eb;
+  color: white;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 850px;
+}
+
+th, td {
+  text-align: left;
+  padding: 13px;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 14px;
+}
+
+th {
+  background: #f8fafc;
+}
+
+.view-btn {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+.status {
+  padding: 12px;
+  border-radius: 8px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  margin-bottom: 15px;
+  overflow-wrap: anywhere;
+}
+
+.error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.badge {
+  padding: 5px 9px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.paid {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.details {
+  display: none;
+  margin-top: 18px;
+  padding: 18px;
+  background: #f8fafc;
+  border-radius: 10px;
+}
+
+.details h3 {
+  margin-top: 0;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.detail-box {
+  background: white;
+  padding: 12px;
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+
+.muted {
+  color: #64748b;
+  font-size: 13px;
+}
+
+@media(max-width: 800px) {
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media(max-width: 500px) {
+  body {
+    padding: 10px;
+  }
+
+  .stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <h1>👥 Customer Management</h1>
+    <p>Smart Printing Kiosk Network - Admin Panel</p>
+  </div>
+
+  <div id="status" class="status">
+    Checking admin access...
+  </div>
+
+  <div class="stats">
+
+    <div class="stat-card">
+      <p>Total Customers</p>
+      <h2 id="totalCustomers">0</h2>
+    </div>
+
+    <div class="stat-card">
+      <p>Total Orders</p>
+      <h2 id="totalOrders">0</h2>
+    </div>
+
+    <div class="stat-card">
+      <p>Total Revenue</p>
+      <h2 id="totalRevenue">₹0</h2>
+    </div>
+
+    <div class="stat-card">
+      <p>Active Customers</p>
+      <h2 id="activeCustomers">0</h2>
+    </div>
+
+  </div>
+
+  <div class="card">
+
+    <h2>Customer List</h2>
+
+    <div class="controls">
+
+      <input
+        type="search"
+        id="search"
+        placeholder="Search name, phone or customer ID..."
+      >
+
+      <select id="filter">
+        <option value="all">All Customers</option>
+        <option value="active">Active Customers</option>
+        <option value="inactive">Inactive Customers</option>
+      </select>
+
+      <button class="refresh" id="refreshBtn">
+        🔄 Refresh
+      </button>
+
+    </div>
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Customer ID</th>
+            <th>Name</th>
+            <th>Mobile</th>
+            <th>Total Orders</th>
+            <th>Total Spending</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody id="customerTable">
+
+          <tr>
+            <td colspan="6">Loading customers...</td>
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+  <div class="card">
+
+    <h2>Customer Details</h2>
+
+    <div id="details" class="details">
+      Select a customer to see details.
+    </div>
+
+  </div>
+
+</div>
+
+
+<script type="module">
+
+import { auth, db } from "./firebase.js";
+
+import {
+  collection,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+
+const ADMIN_UID = "ibK3XWMUEYQIbBhPmGQRnW72MZg1";
+
+const statusBox = document.getElementById("status");
+const customerTable = document.getElementById("customerTable");
+const detailsBox = document.getElementById("details");
+
+let customers = [];
+let orders = [];
+let isAdmin = false;
+
+
+function money(value) {
+  return "₹" + Number(value || 0).toFixed(2);
+}
+
+
+function showStatus(message, type = "success") {
+
+  statusBox.textContent = message;
+  statusBox.className = "status " + type;
+
+}
+
+
+function escapeText(value) {
+
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
+
+}
+
+
+// Create unique customer key
+function getCustomerKey(order) {
+
+  const uid = String(order.uid || "").trim();
+
+  if (uid) return "uid:" + uid;
+
+  const phone = String(order.phone || "").trim();
+
+  if (phone) return "phone:" + phone;
+
+  return "order:" + String(order.orderId || "");
+
+}
+
+
+// Load customer data
+async function loadCustomers() {
+
+  if (!isAdmin) return;
+
+  showStatus("Loading customer data...");
+
+  customerTable.innerHTML =
+    '<tr><td colspan="6">Loading...</td></tr>';
+
+  try {
+
+    const snapshot = await getDocs(collection(db, "orders"));
+
+    orders = [];
+
+    customers = [];
+
+    const customerMap = new Map();
+
+    snapshot.forEach(document => {
+
+      const data = document.data();
+
+      const order = {
+        ...data,
+        documentId: document.id
+      };
+
+      orders.push(order);
+
+      const key = getCustomerKey(order);
+
+      if (!customerMap.has(key)) {
+
+        customerMap.set(key, {
+          key,
+          uid: order.uid || "",
+          name: order.name || "Unknown",
+          phone: order.phone || "Not available",
+          orders: [],
+          totalSpending: 0,
+          paidOrders: 0
+        });
+
+      }
+
+      const customer = customerMap.get(key);
+
+      customer.orders.push(order);
+
+      // Keep latest non-empty customer details
+      if (order.name) customer.name = order.name;
+      if (order.phone) customer.phone = order.phone;
+
+      const amount = Number(order.totalPrice) || 0;
+
+      // Count confirmed paid orders only
+      if (String(order.paymentStatus || "").toUpperCase() === "PAID") {
+        customer.totalSpending += amount;
+        customer.paidOrders++;
+      }
+
+    });
+
+    customers = Array.from(customerMap.values());
+
+    // Sort by number of orders
+    customers.sort((a, b) =>
+      b.orders.length - a.orders.length
+    );
+
+    updateStats();
+
+    renderCustomers();
+
+    showStatus(
+      "Customer data loaded successfully.",
+      "success"
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    showStatus(
+      "Customer data load failed: " + error.message,
+      "error"
+    );
+
+    customerTable.innerHTML =
+      '<tr><td colspan="6">Unable to load customers.</td></tr>';
+
+  }
+
+}
+
+
+// Update dashboard statistics
+function updateStats() {
+
+  const totalRevenue = customers.reduce(
+    (sum, customer) => sum + customer.totalSpending,
+    0
+  );
+
+  const activeCount = customers.filter(
+    customer => customer.orders.length >= 2
+  ).length;
+
+  document.getElementById("totalCustomers").textContent =
+    customers.length;
+
+  document.getElementById("totalOrders").textContent =
+    orders.length;
+
+  document.getElementById("totalRevenue").textContent =
+    money(totalRevenue);
+
+  document.getElementById("activeCustomers").textContent =
+    activeCount;
+
+}
+
+
+// Render customers
+function renderCustomers() {
+
+  const search = document
+    .getElementById("search")
+    .value
+    .trim()
+    .toLowerCase();
+
+  const filter = document.getElementById("filter").value;
+
+  let filtered = customers.filter(customer => {
+
+    const text =
+      customer.name.toLowerCase() + " " +
+      customer.phone.toLowerCase() + " " +
+      customer.uid.toLowerCase();
+
+    const matchesSearch = text.includes(search);
+
+    const isActive = customer.orders.length >= 2;
+
+    const matchesFilter =
+      filter === "all" ||
+      (filter === "active" && isActive) ||
+      (filter === "inactive" && !isActive);
+
+    return matchesSearch && matchesFilter;
+
+  });
+
+
+  customerTable.innerHTML = "";
+
+  if (filtered.length === 0) {
+
+    customerTable.innerHTML =
+      '<tr><td colspan="6">No customers found.</td></tr>';
+
+    return;
+
+  }
+
+
+  filtered.forEach(customer => {
+
+    const tr = document.createElement("tr");
+
+    const id = customer.uid
+      ? customer.uid.substring(0, 10)
+      : customer.key.substring(0, 14);
+
+    const cells = [
+      id,
+      customer.name,
+      customer.phone,
+      customer.orders.length,
+      money(customer.totalSpending)
+    ];
+
+    cells.forEach(value => {
+
+      const td = document.createElement("td");
+      td.textContent = value;
+      tr.appendChild(td);
+
+    });
+
+    const actionTd = document.createElement("td");
+
+    const button = document.createElement("button");
+
+    button.className = "view-btn";
+    button.textContent = "View Details";
+
+    button.addEventListener("click", () => {
+      showCustomerDetails(customer.key);
+    });
+
+    actionTd.appendChild(button);
+    tr.appendChild(actionTd);
+
+    customerTable.appendChild(tr);
+
+  });
+
+}
+
+
+// Show customer details
+function showCustomerDetails(key) {
+
+  const customer = customers.find(
+    item => item.key === key
+  );
+
+  if (!customer) return;
+
+  detailsBox.style.display = "block";
+
+  detailsBox.innerHTML = `
+    <h3>👤 ${escapeText(customer.name)}</h3>
+
+    <div class="detail-grid">
+
+      <div class="detail-box">
+        <b>Customer ID</b>
+        <p>${escapeText(customer.uid || "Not available")}</p>
+      </div>
+
+      <div class="detail-box">
+        <b>Mobile Number</b>
+        <p>${escapeText(customer.phone)}</p>
+      </div>
+
+      <div class="detail-box">
+        <b>Total Orders</b>
+        <p>${customer.orders.length}</p>
+      </div>
+
+      <div class="detail-box">
+        <b>Paid Orders</b>
+        <p>${customer.paidOrders}</p>
+      </div>
+
+      <div class="detail-box">
+        <b>Total Spending</b>
+        <p>${money(customer.totalSpending)}</p>
+      </div>
+
+      <div class="detail-box">
+        <b>Pending Orders</b>
+        <p>${customer.orders.filter(
+          order => String(order.paymentStatus || "").toUpperCase() !== "PAID"
+        ).length}</p>
+      </div>
+
+    </div>
+
+    <h3 style="margin-top:25px;">📦 Order History</h3>
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Pages</th>
+            <th>Print Type</th>
+            <th>Amount</th>
+            <th>Payment</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          ${customer.orders.map(order => {
+
+            const paid =
+              String(order.paymentStatus || "").toUpperCase() === "PAID";
+
+            return `
+              <tr>
+                <td>${escapeText(order.orderId || order.documentId)}</td>
+                <td>${Number(order.totalPages) || 0}</td>
+                <td>${escapeText(order.printType || "-")}</td>
+                <td>${money(order.totalPrice)}</td>
+                <td>
+                  <span class="badge ${paid ? "paid" : "pending"}">
+                    ${paid ? "PAID" : "PENDING"}
+                  </span>
+                </td>
+              </tr>
+            `;
+
+          }).join("")}
+
+        </tbody>
+
+      </table>
+
+    </div>
+  `;
+
+  detailsBox.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+
+}
+
+
+// Authentication
+onAuthStateChanged(auth, async user => {
+
+  if (!user) {
+
+    isAdmin = false;
+
+    showStatus(
+      "Please login through Admin Panel.",
+      "error"
+    );
+
+    return;
+
+  }
+
+  if (user.uid !== ADMIN_UID) {
+
+    isAdmin = false;
+
+    showStatus(
+      "Access denied. Admin permission required.",
+      "error"
+    );
+
+    return;
+
+  }
+
+  isAdmin = true;
+
+  await loadCustomers();
+
+});
+
+
+document.getElementById("search").addEventListener(
+  "input",
+  renderCustomers
+);
+
+document.getElementById("filter").addEventListener(
+  "change",
+  renderCustomers
+);
+
+document.getElementById("refreshBtn").addEventListener(
+  "click",
+  loadCustomers
+);
+
+</script>
+
+</body>
+  </html>
