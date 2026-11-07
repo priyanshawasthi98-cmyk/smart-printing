@@ -1,773 +1,933 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#7048e8">
-  <title>Payment - Smart Printing</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#155eef">
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<title>UPI Payment | Smart Printing</title>
 
-    body {
-      margin: 0;
-      padding: 20px;
-      font-family: Arial, sans-serif;
-      color: #172033;
-      background: linear-gradient(135deg, #f3eaff, #e8f4ff, #fff0f6);
-      background-size: 300% 300%;
-      animation: backgroundMove 12s ease infinite;
-      overflow-x: hidden;
-    }
+<style>
+:root {
+  --blue:#155eef;
+  --dark:#123a91;
+  --light:#eff6ff;
+  --text:#172b4d;
+  --muted:#64748b;
+  --green:#059669;
+  --border:#dbe5f5;
+}
 
-    @keyframes backgroundMove {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
+* {
+  box-sizing:border-box;
+}
 
-    header {
-      background: linear-gradient(120deg, #7048e8, #155eef, #e84393);
-      background-size: 200% 200%;
-      animation: gradientMove 6s ease infinite;
-      color: white;
-      text-align: center;
-      padding: 25px 15px;
-      border-radius: 20px;
-      box-shadow: 0 8px 25px #7048e844;
-      position: relative;
-      overflow: hidden;
-    }
+body {
+  margin:0;
+  padding:20px 14px;
+  font-family:Arial,sans-serif;
+  color:var(--text);
+  background:linear-gradient(135deg,#eff6ff,#f8fafc,#e8f0ff);
+}
 
-    @keyframes gradientMove {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
+.container {
+  max-width:560px;
+  margin:20px auto;
+}
 
-    header h1 {
-      margin: 8px 0;
-      font-size: 27px;
-    }
+.card {
+  background:white;
+  border:1px solid #e5edfa;
+  border-radius:24px;
+  padding:24px;
+  box-shadow:0 15px 45px #123a9115;
+  animation:appear .7s ease both;
+}
 
-    .stickers {
-      font-size: 25px;
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-    }
+@keyframes appear {
+  from {opacity:0;transform:translateY(25px);}
+  to {opacity:1;transform:translateY(0);}
+}
 
-    .stickers span {
-      display: inline-block;
-      animation: float 2.5s ease-in-out infinite;
-    }
+.header {
+  text-align:center;
+  margin-bottom:22px;
+}
 
-    .stickers span:nth-child(2) { animation-delay: .5s; }
-    .stickers span:nth-child(3) { animation-delay: 1s; }
+.logo {
+  font-size:36px;
+}
 
-    @keyframes float {
-      0%, 100% { transform: translateY(0) rotate(-5deg); }
-      50% { transform: translateY(-9px) rotate(8deg); }
-    }
+.header h1 {
+  color:var(--dark);
+  font-size:25px;
+  margin:10px 0;
+}
 
-    main {
-      max-width: 500px;
-      margin: 25px auto;
-      position: relative;
-      z-index: 2;
-    }
+.header p {
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.5;
+}
 
-    .card {
-      background: white;
-      padding: 22px;
-      border-radius: 20px;
-      box-shadow: 0 8px 30px #00000012;
-      animation: cardAppear .7s ease both;
-    }
+.amount-box {
+  text-align:center;
+  color:white;
+  background:linear-gradient(120deg,#123a91,#155eef,#4285ff);
+  padding:22px;
+  border-radius:18px;
+  box-shadow:0 10px 25px #155eef30;
+}
 
-    @keyframes cardAppear {
-      from {
-        opacity: 0;
-        transform: translateY(25px) scale(.97);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-    }
+.amount-box small {
+  color:#dce9ff;
+}
 
-    .payment-icon {
-      text-align: center;
-      font-size: 48px;
-      margin: 5px 0 15px;
-      animation: float 2.5s ease-in-out infinite;
-    }
+.amount {
+  font-size:34px;
+  font-weight:800;
+  margin:9px 0;
+}
 
-    h2 {
-      color: #7048e8;
-    }
+.order-id {
+  font-size:12px;
+  color:#e5efff;
+  overflow-wrap:anywhere;
+}
 
-    .row {
-      display: flex;
-      justify-content: space-between;
-      gap: 15px;
-      padding: 13px 0;
-      border-bottom: 1px solid #eee;
-      animation: rowAppear .5s ease both;
-    }
+.section-title {
+  font-size:17px;
+  margin:24px 0 13px;
+}
 
-    .row:nth-child(2) { animation-delay: .1s; }
-    .row:nth-child(3) { animation-delay: .2s; }
-    .row:nth-child(4) { animation-delay: .3s; }
-    .row:nth-child(5) { animation-delay: .4s; }
-    .row:nth-child(6) { animation-delay: .5s; }
-    .row:nth-child(7) { animation-delay: .6s; }
-    .row:nth-child(8) { animation-delay: .7s; }
+.qr-box {
+  background:#f8faff;
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:20px;
+  text-align:center;
+}
 
-    @keyframes rowAppear {
-      from {
-        opacity: 0;
-        transform: translateX(-12px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
-    }
+.qr-box img {
+  width:210px;
+  height:210px;
+  max-width:100%;
+  object-fit:contain;
+  background:white;
+  padding:8px;
+  border-radius:12px;
+}
 
-    .label {
-      color: #667085;
-    }
+.qr-box p {
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.5;
+}
 
-    .value {
-      font-weight: bold;
-      text-align: right;
-      overflow-wrap: anywhere;
-    }
+.upi-box {
+  background:#eff6ff;
+  border:1px solid #c7dcff;
+  border-radius:13px;
+  padding:13px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
 
-    .total {
-      color: #7048e8;
-      font-size: 24px;
-    }
+.upi-id {
+  font-weight:bold;
+  font-size:14px;
+  overflow-wrap:anywhere;
+}
 
-    .price-box {
-      background: linear-gradient(120deg, #f0eaff, #e7f2ff);
-      border-radius: 12px;
-      padding: 5px 12px;
-      margin-top: 8px;
-    }
+.copy-btn {
+  border:0;
+  background:#dbeafe;
+  color:#1d4ed8;
+  border-radius:9px;
+  padding:10px;
+  font-weight:bold;
+  cursor:pointer;
+  flex-shrink:0;
+}
 
-    button {
-      width: 100%;
-      padding: 15px;
-      margin-top: 15px;
-      border: 0;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: .25s;
-    }
+.apps {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
 
-    button:active {
-      transform: scale(.97);
-    }
+.app-btn {
+  padding:15px 5px;
+  border:1px solid var(--border);
+  border-radius:13px;
+  background:white;
+  color:var(--text);
+  cursor:pointer;
+  font-size:12px;
+  font-weight:bold;
+  transition:.25s;
+}
 
-    button:disabled {
-      opacity: .6;
-      cursor: not-allowed;
-    }
+.app-btn:hover {
+  transform:translateY(-4px);
+  border-color:var(--blue);
+  box-shadow:0 8px 20px #155eef15;
+}
 
-    .pay {
-      background: linear-gradient(120deg, #7048e8, #155eef);
-      color: white;
-      box-shadow: 0 5px 15px #7048e844;
-    }
+.app-btn span {
+  display:block;
+  font-size:25px;
+  margin-bottom:7px;
+}
 
-    .pay:not(:disabled):hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px #7048e855;
-    }
+.details {
+  background:#f8faff;
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:15px;
+}
 
-    .back {
-      background: #f0eaff;
-      color: #7048e8;
-    }
+.row {
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:9px 0;
+  border-bottom:1px solid #e9eef7;
+  font-size:13px;
+}
 
-    .note {
-      color: #667085;
-      font-size: 13px;
-      line-height: 1.6;
-      background: #fff8e7;
-      padding: 12px;
-      border-radius: 10px;
-      margin-top: 18px;
-    }
+.row:last-child {
+  border:0;
+}
 
-    #qrSection {
-      text-align: center;
-      margin-top: 20px;
-      padding: 18px;
-      background: linear-gradient(135deg, #f8faff, #f5edff);
-      border: 1px solid #e5dcff;
-      border-radius: 16px;
-      animation: cardAppear .5s ease both;
-    }
+.row span {
+  color:var(--muted);
+}
 
-    #qrImage {
-      width: 230px;
-      max-width: 100%;
-      display: block;
-      margin: 15px auto;
-      padding: 10px;
-      background: white;
-      border-radius: 15px;
-      box-shadow: 0 5px 20px #7048e833;
-      animation: qrAppear .6s ease both;
-    }
+.row strong {
+  text-align:right;
+  overflow-wrap:anywhere;
+}
 
-    @keyframes qrAppear {
-      from { opacity: 0; transform: scale(.8); }
-      to { opacity: 1; transform: scale(1); }
-    }
+label {
+  display:block;
+  font-size:14px;
+  font-weight:bold;
+  margin:17px 0 8px;
+}
 
-    input {
-      width: 100%;
-      box-sizing: border-box;
-      padding: 13px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 16px;
-      margin-top: 8px;
-      outline: none;
-      transition: .2s;
-    }
+input {
+  width:100%;
+  padding:15px;
+  border:1.5px solid var(--border);
+  border-radius:12px;
+  font-size:15px;
+  outline:none;
+  transition:.2s;
+}
 
-    input:focus {
-      border-color: #7048e8;
-      box-shadow: 0 0 0 3px #7048e822;
-    }
+input:focus {
+  border-color:var(--blue);
+  box-shadow:0 0 0 4px #155eef15;
+}
 
-    #paymentMessage {
-      margin-top: 15px;
-      padding: 12px;
-      background: #fff4e5;
-      border-radius: 8px;
-      line-height: 1.6;
-      overflow-wrap: anywhere;
-      animation: cardAppear .4s ease;
-    }
+.primary {
+  width:100%;
+  padding:16px;
+  margin-top:18px;
+  background:linear-gradient(110deg,#155eef,#347cff);
+  color:white;
+  border:0;
+  border-radius:13px;
+  font-size:15px;
+  font-weight:bold;
+  cursor:pointer;
+  box-shadow:0 8px 20px #155eef30;
+  transition:.25s;
+}
 
-    .floating {
-      position: fixed;
-      font-size: 23px;
-      pointer-events: none;
-      animation: float 4s ease-in-out infinite;
-      opacity: .6;
-      z-index: 0;
-    }
+.primary:hover {
+  transform:translateY(-3px);
+}
 
-    .f1 { top: 20%; left: 3%; }
-    .f2 { top: 55%; right: 3%; animation-delay: 1s; }
-    .f3 { bottom: 12%; left: 7%; animation-delay: 2s; }
+.primary:disabled {
+  opacity:.5;
+  cursor:not-allowed;
+  transform:none;
+}
 
-    #confetti {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 10;
-    }
+.secondary {
+  width:100%;
+  padding:14px;
+  margin-top:10px;
+  background:#eff6ff;
+  color:var(--blue);
+  border:1px solid #c7dcff;
+  border-radius:12px;
+  font-weight:bold;
+  cursor:pointer;
+}
 
-    [hidden] {
-      display: none !important;
-    }
+.notice {
+  background:#fff7ed;
+  border:1px solid #fed7aa;
+  color:#9a3412;
+  border-radius:13px;
+  padding:14px;
+  font-size:12px;
+  line-height:1.6;
+  margin-top:18px;
+}
 
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: .01ms !important;
-        animation-iteration-count: 1 !important;
-        scroll-behavior: auto !important;
-      }
-    }
-  </style>
+.message {
+  margin-top:14px;
+  font-size:13px;
+  line-height:1.5;
+  overflow-wrap:anywhere;
+}
+
+.success {color:var(--green);}
+.error {color:#dc2626;}
+
+.loading {
+  text-align:center;
+  padding:35px 10px;
+  color:var(--blue);
+}
+
+.spinner {
+  width:43px;
+  height:43px;
+  border:4px solid #dbeafe;
+  border-top-color:var(--blue);
+  border-radius:50%;
+  margin:0 auto 14px;
+  animation:spin .8s linear infinite;
+}
+
+@keyframes spin {
+  to {transform:rotate(360deg);}
+}
+
+footer {
+  text-align:center;
+  color:var(--muted);
+  font-size:12px;
+  padding:20px 5px;
+}
+
+@media(max-width:400px) {
+  .card {padding:17px;}
+  .amount {font-size:29px;}
+}
+
+@media(prefers-reduced-motion:reduce) {
+  *,*::before,*::after {
+    animation:none!important;
+    transition:none!important;
+  }
+}
+</style>
 </head>
 
 <body>
 
-  <canvas id="confetti"></canvas>
+<div class="container">
 
-  <div class="floating f1">🌟</div>
-  <div class="floating f2">🎈</div>
-  <div class="floating f3">✨</div>
+<div class="card">
 
-  <header>
-    <div class="stickers">
-      <span>🎉</span>
-      <span>🖨️</span>
-      <span>💳</span>
+<div class="header">
+  <div class="logo">🖨️</div>
+  <h1>Smart Printing</h1>
+  <p>Secure UPI Payment</p>
+</div>
+
+<div id="loading" class="loading">
+  <div class="spinner"></div>
+  <strong>Order verify ho raha hai...</strong>
+</div>
+
+<div id="paymentContent" hidden>
+
+  <div class="amount-box">
+    <small>Total Amount Payable</small>
+    <div class="amount" id="amount">₹0</div>
+    <div class="order-id" id="orderId">Order ID: -</div>
+  </div>
+
+  <h2 class="section-title">📋 Order Summary</h2>
+
+  <div class="details">
+    <div class="row">
+      <span>Customer</span>
+      <strong id="customerName">-</strong>
     </div>
 
-    <h1>Smart Printing</h1>
-    <p>Secure UPI Payment</p>
-  </header>
-
-  <main>
-    <div class="card">
-
-      <div class="payment-icon">💳</div>
-
-      <h2>Payment Summary</h2>
-
-      <div id="orderDetails">
-        Order details load ho rahi hain...
-      </div>
-
-      <button class="pay" id="payButton" type="button">
-        Generate Payment QR
-      </button>
-
-      <section id="qrSection" hidden>
-
-        <h3>📱 Scan &amp; Pay</h3>
-
-        <p id="qrAmount"></p>
-
-        <img id="qrImage" alt="UPI Payment QR Code">
-
-        <p><b>UPI ID: 9770981980@ybl</b></p>
-
-        <button class="pay" id="openUPI" type="button">
-          📲 Open UPI App
-        </button>
-
-        <label for="utr">
-          <b>Payment UTR / Transaction ID</b>
-        </label>
-
-        <input
-          id="utr"
-          type="text"
-          maxlength="30"
-          placeholder="Payment ke baad UTR dalein"
-          autocomplete="off"
-        >
-
-        <button class="pay" id="submitUTR" type="button">
-          Submit Payment Reference
-        </button>
-
-      </section>
-
-      <button class="back" id="backButton" type="button">
-        ← Back to Order
-      </button>
-
-      <div id="paymentMessage" hidden></div>
-
-      <p class="note">
-        ⚠️ UTR submit karne se payment automatically verify nahi hota.
-        Payment verify hone ke baad hi Admin payment ko Paid mark karega.
-      </p>
-
+    <div class="row">
+      <span>Pages</span>
+      <strong id="pages">-</strong>
     </div>
-  </main>
 
-  <script type="module">
+    <div class="row">
+      <span>Printing Type</span>
+      <strong id="printType">-</strong>
+    </div>
 
-    import { db, auth } from "./firebase.js";
+    <div class="row">
+      <span>Copies</span>
+      <strong id="copies">-</strong>
+    </div>
 
-    import {
-      doc,
-      getDoc,
-      updateDoc
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    <div class="row">
+      <span>Payment Status</span>
+      <strong id="paymentStatus">PENDING</strong>
+    </div>
+  </div>
 
-    import {
-      onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  <h2 class="section-title">📱 Scan UPI QR Code</h2>
 
-    const UPI_ID = "9770981980@ybl";
-    const UPI_NAME = "Smart Printing";
+  <div class="qr-box">
 
-    const get = key => sessionStorage.getItem(key);
+    <img id="qrImage" alt="UPI Payment QR Code">
 
-    function readOrder() {
-      let legacy = null;
+    <p>
+      Apne PhonePe, Google Pay ya Paytm se QR scan karein.
+    </p>
 
-      try {
-        legacy = JSON.parse(get("smartPrintingOrder") || "null");
-      } catch (error) {
-        console.warn("Legacy order data invalid.", error);
-      }
+  </div>
 
-      const separate = {
-        orderId: get("orderId"),
-        name: get("name"),
-        phone: get("phone"),
-        fileNames: get("fileNames"),
-        filePaths: get("filePaths"),
-        totalPages: get("totalPages"),
-        printType: get("printType"),
-        printSide: get("printSide"),
-        copies: get("copies"),
-        totalPrice: get("totalPrice")
-      };
+  <h2 class="section-title">UPI ID</h2>
 
-      const raw = separate.orderId ? separate : (legacy || {});
+  <div class="upi-box">
+    <div class="upi-id" id="upiId">9770981980@ybl</div>
+    <button type="button" class="copy-btn" id="copyBtn">
+      Copy
+    </button>
+  </div>
 
-      function arrayValue(value) {
-        if (Array.isArray(value)) return value;
+  <h2 class="section-title">Ya UPI App Select Karein</h2>
 
-        if (typeof value !== "string" || !value) return [];
+  <div class="apps">
 
-        try {
-          const parsed = JSON.parse(value);
-          if (Array.isArray(parsed)) return parsed;
-        } catch (_) {}
+    <button type="button" class="app-btn" id="phonePe">
+      <span>🟣</span>
+      PhonePe
+    </button>
 
-        return value.split(",").map(x => x.trim()).filter(Boolean);
-      }
+    <button type="button" class="app-btn" id="googlePay">
+      <span>🔵</span>
+      Google Pay
+    </button>
 
-      return {
-        orderId: raw.orderId,
-        name: raw.name,
-        phone: raw.phone,
-        fileNames: arrayValue(raw.fileNames),
-        filePaths: arrayValue(raw.filePaths),
-        totalPages: Number(raw.totalPages),
-        printType: raw.printType,
-        printSide: raw.printSide,
-        copies: Number(raw.copies),
-        totalPrice: Number(raw.totalPrice)
-      };
-    }
+    <button type="button" class="app-btn" id="paytm">
+      <span>🔷</span>
+      Paytm
+    </button>
 
-    const order = readOrder();
+  </div>
 
-    const details = document.getElementById("orderDetails");
-    const payButton = document.getElementById("payButton");
-    const message = document.getElementById("paymentMessage");
-    const qrSection = document.getElementById("qrSection");
-    const submitButton = document.getElementById("submitUTR");
+  <h2 class="section-title">🧾 UTR / Transaction ID Submit Karein</h2>
 
-    let paymentSubmitted = false;
+  <form id="utrForm">
 
-    function showMessage(text) {
-      message.hidden = false;
-      message.textContent = text;
-    }
+    <label for="utr">12 Digit ya Transaction Reference ID</label>
 
-    const validOrder = Boolean(
-      order.orderId &&
-      order.name &&
-      /^[0-9]{10}$/.test(String(order.phone || "")) &&
-      order.fileNames.length > 0 &&
-      order.filePaths.length === order.fileNames.length &&
-      Number.isInteger(order.totalPages) &&
-      order.totalPages > 0 &&
-      Number.isInteger(order.copies) &&
-      order.copies > 0 &&
-      Number.isFinite(order.totalPrice) &&
-      order.totalPrice > 0 &&
-      ["Black & White", "Colour"].includes(order.printType) &&
-      ["Single Side", "Double Side"].includes(order.printSide)
+    <input
+      type="text"
+      id="utr"
+      minlength="8"
+      maxlength="30"
+      pattern="[A-Za-z0-9]{8,30}"
+      placeholder="Transaction ID enter karein"
+      autocomplete="off"
+      required
+    >
+
+    <button type="submit" class="primary" id="submitBtn">
+      Submit UTR
+    </button>
+
+  </form>
+
+  <div id="message" class="message" aria-live="polite"></div>
+
+  <div class="notice">
+    ⚠️ Payment karne ke baad hi UTR submit karein.
+    UTR submit karne se payment automatically verify nahi hota.
+    Admin transaction check karne ke baad payment Paid mark karega.
+    Payment ka screenshot apne paas rakhein.
+  </div>
+
+</div>
+
+<div id="errorBox" hidden>
+  <div class="notice" id="errorText"></div>
+
+  <button class="secondary" id="backButton">
+    Back to Order
+  </button>
+</div>
+
+</div>
+
+<footer>
+  © 2026 Smart Printing. All Rights Reserved.
+  <br>
+  Secure Payments • Made for Students ❤️
+</footer>
+
+</div>
+
+<script type="module">
+
+import {
+  auth,
+  db
+} from "./firebase.js";
+
+import {
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+  doc,
+  getDoc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const UPI_ID = "9770981980@ybl";
+const UPI_NAME = "Smart Printing";
+
+const loading = document.getElementById("loading");
+const content = document.getElementById("paymentContent");
+const errorBox = document.getElementById("errorBox");
+
+const message = document.getElementById("message");
+const submitBtn = document.getElementById("submitBtn");
+const utrForm = document.getElementById("utrForm");
+
+let currentOrder = null;
+let currentUser = null;
+let submitting = false;
+
+
+// ==================================
+// HELPERS
+// ==================================
+
+function showMessage(text,type="") {
+  message.textContent = text;
+  message.className = "message " + type;
+}
+
+function showError(text) {
+  loading.hidden = true;
+  content.hidden = true;
+  errorBox.hidden = false;
+
+  document.getElementById("errorText").textContent = text;
+}
+
+function formatPrice(value) {
+  return new Intl.NumberFormat("en-IN",{
+    style:"currency",
+    currency:"INR",
+    maximumFractionDigits:2
+  }).format(Number(value) || 0);
+}
+
+function setText(id,value) {
+  document.getElementById(id).textContent =
+    value === undefined || value === null ? "-" : String(value);
+}
+
+
+// ==================================
+// UPI DETAILS
+// ==================================
+
+function makeUpiLink() {
+
+  const params = new URLSearchParams({
+    pa:UPI_ID,
+    pn:UPI_NAME,
+    am:Number(currentOrder.totalPrice).toFixed(2),
+    cu:"INR",
+    tn:"Smart Printing " + currentOrder.orderId
+  });
+
+  return "upi://pay?" + params.toString();
+
+}
+
+
+// ==================================
+// QR GENERATION
+// ==================================
+
+function generateQR() {
+
+  const upiLink = makeUpiLink();
+
+  const qrUrl =
+    "https://api.qrserver.com/v1/create-qr-code/?" +
+    new URLSearchParams({
+      size:"300x300",
+      data:upiLink
+    }).toString();
+
+  document.getElementById("qrImage").src = qrUrl;
+
+}
+
+
+// ==================================
+// SHOW PAYMENT DETAILS
+// ==================================
+
+function displayOrder(order) {
+
+  currentOrder = order;
+
+  setText("amount",formatPrice(order.totalPrice));
+
+  setText("orderId","Order ID: " + order.orderId);
+
+  setText("customerName",order.name);
+
+  setText("pages",order.totalPages);
+
+  setText("printType",order.printType);
+
+  setText("copies",order.copies);
+
+  setText("paymentStatus",order.paymentStatus);
+
+  setText("upiId",UPI_ID);
+
+  generateQR();
+
+  loading.hidden = true;
+  errorBox.hidden = true;
+  content.hidden = false;
+
+  if(order.utr) {
+
+    document.getElementById("utr").value = order.utr;
+
+    document.getElementById("utr").disabled = true;
+
+    submitBtn.disabled = true;
+
+    submitBtn.textContent = "UTR Already Submitted";
+
+    showMessage(
+      "Aapka UTR pehle hi submit ho chuka hai. Admin verification ka wait karein.",
+      "success"
     );
 
-    if (!validOrder) {
+  }
 
-      details.textContent =
-        "Valid order nahi mila ya order data adhura hai. Please order page se dobara order banayein.";
+  if(order.paymentStatus !== "PENDING") {
 
-      payButton.disabled = true;
+    submitBtn.disabled = true;
 
-      showMessage(
-        "Order details missing hain. Back to Order par tap karke dobara try karein."
+    document.getElementById("utr").disabled = true;
+
+    showMessage(
+      "Is order ka payment status " + order.paymentStatus + " hai.",
+      "success"
+    );
+
+  }
+
+}
+
+
+// ==================================
+// VERIFY ORDER FROM FIRESTORE
+// ==================================
+
+async function verifyOrder(user) {
+
+  currentUser = user;
+
+  const orderId = sessionStorage.getItem("orderId");
+
+  if(!orderId) {
+
+    showError("Order ID nahi mila. Pehle order banayein.");
+
+    return;
+
+  }
+
+  if(!user) {
+
+    showError("Customer authentication nahi mili.");
+
+    return;
+
+  }
+
+  try {
+
+    const ref = doc(db,"orders",orderId);
+
+    const snapshot = await getDoc(ref);
+
+    if(!snapshot.exists()) {
+
+      showError("Firebase mein order nahi mila.");
+
+      return;
+
+    }
+
+    const order = snapshot.data();
+
+    if(order.uid !== user.uid) {
+
+      showError("Security verification failed.");
+
+      return;
+
+    }
+
+    if(order.orderId !== orderId) {
+
+      showError("Order ID match nahi hui.");
+
+      return;
+
+    }
+
+    if(
+      !Number.isFinite(Number(order.totalPrice)) ||
+      Number(order.totalPrice) <= 0
+    ) {
+
+      showError("Order amount valid nahi hai.");
+
+      return;
+
+    }
+
+    if(order.orderStatus !== "PENDING") {
+
+      showError(
+        "Order status " + order.orderStatus +
+        " hai. Payment se pehle shop/admin se sampark karein."
       );
 
-    } else {
-
-      [
-        ["Order ID", order.orderId],
-        ["Name", order.name],
-        ["Files", order.fileNames.join(", ")],
-        ["Total Pages", order.totalPages],
-        ["Print Type", order.printType],
-        ["Printing Side", order.printSide],
-        ["Copies", order.copies],
-        ["Total Amount", "₹" + order.totalPrice.toFixed(2)]
-      ].forEach((item, index) => {
-
-        const row = document.createElement("div");
-        row.className = "row";
-
-        if (index === 7) {
-          row.classList.add("price-box");
-        }
-
-        const label = document.createElement("span");
-        label.className = "label";
-        label.textContent = item[0];
-
-        const value = document.createElement("span");
-        value.className = index === 7 ? "value total" : "value";
-        value.textContent = item[1];
-
-        row.append(label, value);
-        details.appendChild(row);
-
-      });
+      return;
 
     }
 
-    function generateQR() {
+    displayOrder(order);
 
-      if (!validOrder) return;
+  } catch(error) {
 
-      const amount = order.totalPrice.toFixed(2);
+    console.error(error);
 
-      const upiLink = "upi://pay?" + new URLSearchParams({
-        pa: UPI_ID,
-        pn: UPI_NAME,
-        am: amount,
-        cu: "INR",
-        tn: "Order " + order.orderId
-      }).toString();
+    showError(
+      "Order verify nahi ho paaya. Internet aur Firebase Rules check karein."
+    );
 
-      document.getElementById("qrImage").src =
-        "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" +
-        encodeURIComponent(upiLink);
+  }
 
-      document.getElementById("qrAmount").textContent =
-        "Pay exactly ₹" + amount;
+}
 
-      document.getElementById("openUPI").onclick = () => {
-        window.location.href = upiLink;
-      };
 
-      qrSection.hidden = false;
-      payButton.disabled = true;
-      payButton.textContent = "QR Generated";
+// ==================================
+// COPY UPI ID
+// ==================================
 
-      startConfetti();
+document.getElementById("copyBtn").addEventListener("click",async()=>{
+
+  try {
+
+    await navigator.clipboard.writeText(UPI_ID);
+
+    document.getElementById("copyBtn").textContent = "Copied ✓";
+
+  } catch(error) {
+
+    showMessage(
+      "UPI ID manually copy karein: " + UPI_ID,
+      "error"
+    );
+
+  }
+
+});
+
+
+// ==================================
+// OPEN UPI APP
+// ==================================
+
+function openUPIApp() {
+
+  if(!currentOrder) return;
+
+  window.location.href = makeUpiLink();
+
+}
+
+document.getElementById("phonePe").addEventListener("click",openUPIApp);
+
+document.getElementById("googlePay").addEventListener("click",openUPIApp);
+
+document.getElementById("paytm").addEventListener("click",openUPIApp);
+
+
+// ==================================
+// SUBMIT UTR
+// ==================================
+
+utrForm.addEventListener("submit",async event=>{
+
+  event.preventDefault();
+
+  if(submitting || !currentOrder || !currentUser) return;
+
+  const utr = document.getElementById("utr").value.trim();
+
+  if(!/^[A-Za-z0-9]{8,30}$/.test(utr)) {
+
+    showMessage(
+      "Valid UTR enter karein (8–30 letters/numbers).",
+      "error"
+    );
+
+    return;
+
+  }
+
+  if(currentOrder.utr) {
+
+    showMessage(
+      "UTR pehle hi submit ho chuka hai.",
+      "error"
+    );
+
+    return;
+
+  }
+
+  if(currentOrder.paymentStatus !== "PENDING") {
+
+    showMessage(
+      "Payment status ab PENDING nahi hai.",
+      "error"
+    );
+
+    return;
+
+  }
+
+  submitting = true;
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Submitting...";
+
+  try {
+
+    const ref = doc(db,"orders",currentOrder.orderId);
+
+    // Re-read the canonical order immediately before update.
+    const freshSnapshot = await getDoc(ref);
+
+    if(!freshSnapshot.exists()) {
+      throw new Error("Order nahi mila.");
     }
 
-    payButton.addEventListener("click", generateQR);
+    const freshOrder = freshSnapshot.data();
 
-    // Firebase Auth initialization ka wait
-    function waitForAuth() {
-      return new Promise((resolve) => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-          unsubscribe();
-          resolve(user);
-        });
-      });
+    if(
+      freshOrder.uid !== currentUser.uid ||
+      freshOrder.orderId !== currentOrder.orderId
+    ) {
+      throw new Error("Order verification failed.");
     }
 
-    // UTR ko existing Order mein update karna
-    submitButton.addEventListener("click", async () => {
+    if(
+      freshOrder.utr ||
+      freshOrder.paymentStatus !== "PENDING" ||
+      freshOrder.orderStatus !== "PENDING"
+    ) {
+      throw new Error("Order ka payment status badal chuka hai.");
+    }
 
-      if (!validOrder || paymentSubmitted) return;
-
-      const utr = document.getElementById("utr").value.trim();
-
-      if (!/^[A-Za-z0-9]{8,30}$/.test(utr)) {
-
-        showMessage(
-          "Kripya valid UTR enter karein (8–30 letters/numbers)."
-        );
-
-        return;
-      }
-
-      submitButton.disabled = true;
-      submitButton.textContent = "Saving...";
-
-      try {
-
-        const user = await waitForAuth();
-
-        if (!user) {
-          throw new Error(
-            "Customer login nahi mila. Isi browser mein order dobara banayein."
-          );
-        }
-
-        const customerUid = get("customerUid");
-
-        if (!customerUid || user.uid !== customerUid) {
-          throw new Error(
-            "Customer session match nahi hui. Order dobara banayein."
-          );
-        }
-
-        const orderRef = doc(db, "orders", order.orderId);
-
-        const orderSnapshot = await getDoc(orderRef);
-
-        if (!orderSnapshot.exists()) {
-          throw new Error("Firestore mein Order nahi mila.");
-        }
-
-        const savedOrder = orderSnapshot.data();
-
-        if (savedOrder.uid !== user.uid) {
-          throw new Error("Is Order ko update karne ki permission nahi hai.");
-        }
-
-        if (savedOrder.utr && savedOrder.utr !== "") {
-          throw new Error("Is Order ka UTR pehle hi submit ho chuka hai.");
-        }
-
-        if (
-          savedOrder.paymentStatus !== "PENDING" ||
-          savedOrder.orderStatus !== "PENDING"
-        ) {
-          throw new Error("Order ka current status update ke liye valid nahi hai.");
-        }
-
-        // Sirf existing Order ka UTR update hoga.
-        await updateDoc(orderRef, {
-          utr: utr
-        });
-
-        paymentSubmitted = true;
-
-        showMessage(
-          "UTR successfully save ho gaya! Payment status abhi bhi PENDING hai. Admin transaction verify karne ke baad hi Paid mark karega."
-        );
-
-        submitButton.textContent = "UTR Submitted";
-
-      } catch (error) {
-
-        console.error(error);
-
-        showMessage(
-          "UTR save nahi hua: " + (error.message || "Unknown error")
-        );
-
-        submitButton.disabled = false;
-        submitButton.textContent = "Retry Submit";
-
-      }
-
+    await updateDoc(ref,{
+      utr:utr
     });
 
-    document.getElementById("backButton").addEventListener("click", () => {
-      window.location.href = "confirmation.html";
-    });
+    currentOrder.utr = utr;
 
-    // Confetti animation
-    function startConfetti() {
+    document.getElementById("utr").disabled = true;
 
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        return;
-      }
+    submitBtn.textContent = "UTR Submitted ✓";
 
-      const canvas = document.getElementById("confetti");
-      const ctx = canvas.getContext("2d");
+    showMessage(
+      "UTR successfully submit ho gaya! Payment abhi PENDING hai. Admin verification ke baad status update hoga.",
+      "success"
+    );
 
-      if (!ctx) return;
+  } catch(error) {
 
-      let pieces = [];
-      let startTime = performance.now();
-      let animationId;
+    console.error(error);
 
-      function resize() {
-        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    showMessage(
+      error.message || "UTR submit nahi hua. Dobara try karein.",
+      "error"
+    );
 
-        canvas.width = window.innerWidth * dpr;
-        canvas.height = window.innerHeight * dpr;
+    submitBtn.disabled = false;
 
-        canvas.style.width = window.innerWidth + "px";
-        canvas.style.height = window.innerHeight + "px";
+    submitBtn.textContent = "Submit UTR";
 
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      }
+  } finally {
 
-      resize();
-      window.addEventListener("resize", resize);
+    submitting = false;
 
-      const colors = [
-        "#ff4757",
-        "#ffa502",
-        "#2ed573",
-        "#1e90ff",
-        "#a55eea",
-        "#ff6bcb",
-        "#f9ca24"
-      ];
+  }
 
-      for (let i = 0; i < 90; i++) {
+});
 
-        pieces.push({
-          x: Math.random() * window.innerWidth,
-          y: Math.random() * -window.innerHeight,
-          size: Math.random() * 7 + 4,
-          speed: Math.random() * 3 + 2,
-          rotation: Math.random() * 360,
-          spin: Math.random() * 5 - 2.5,
-          color: colors[Math.floor(Math.random() * colors.length)]
-        });
 
-      }
+// ==================================
+// BACK BUTTON
+// ==================================
 
-      function animate(now) {
+document.getElementById("backButton").addEventListener("click",()=>{
 
-        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+  window.location.href = "confirmation.html";
 
-        pieces.forEach(p => {
+});
 
-          p.y += p.speed;
-          p.rotation += p.spin;
-          p.x += Math.sin(p.y / 30) * 1.2;
 
-          ctx.save();
+// ==================================
+// AUTH INITIALIZATION
+// ==================================
 
-          ctx.translate(p.x, p.y);
-          ctx.rotate(p.rotation * Math.PI / 180);
+let authHandled = false;
 
-          ctx.fillStyle = p.color;
-          ctx.fillRect(
-            -p.size / 2,
-            -p.size / 2,
-            p.size,
-            p.size * .65
-          );
+const unsubscribe = onAuthStateChanged(auth,async user=>{
 
-          ctx.restore();
+  if(authHandled) return;
 
-          if (p.y > window.innerHeight + 20) {
-            p.y = -20;
-            p.x = Math.random() * window.innerWidth;
-          }
+  authHandled = true;
 
-        });
+  unsubscribe();
 
-        if (now - startTime < 4000) {
+  await verifyOrder(user);
 
-          animationId = requestAnimationFrame(animate);
+});
 
-        } else {
-
-          cancelAnimationFrame(animationId);
-
-          ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-
-          window.removeEventListener("resize", resize);
-
-        }
-
-      }
-
-      animationId = requestAnimationFrame(animate);
-    }
-
-  </script>
+</script>
 
 </body>
   </html>
