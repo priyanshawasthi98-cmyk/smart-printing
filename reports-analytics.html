@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Reports & Analytics - Smart Printing</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 18px;
+  background: #f1f5f9;
+  color: #1e293b;
+  animation: fadeIn .5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.container {
+  max-width: 1200px;
+  margin: auto;
+}
+
+.header {
+  background: linear-gradient(120deg, #172554, #2563eb);
+  color: white;
+  padding: 25px;
+  border-radius: 14px;
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  margin: 0 0 8px;
+}
+
+.header p {
+  margin: 0;
+  color: #dbeafe;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 3px 12px #00000008;
+  animation: slideUp .5s ease both;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.stat {
+  background: white;
+  padding: 19px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px #00000008;
+  transition: transform .25s, box-shadow .25s;
+}
+
+.stat:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px #00000012;
+}
+
+.stat p {
+  color: #64748b;
+  margin: 0 0 10px;
+  font-size: 14px;
+}
+
+.stat h2 {
+  margin: 0;
+  font-size: 25px;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+input, select {
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 15px;
+  min-width: 130px;
+}
+
+button {
+  border: none;
+  padding: 12px 17px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: transform .2s, opacity .2s;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  opacity: .9;
+}
+
+button:active {
+  transform: scale(.97);
+}
+
+.blue {
+  background: #2563eb;
+  color: white;
+}
+
+.green {
+  background: #16a34a;
+  color: white;
+}
+
+.gray {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.chart-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.bar-item {
+  margin: 17px 0;
+}
+
+.bar-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 14px;
+  margin-bottom: 7px;
+}
+
+.bar-bg {
+  height: 13px;
+  background: #e2e8f0;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.bar {
+  height: 100%;
+  width: 0;
+  border-radius: 20px;
+  transition: width 1s ease;
+}
+
+.bw { background: #2563eb; }
+.colour { background: #9333ea; }
+.paid { background: #16a34a; }
+.pending { background: #f59e0b; }
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 650px;
+}
+
+th, td {
+  padding: 13px;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 14px;
+}
+
+th {
+  background: #f8fafc;
+}
+
+.status {
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  overflow-wrap: anywhere;
+}
+
+.error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.field {
+  margin-bottom: 15px;
+}
+
+.field label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 7px;
+}
+
+.field input {
+  width: 100%;
+}
+
+.muted {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.spinner {
+  display: inline-block;
+  width: 17px;
+  height: 17px;
+  border: 3px solid #bfdbfe;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media(max-width: 850px) {
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .chart-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media(max-width: 500px) {
+  body { padding: 10px; }
+  .stats { gap: 9px; }
+  .stat { padding: 13px; }
+  .stat h2 { font-size: 20px; }
+  .header { padding: 18px; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <h1>📊 Reports & Analytics</h1>
+    <p>Smart Printing Kiosk Network - Admin Dashboard</p>
+  </div>
+
+  <div id="status" class="status">
+    <span class="spinner"></span> Checking admin access...
+  </div>
+
+  <div class="card">
+    <h2>📅 Report Filters</h2>
+
+    <div class="controls">
+
+      <select id="period">
+        <option value="all">All Time</option>
+        <option value="today">Today</option>
+        <option value="week">Last 7 Days</option>
+        <option value="month">Last 30 Days</option>
+        <option value="custom">Custom Range</option>
+      </select>
+
+      <input type="date" id="startDate" aria-label="Start date">
+      <input type="date" id="endDate" aria-label="End date">
+
+      <button class="blue" id="applyBtn">Apply Filter</button>
+      <button class="green" id="csvBtn">Download CSV</button>
+      <button class="gray" id="refreshBtn">🔄 Refresh</button>
+
+    </div>
+  </div>
+
+  <div class="stats">
+
+    <div class="stat">
+      <p>Total Orders</p>
+      <h2 id="totalOrders">0</h2>
+    </div>
+
+    <div class="stat">
+      <p>Confirmed Revenue</p>
+      <h2 id="revenue">₹0</h2>
+    </div>
+
+    <div class="stat">
+      <p>Pending Payments</p>
+      <h2 id="pendingAmount">₹0</h2>
+    </div>
+
+    <div class="stat">
+      <p>Paid Orders</p>
+      <h2 id="paidOrders">0</h2>
+    </div>
+
+    <div class="stat">
+      <p>Total Customers</p>
+      <h2 id="customers">0</h2>
+    </div>
+
+    <div class="stat">
+      <p>Total Shops</p>
+      <h2 id="shops">0</h2>
+    </div>
+
+    <div class="stat">
+      <p>Total Colleges</p>
+      <h2 id="colleges">0</h2>
+    </div>
+
+    <div class="stat">
+      <p>Shop Payouts</p>
+      <h2 id="payouts">₹0</h2>
+    </div>
+
+  </div>
+
+  <div class="chart-row">
+
+    <div class="card">
+      <h2>🖨️ Printing Analytics</h2>
+
+      <div class="bar-item">
+        <div class="bar-label">
+          <span>B&W Orders</span>
+          <b id="bwCount">0</b>
+        </div>
+        <div class="bar-bg">
+          <div class="bar bw" id="bwBar"></div>
+        </div>
+      </div>
+
+      <div class="bar-item">
+        <div class="bar-label">
+          <span>Colour Orders</span>
+          <b id="colourCount">0</b>
+        </div>
+        <div class="bar-bg">
+          <div class="bar colour" id="colourBar"></div>
+        </div>
+      </div>
+
+      <div class="bar-item">
+        <div class="bar-label">
+          <span>Single Side</span>
+          <b id="singleCount">0</b>
+        </div>
+        <div class="bar-bg">
+          <div class="bar paid" id="singleBar"></div>
+        </div>
+      </div>
+
+      <div class="bar-item">
+        <div class="bar-label">
+          <span>Double Side</span>
+          <b id="doubleCount">0</b>
+        </div>
+        <div class="bar-bg">
+          <div class="bar pending" id="doubleBar"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>💳 Payment Analytics</h2>
+
+      <div class="bar-item">
+        <div class="bar-label">
+          <span>Paid Orders</span>
+          <b id="paidCountLabel">0</b>
+        </div>
+        <div class="bar-bg">
+          <div class="bar paid" id="paidBar"></div>
+        </div>
+      </div>
+
+      <div class="bar-item">
+        <div class="bar-label">
+          <span>Pending Orders</span>
+          <b id="pendingCountLabel">0</b>
+        </div>
+        <div class="bar-bg">
+          <div class="bar pending" id="pendingBar"></div>
+        </div>
+      </div>
+
+      <h3>Commission Summary</h3>
+      <p>Estimated Commission: <b id="commission">₹0</b></p>
+      <p class="muted">
+        Commission calculation uses the order's saved commissionRate
+        when available; otherwise it uses the current configured rate.
+      </p>
+    </div>
+
+  </div>
+
+  <div class="card">
+    <h2>📦 Recent Orders</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Amount</th>
+            <th>Payment</th>
+            <th>Order Status</th>
+          </tr>
+        </thead>
+        <tbody id="ordersTable">
+          <tr><td colspan="5">No data loaded.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>⚙️ Business Settings</h2>
+    <p class="muted">
+      These settings are stored in Firestore under
+      settings/businessProfile.
+    </p>
+
+    <div class="field">
+      <label>Business Name</label>
+      <input type="text" id="businessName" placeholder="Smart Printing">
+    </div>
+
+    <div class="field">
+      <label>UPI ID</label>
+      <input type="text" id="upiId" placeholder="your-upi@bank">
+    </div>
+
+    <div class="field">
+      <label>Support Number</label>
+      <input type="tel" id="supportNumber" placeholder="10-digit mobile number">
+    </div>
+
+    <button class="green" id="saveSettingsBtn">
+      Save Business Settings
+    </button>
+
+    <div id="settingsMessage" class="status" style="display:none;"></div>
+  </div>
+
+</div>
+
+
+<script type="module">
+
+import { auth, db } from "./firebase.js";
+
+import {
+  collection,
+  getDocs,
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+
+const ADMIN_UID = "ibK3XWMUEYQIbBhPmGQRnW72MZg1";
+
+const statusBox = document.getElementById("status");
+
+let isAdmin = false;
+let allOrders = [];
+let filteredOrders = [];
+let shopCount = 0;
+let collegeCount = 0;
+let payoutTotal = 0;
+let commissionRate = 10;
+
+const money = value =>
+  "₹" + Number(value || 0).toFixed(2);
+
+function showStatus(message, type = "") {
+  statusBox.textContent = message;
+  statusBox.className = "status " + type;
+}
+
+function paymentIsPaid(order) {
+  return String(order.paymentStatus || "").toUpperCase() === "PAID";
+}
+
+function getCustomerKey(order) {
+  const uid = String(order.uid || "").trim();
+  const phone = String(order.phone || "").trim();
+
+  if (uid) return "uid:" + uid;
+  if (phone) return "phone:" + phone;
+
+  return "order:" + String(order.orderId || order.documentId || "");
+}
+
+function getOrderDate(order) {
+  const value = order.createdAt;
+
+  if (value && typeof value.toDate === "function") {
+    return value.toDate();
+  }
+
+  if (value instanceof Date) return value;
+
+  if (typeof value === "string" || typeof value === "number") {
+    const date = new Date(value);
+    if (!Number.isNaN(date.getTime())) return date;
+  }
+
+  return null;
+}
+
+function formatDate(date) {
+  return date ? date.toLocaleDateString("en-IN") : "Unknown";
+}
+
+
+// Load auxiliary collections
+async function loadAuxiliaryData() {
+
+  const tasks = await Promise.allSettled([
+    getDocs(collection(db, "shops")),
+    getDocs(collection(db, "colleges")),
+    getDocs(collection(db, "shopPayouts")),
+    getDoc(doc(db, "settings", "commission"))
+  ]);
+
+  shopCount = tasks[0].status === "fulfilled"
+    ? tasks[0].value.size : 0;
+
+  collegeCount = tasks[1].status === "fulfilled"
+    ? tasks[1].value.size : 0;
+
+  payoutTotal = 0;
+
+  if (tasks[2].status === "fulfilled") {
+    tasks[2].value.forEach(item => {
+      const data = item.data();
+      payoutTotal += Number(
+        data.amount ?? data.payoutAmount ?? data.totalPayout ?? 0
+      );
+    });
+  }
+
+  if (tasks[3].status === "fulfilled" &&
+      tasks[3].value.exists()) {
+    commissionRate = Number(
+      tasks[3].value.data().rate ?? 10
+    );
+  }
+
+}
+
+
+// Load business settings
+async function loadBusinessSettings() {
+
+  try {
+
+    const snapshot = await getDoc(
+      doc(db, "settings", "businessProfile")
+    );
+
+    if (snapshot.exists()) {
+
+      const data = snapshot.data();
+
+      document.getElementById("businessName").value =
+        data.businessName || "";
+
+      document.getElementById("upiId").value =
+        data.upiId || "";
+
+      document.getElementById("supportNumber").value =
+        data.supportNumber || "";
+
+    } else {
+
+      document.getElementById("businessName").value =
+        "Smart Printing";
+
+      document.getElementById("upiId").value =
+        "9770981980@ybl";
+
+    }
+
+  } catch (error) {
+
+    console.error("Settings load:", error);
+
+    document.getElementById("settingsMessage").textContent =
+      "Settings could not be loaded: " + error.message;
+
+    document.getElementById("settingsMessage").style.display = "block";
+    document.getElementById("settingsMessage").className = "status error";
+
+  }
+
+}
+
+
+// Save business settings
+async function saveBusinessSettings() {
+
+  if (!isAdmin) return;
+
+  const businessName =
+    document.getElementById("businessName").value.trim();
+
+  const upiId =
+    document.getElementById("upiId").value.trim();
+
+  const supportNumber =
+    document.getElementById("supportNumber").value.trim();
+
+  const message = document.getElementById("settingsMessage");
+  const button = document.getElementById("saveSettingsBtn");
+
+  if (!businessName) {
+    message.textContent = "Business name is required.";
+    message.className = "status error";
+    message.style.display = "block";
+    return;
+  }
+
+  if (supportNumber && !/^[0-9]{10}$/.test(supportNumber)) {
+    message.textContent = "Support number must be 10 digits.";
+    message.className = "status error";
+    message.style.display = "block";
+    return;
+  }
+
+  if (upiId && !/^[^\s@]+@[^\s@]+$/.test(upiId)) {
+    message.textContent = "Please enter a valid UPI ID.";
+    message.className = "status error";
+    message.style.display = "block";
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "Saving...";
+
+  try {
+
+    await setDoc(
+      doc(db, "settings", "businessProfile"),
+      {
+        businessName,
+        upiId,
+        supportNumber,
+        updatedAt: serverTimestamp(),
+        updatedBy: auth.currentUser.uid
+      },
+      { merge: true }
+    );
+
+    message.textContent = "Business settings saved successfully.";
+    message.className = "status success";
+
+  } catch (error) {
+
+    console.error(error);
+
+    message.textContent =
+      "Settings save failed: " + error.message;
+
+    message.className = "status error";
+
+  } finally {
+
+    message.style.display = "block";
+    button.disabled = false;
+    button.textContent = "Save Business Settings";
+
+  }
+
+}
+
+
+// Apply date filter
+function applyDateFilter() {
+
+  const period = document.getElementById("period").value;
+
+  const now = new Date();
+
+  let start = null;
+  let end = new Date(now);
+
+  if (period === "today") {
+
+    start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  } else if (period === "week") {
+
+    start = new Date(now);
+    start.setDate(start.getDate() - 6);
+    start.setHours(0, 0, 0, 0);
+
+  } else if (period === "month") {
+
+    start = new Date(now);
+    start.setDate(start.getDate() - 29);
+    start.setHours(0, 0, 0, 0);
+
+  } else if (period === "custom") {
+
+    const startValue = document.getElementById("startDate").value;
+    const endValue = document.getElementById("endDate").value;
+
+    if (!startValue || !endValue) {
+      alert("Please select both start and end dates.");
+      return;
+    }
+
+    start = new Date(startValue + "T00:00:00");
+    end = new Date(endValue + "T23:59:59.999");
+
+    if (start > end) {
+      alert("Start date cannot be after end date.");
+      return;
+    }
+
+  }
+
+  filteredOrders = allOrders.filter(order => {
+
+    const date = getOrderDate(order);
+
+    if (!date) return period === "all";
+
+    if (start && date < start) return false;
+    if (date > end) return false;
+
+    return true;
+
+  });
+
+  renderAnalytics();
+
+}
+
+
+// Render analytics
+function renderAnalytics() {
+
+  const total = filteredOrders.length;
+
+  const paid = filteredOrders.filter(paymentIsPaid);
+
+  const pending = filteredOrders.filter(order => !paymentIsPaid(order));
+
+  const revenue = paid.reduce(
+    (sum, order) => sum + (Number(order.totalPrice) || 0),
+    0
+  );
+
+  const pendingAmount = pending.reduce(
+    (sum, order) => sum + (Number(order.totalPrice) || 0),
+    0
+  );
+
+  const customerSet = new Set(
+    filteredOrders.map(getCustomerKey)
+  );
+
+  const bw = filteredOrders.filter(
+    order => String(order.printType || "").toLowerCase().includes("bw") ||
+             String(order.printType || "").toLowerCase().includes("black")
+  ).length;
+
+  const colour = filteredOrders.filter(
+    order => String(order.printType || "").toLowerCase().includes("colour") ||
+             String(order.printType || "").toLowerCase().includes("color")
+  ).length;
+
+  const single = filteredOrders.filter(
+    order => String(order.printSide || "").toLowerCase().includes("single")
+  ).length;
+
+  const double = filteredOrders.filter(
+    order => String(order.printSide || "").toLowerCase().includes("double")
+  ).length;
+
+  const commission = paid.reduce((sum, order) => {
+
+    const rate = Number.isFinite(Number(order.commissionRate))
+      ? Number(order.commissionRate)
+      : commissionRate;
+
+    return sum + (Number(order.totalPrice) || 0) * rate / 100;
+
+  }, 0);
+
+
+  document.getElementById("totalOrders").textContent = total;
+
+  document.getElementById("revenue").textContent =
+    money(revenue);
+
+  document.getElementById("pendingAmount").textContent =
+    money(pendingAmount);
+
+  document.getElementById("paidOrders").textContent =
+    paid.length;
+
+  document.getElementById("customers").textContent =
+    customerSet.size;
+
+  document.getElementById("shops").textContent =
+    shopCount;
+
+  document.getElementById("colleges").textContent =
+    collegeCount;
+
+  document.getElementById("payouts").textContent =
+    money(payoutTotal);
+
+  document.getElementById("commission").textContent =
+    money(commission);
+
+
+  document.getElementById("bwCount").textContent = bw;
+  document.getElementById("colourCount").textContent = colour;
+  document.getElementById("singleCount").textContent = single;
+  document.getElementById("doubleCount").textContent = double;
+
+  document.getElementById("paidCountLabel").textContent = paid.length;
+  document.getElementById("pendingCountLabel").textContent = pending.length;
+
+
+  function setBar(id, value, max) {
+
+    const percent = max ? (value / max) * 100 : 0;
+
+    document.getElementById(id).style.width =
+      Math.min(100, percent) + "%";
+
+  }
+
+  const maxPrint = Math.max(bw, colour, 1);
+  const maxSide = Math.max(single, double, 1);
+  const maxPayment = Math.max(paid.length, pending.length, 1);
+
+  setBar("bwBar", bw, maxPrint);
+  setBar("colourBar", colour, maxPrint);
+  setBar("singleBar", single, maxSide);
+  setBar("doubleBar", double, maxSide);
+  setBar("paidBar", paid.length, maxPayment);
+  setBar("pendingBar", pending.length, maxPayment);
+
+  renderOrders();
+
+}
+
+
+// Recent orders table
+function renderOrders() {
+
+  const tbody = document.getElementById("ordersTable");
+
+  tbody.innerHTML = "";
+
+  const recent = [...filteredOrders]
+    .sort((a, b) => {
+      const da = getOrderDate(a)?.getTime() || 0;
+      const db = getOrderDate(b)?.getTime() || 0;
+      return db - da;
+    })
+    .slice(0, 30);
+
+  if (!recent.length) {
+
+    tbody.innerHTML =
+      '<tr><td colspan="5">No orders found.</td></tr>';
+
+    return;
+
+  }
+
+  recent.forEach(order => {
+
+    const tr = document.createElement("tr");
+
+    const values = [
+      order.orderId || order.documentId || "-",
+      order.name || "-",
+      money(order.totalPrice),
+      order.paymentStatus || "PENDING",
+      order.orderStatus || "PENDING"
+    ];
+
+    values.forEach(value => {
+
+      const td = document.createElement("td");
+      td.textContent = value;
+      tr.appendChild(td);
+
+    });
+
+    tbody.appendChild(tr);
+
+  });
+
+}
+
+
+// CSV download
+function downloadCSV() {
+
+  if (!filteredOrders.length) {
+    alert("No orders available for export.");
+    return;
+  }
+
+  const headers = [
+    "Order ID",
+    "Customer",
+    "Phone",
+    "Total Pages",
+    "Print Type",
+    "Print Side",
+    "Copies",
+    "Amount",
+    "Payment Status",
+    "Order Status",
+    "Date"
+  ];
+
+  const rows = filteredOrders.map(order => [
+
+    order.orderId || order.documentId || "",
+    orde
