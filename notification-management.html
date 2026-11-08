@@ -1,0 +1,235 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notification Management | Smart Printing</title>
+<style>
+:root{--blue:#1769e0;--dark:#123b78;--light:#eef5ff;--bg:#f5f8ff;--text:#172b4d;--muted:#718096;--border:#e3ebf7;--green:#159b65;--red:#df4759}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:245px;background:linear-gradient(180deg,#123b78,#1769e0);color:white;padding:25px 16px;flex-shrink:0}
+.brand{font-size:21px;font-weight:800;margin:0 8px 7px}
+.brand small{display:block;font-size:11px;font-weight:400;opacity:.8;margin-top:5px}
+.nav-title{font-size:11px;letter-spacing:1.5px;opacity:.65;margin:32px 10px 12px}
+.nav a{display:block;color:#e8f1ff;text-decoration:none;padding:12px;border-radius:10px;margin:4px 0;font-size:14px}
+.nav a:hover,.nav a.active{background:#ffffff25}
+.main{flex:1;min-width:0;padding:28px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;margin-bottom:25px}
+h1{font-size:26px;margin:0 0 7px}
+.subtitle{font-size:13px;color:var(--muted)}
+.demo{background:#fff3d9;color:#986000;padding:9px 13px;border-radius:9px;font-size:12px;font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:22px}
+.card,.panel{background:white;border:1px solid var(--border);border-radius:15px;padding:20px;box-shadow:0 5px 20px #183d7208}
+.label{font-size:12px;color:var(--muted)}
+.value{font-size:26px;font-weight:800;margin-top:10px}
+.panel{margin-bottom:20px}
+h2{font-size:17px;margin:0 0 18px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.field{display:flex;flex-direction:column;gap:7px}
+.field.full{grid-column:1/-1}
+label{font-size:12px;font-weight:700;color:#435875}
+input,select,textarea{width:100%;border:1px solid var(--border);border-radius:9px;padding:12px;background:#fff;color:var(--text);font:inherit;outline:none}
+textarea{min-height:110px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:var(--blue)}
+.audience{display:flex;gap:15px;flex-wrap:wrap;padding:10px 0}
+.audience label{font-weight:400;display:flex;align-items:center;gap:6px}
+.audience input{width:auto}
+.btn{border:0;border-radius:9px;padding:12px 17px;background:var(--blue);color:white;font-weight:700;cursor:pointer}
+.btn:hover{filter:brightness(.94)}
+.btn-red{background:#ffebee;color:#c52f43;padding:8px 11px;font-size:11px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:650px}
+th{text-align:left;font-size:11px;color:var(--muted);padding:13px 10px;border-bottom:1px solid var(--border)}
+td{padding:14px 10px;border-bottom:1px solid #edf1f8;font-size:13px}
+.badge{display:inline-block;padding:6px 9px;border-radius:20px;font-size:11px;font-weight:700;background:#e4f8ef;color:#087c4b}
+.note{background:#eef5ff;border:1px solid #d7e7ff;padding:14px;border-radius:10px;color:#315b94;font-size:12px;line-height:1.6}
+.toast{display:none;padding:12px;margin-bottom:15px;border-radius:9px;background:#e4f8ef;color:#087c4b;font-size:13px}
+.footer{text-align:center;color:var(--muted);font-size:11px;padding:12px}
+@media(max-width:900px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:650px){.sidebar{width:65px;padding:18px 7px}.brand{font-size:0;text-align:center}.brand:before{content:"SP";font-size:19px}.brand small,.nav-title{display:none}.nav a{font-size:0;text-align:center;padding:14px 4px}.nav a:before{content:"•";font-size:20px}.main{padding:17px 12px}.grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}h1{font-size:22px}.panel,.card{padding:15px}}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+<div class="brand">🖨️ Smart Printing<small>ADMIN CONTROL PANEL</small></div>
+<div class="nav-title">MAIN MENU</div>
+<nav class="nav">
+<a href="admin-dashboard.html">📊 Dashboard</a>
+<a href="order-management.html">📦 Orders</a>
+<a href="payment-management.html">💳 Payments</a>
+<a href="pricing-management.html">🏷️ Pricing</a>
+<a href="shop-management.html">🏪 Shops</a>
+<a href="college-management.html">🎓 Colleges</a>
+<a href="commission-management.html">📈 Commission</a>
+<a href="wallet-management.html">👛 Wallet</a>
+<a class="active" href="notification-management.html">🔔 Notifications</a>
+</nav>
+</aside>
+
+<main class="main">
+<header class="top">
+<div>
+<h1>Notification Management 🔔</h1>
+<div class="subtitle">Announcements and communication control panel</div>
+</div>
+<span class="demo">⚠ DEMO MODE — SAMPLE DATA</span>
+</header>
+
+<section class="grid">
+<div class="card"><div class="label">Total Notifications</div><div class="value" id="totalCount">0</div></div>
+<div class="card"><div class="label">Sent Notifications</div><div class="value" id="sentCount">0</div></div>
+<div class="card"><div class="label">Draft Notifications</div><div class="value" id="draftCount">0</div></div>
+</section>
+
+<div id="toast" class="toast"></div>
+
+<section class="panel">
+<h2>Create Announcement</h2>
+<form id="notificationForm">
+<div class="form-grid">
+<div class="field">
+<label for="title">Notification Title</label>
+<input id="title" maxlength="80" required placeholder="Example: New printing offer">
+</div>
+<div class="field">
+<label for="type">Notification Type</label>
+<select id="type">
+<option value="ANNOUNCEMENT">Announcement</option>
+<option value="OFFER">Special Offer</option>
+<option value="UPDATE">Website Update</option>
+<option value="ALERT">Important Alert</option>
+</select>
+</div>
+<div class="field full">
+<label>Target Audience</label>
+<div class="audience">
+<label><input type="radio" name="audience" value="ALL" checked> Everyone</label>
+<label><input type="radio" name="audience" value="CUSTOMERS"> Customers</label>
+<label><input type="radio" name="audience" value="SHOPS"> Shop Owners</label>
+<label><input type="radio" name="audience" value="ADMINS"> Admins</label>
+</div>
+</div>
+<div class="field full">
+<label for="message">Message</label>
+<textarea id="message" maxlength="500" required placeholder="Write your notification message..."></textarea>
+</div>
+<div class="field">
+<label for="channel">Delivery Channel</label>
+<select id="channel">
+<option value="IN_APP">In-App Notification</option>
+<option value="EMAIL">Email</option>
+<option value="SMS">SMS</option>
+<option value="PUSH">Push Notification</option>
+<option value="ALL">All Channels</option>
+</select>
+</div>
+<div class="field">
+<label for="action">Action</label>
+<select id="action">
+<option value="DRAFT">Save as Draft</option>
+<option value="SEND">Send Demo Notification</option>
+</select>
+</div>
+<div class="field full">
+<button class="btn" type="submit">Create Notification</button>
+</div>
+</div>
+</form>
+</section>
+
+<section class="panel">
+<h2>Notification History</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>TITLE</th><th>TYPE</th><th>AUDIENCE</th><th>CHANNEL</th><th>DATE</th><th>STATUS</th><th>ACTION</th></tr></thead>
+<tbody id="historyRows"></tbody>
+</table>
+</div>
+</section>
+
+<div class="note">
+<b>Important:</b> Ye abhi frontend demo hai. Send button kisi customer ko email, SMS ya push notification nahi bhejta. Real delivery, Firebase notification records aur delivery status Firebase integration ke baad implement honge.
+</div>
+<div class="footer">© Smart Printing Network • Notification Control Panel</div>
+</main>
+</div>
+
+<script>
+let notifications=[
+ {id:1,title:"Welcome to Smart Printing",type:"ANNOUNCEMENT",audience:"ALL",channel:"IN_APP",date:"04 Nov 2026",status:"SENT"},
+ {id:2,title:"New shop registration open",type:"UPDATE",audience:"SHOPS",channel:"EMAIL",date:"03 Nov 2026",status:"DRAFT"},
+ {id:3,title:"Special printing offer",type:"OFFER",audience:"CUSTOMERS",channel:"PUSH",date:"02 Nov 2026",status:"SENT"}
+];
+
+const $=id=>document.getElementById(id);
+
+function showToast(message){
+ $("toast").textContent=message;
+ $("toast").style.display="block";
+ setTimeout(()=>{$("toast").style.display="none"},3000);
+}
+
+function render(){
+ $("totalCount").textContent=notifications.length;
+ $("sentCount").textContent=notifications.filter(n=>n.status==="SENT").length;
+ $("draftCount").textContent=notifications.filter(n=>n.status==="DRAFT").length;
+
+ $("historyRows").innerHTML=notifications.length?notifications.map(n=>`
+ <tr>
+ <td><b>${escapeHTML(n.title)}</b></td>
+ <td>${n.type}</td>
+ <td>${n.audience}</td>
+ <td>${n.channel}</td>
+ <td>${n.date}</td>
+ <td><span class="badge">${n.status}</span></td>
+ <td><button class="btn btn-red" onclick="deleteNotification(${n.id})">Delete</button></td>
+ </tr>`).join(""):`<tr><td colspan="7" style="text-align:center;padding:25px">No notifications found</td></tr>`;
+}
+
+function escapeHTML(value){
+ return String(value).replace(/[&<>"']/g,char=>({
+ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ }[char]));
+}
+
+$("notificationForm").addEventListener("submit",function(e){
+ e.preventDefault();
+ const title=$("title").value.trim();
+ const message=$("message").value.trim();
+ if(!title||!message){showToast("Please fill all required fields.");return;}
+
+ const audience=document.querySelector('input[name="audience"]:checked').value;
+ const action=$("action").value;
+
+ notifications.unshift({
+  id:Date.now(),
+  title,
+  message,
+  type:$("type").value,
+  audience,
+  channel:$("channel").value,
+  date:new Date().toLocaleDateString("en-IN"),
+  status:action==="SEND"?"SENT":"DRAFT"
+ });
+
+ render();
+ this.reset();
+ showToast(action==="SEND"?"Demo notification created. Real delivery is not enabled.":"Notification saved as a demo draft.");
+});
+
+function deleteNotification(id){
+ if(!confirm("Is demo notification ko delete karein?"))return;
+ notifications=notifications.filter(n=>n.id!==id);
+ render();
+ showToast("Demo notification deleted.");
+}
+
+render();
+</script>
+</body>
+</html>
