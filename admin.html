@@ -1,459 +1,616 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#075bdb">
+  <title>Admin Login | Smart Printing</title>
 
-<title>Smart Printing - Admin Login</title>
+  <style>
+    :root {
+      --blue: #075bdb;
+      --dark: #073b91;
+      --light: #eaf3ff;
+      --text: #172b4d;
+      --muted: #718096;
+      --white: #ffffff;
+      --border: #dce7f5;
+      --danger: #dc3545;
+      --success: #128451;
+    }
 
-<style>
-* {
-  box-sizing: border-box;
-}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
 
-body {
-  margin: 0;
-  padding: 20px;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #102b55, #174ea6, #3478d4);
-}
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: var(--text);
+      background: linear-gradient(135deg, #eaf3ff, #ffffff, #dceaff);
+      overflow-x: hidden;
+      position: relative;
+    }
 
-.container {
-  width: 100%;
-  max-width: 430px;
-}
+    .background-circle {
+      position: fixed;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0878ff, #8fc5ff);
+      opacity: 0.12;
+      filter: blur(2px);
+      animation: float 9s ease-in-out infinite;
+      pointer-events: none;
+    }
 
-.card {
-  background: white;
-  padding: 28px;
-  border-radius: 18px;
-  box-shadow: 0 10px 35px rgba(0,0,0,0.2);
-}
+    .circle-one {
+      width: 280px;
+      height: 280px;
+      top: -90px;
+      left: -80px;
+    }
 
-h1 {
-  text-align: center;
-  color: #174ea6;
-  margin-bottom: 5px;
-}
+    .circle-two {
+      width: 350px;
+      height: 350px;
+      right: -130px;
+      bottom: -120px;
+      animation-delay: 2s;
+    }
 
-.subtitle {
-  text-align: center;
-  color: #777;
-  margin-bottom: 25px;
-}
+    .circle-three {
+      width: 100px;
+      height: 100px;
+      right: 15%;
+      top: 12%;
+      animation-delay: 4s;
+    }
 
-label {
-  display: block;
-  margin-top: 15px;
-  font-weight: bold;
-  font-size: 14px;
-}
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0) scale(1);
+      }
+      50% {
+        transform: translateY(-25px) scale(1.06);
+      }
+    }
 
-input {
-  width: 100%;
-  padding: 13px;
-  margin-top: 7px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 15px;
-}
+    .login-container {
+      width: 100%;
+      max-width: 430px;
+      position: relative;
+      z-index: 2;
+      animation: appear 0.7s ease;
+    }
 
-button {
-  width: 100%;
-  padding: 13px;
-  margin-top: 18px;
-  border: none;
-  border-radius: 8px;
-  background: #174ea6;
-  color: white;
-  font-size: 15px;
-  font-weight: bold;
-  cursor: pointer;
-}
+    @keyframes appear {
+      from {
+        opacity: 0;
+        transform: translateY(25px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
-button:disabled {
-  background: #999;
-  cursor: not-allowed;
-}
+    .login-card {
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: 24px;
+      padding: 35px 30px;
+      box-shadow: 0 20px 60px rgba(18, 73, 145, 0.13);
+      backdrop-filter: blur(12px);
+    }
 
-.reset {
-  background: #16834a;
-}
+    .brand {
+      text-align: center;
+      margin-bottom: 28px;
+    }
 
-.message {
-  text-align: center;
-  margin-top: 15px;
-  font-size: 14px;
-  overflow-wrap: anywhere;
-}
+    .brand-icon {
+      width: 75px;
+      height: 75px;
+      border-radius: 22px;
+      margin: 0 auto 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 34px;
+      background: linear-gradient(135deg, #0878ff, #0646ae);
+      box-shadow: 0 10px 25px rgba(7, 91, 219, 0.25);
+      animation: pulse 2.5s infinite;
+    }
 
-.success {
-  color: green;
-}
+    @keyframes pulse {
+      0%, 100% {
+        box-shadow: 0 10px 25px rgba(7, 91, 219, 0.25);
+      }
+      50% {
+        box-shadow: 0 10px 35px rgba(7, 91, 219, 0.45);
+      }
+    }
 
-.error {
-  color: red;
-}
+    .brand h1 {
+      font-size: 25px;
+      color: var(--dark);
+      margin-bottom: 7px;
+    }
 
-.hidden {
-  display: none !important;
-}
+    .brand p {
+      font-size: 13px;
+      color: var(--muted);
+    }
 
-.status {
-  padding: 12px;
-  background: #e8f5e9;
-  border-radius: 8px;
-  color: #16733a;
-  text-align: center;
-  margin-top: 15px;
-}
+    .admin-badge {
+      display: inline-block;
+      margin-top: 13px;
+      padding: 7px 13px;
+      border-radius: 30px;
+      background: var(--light);
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
 
-.note {
-  text-align: center;
-  font-size: 12px;
-  color: #777;
-  margin-top: 20px;
-}
-</style>
+    .form-title {
+      font-size: 19px;
+      margin-bottom: 7px;
+      color: var(--text);
+    }
+
+    .form-subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #344767;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-wrapper input {
+      width: 100%;
+      height: 49px;
+      padding: 0 45px 0 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      outline: none;
+      font-size: 14px;
+      color: var(--text);
+      background: #fbfdff;
+      transition: 0.25s;
+    }
+
+    .input-wrapper input:focus {
+      border-color: var(--blue);
+      background: white;
+      box-shadow: 0 0 0 4px rgba(7, 91, 219, 0.08);
+    }
+
+    .input-icon {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #8da2bd;
+      font-size: 17px;
+    }
+
+    .show-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: none;
+      background: transparent;
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 8px;
+    }
+
+    .password-input {
+      padding-right: 65px !important;
+    }
+
+    .login-btn {
+      width: 100%;
+      height: 51px;
+      margin-top: 7px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #0878ff, #0646ae);
+      color: white;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.25s;
+      box-shadow: 0 8px 20px rgba(7, 91, 219, 0.2);
+    }
+
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px rgba(7, 91, 219, 0.3);
+    }
+
+    .login-btn:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .message {
+      display: none;
+      padding: 12px;
+      margin-top: 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .message.error {
+      display: block;
+      color: #a51e2b;
+      background: #fff0f1;
+      border: 1px solid #ffd5d9;
+    }
+
+    .message.success {
+      display: block;
+      color: #087747;
+      background: #eafaf2;
+      border: 1px solid #c9f0dc;
+    }
+
+    .security-note {
+      margin-top: 23px;
+      padding: 13px;
+      border-radius: 12px;
+      background: #f3f8ff;
+      color: #536984;
+      font-size: 11px;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .footer {
+      text-align: center;
+      color: #8293aa;
+      font-size: 11px;
+      margin-top: 22px;
+    }
+
+    .footer strong {
+      color: var(--blue);
+    }
+
+    @media (max-width: 480px) {
+      .login-card {
+        padding: 30px 22px;
+        border-radius: 20px;
+      }
+
+      .brand h1 {
+        font-size: 23px;
+      }
+
+      .background-circle {
+        opacity: 0.08;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="container">
+  <div class="background-circle circle-one"></div>
+  <div class="background-circle circle-two"></div>
+  <div class="background-circle circle-three"></div>
 
-  <!-- ADMIN LOGIN -->
+  <main class="login-container">
 
-  <div class="card" id="loginBox">
+    <section class="login-card">
 
-    <h1>🖨️ Smart Printing</h1>
+      <div class="brand">
+        <div class="brand-icon">🖨️</div>
 
-    <div class="subtitle">Admin Secure Login</div>
+        <h1>Smart Printing</h1>
 
-    <label>Email Address</label>
+        <p>Printing Kiosk Network</p>
 
-    <input
-      type="email"
-      id="email"
-      placeholder="Admin Email"
-      autocomplete="username"
-    >
+        <span class="admin-badge">SUPER ADMIN PANEL</span>
+      </div>
 
-    <label>Password</label>
+      <h2 class="form-title">Welcome Back!</h2>
 
-    <input
-      type="password"
-      id="password"
-      placeholder="Enter Password"
-      autocomplete="current-password"
-    >
+      <p class="form-subtitle">
+        Sign in to access your Smart Printing administration dashboard.
+      </p>
 
-    <button id="loginBtn">
-      Login Securely
-    </button>
+      <form id="loginForm">
 
-    <button id="resetBtn" class="reset">
-      Forgot Password?
-    </button>
+        <div class="form-group">
+          <label for="email">Admin Email Address</label>
 
-    <div id="loginMessage" class="message"></div>
+          <div class="input-wrapper">
+            <input
+              type="email"
+              id="email"
+              placeholder="Enter admin email"
+              autocomplete="username"
+              required
+            >
+            <span class="input-icon">✉️</span>
+          </div>
+        </div>
 
-    <div class="note">
-      Authorized Admin Access Only
+        <div class="form-group">
+          <label for="password">Password</label>
+
+          <div class="input-wrapper">
+            <input
+              type="password"
+              id="password"
+              class="password-input"
+              placeholder="Enter your password"
+              autocomplete="current-password"
+              required
+            >
+
+            <button
+              type="button"
+              class="show-password"
+              id="togglePassword"
+            >
+              Show
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="login-btn" id="loginBtn">
+          Secure Admin Login →
+        </button>
+
+        <div id="message" class="message" role="alert"></div>
+
+      </form>
+
+      <div class="security-note">
+        🔒 <strong>Secure Admin Access</strong><br>
+        Only the authorised Super Admin account can access this panel.
+      </div>
+
+    </section>
+
+    <div class="footer">
+      © 2026 <strong>Smart Printing</strong><br>
+      Administration Portal
     </div>
 
-  </div>
+  </main>
 
+  <script type="module">
 
-  <!-- ADMIN VERIFIED -->
-
-  <div class="card hidden" id="adminBox">
-
-    <h1>Admin Verified</h1>
-
-    <div class="status">
-      🟢 Admin Session Active
-    </div>
-
-    <p><b>Admin Email:</b></p>
-
-    <p id="adminEmail"></p>
-
-    <p><b>Admin UID:</b></p>
-
-    <p id="adminUID" style="overflow-wrap:anywhere;"></p>
-
-    <p id="sessionStatus" class="message success">
-      Session Active
-    </p>
-
-    <button id="dashboardBtn">
-      Open Admin Dashboard
-    </button>
-
-    <button id="logoutBtn" style="background:#d93025;">
-      Logout
-    </button>
-
-  </div>
-
-</div>
-
-
-<script type="module">
-
-import { auth } from "./firebase.js";
-
-import {
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-  sendPasswordResetEmail,
-  setPersistence,
-  browserLocalPersistence
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-
-// ADMIN UID
-
-const ADMIN_UID = "ibK3XWMUEYQIbBhPmGQRnW72MZg1";
-
-
-// ELEMENTS
-
-const loginBox = document.getElementById("loginBox");
-const adminBox = document.getElementById("adminBox");
-
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
-
-const loginBtn = document.getElementById("loginBtn");
-const resetBtn = document.getElementById("resetBtn");
-const logoutBtn = document.getElementById("logoutBtn");
-const dashboardBtn = document.getElementById("dashboardBtn");
-
-const loginMessage = document.getElementById("loginMessage");
-
-
-// MESSAGE
-
-function showMessage(text, type = "") {
-
-  loginMessage.textContent = text;
-  loginMessage.className = "message " + type;
-
-}
-
-
-// ERROR HANDLING
-
-function friendlyError(error) {
-
-  const errors = {
-
-    "auth/invalid-email": "Invalid email address.",
-
-    "auth/user-not-found": "Admin account not found.",
-
-    "auth/wrong-password": "Incorrect password.",
-
-    "auth/invalid-credential": "Incorrect email or password.",
-
-    "auth/too-many-requests": "Too many attempts. Try again later.",
-
-    "auth/network-request-failed": "Internet connection failed.",
-
-    "auth/user-disabled": "This account is disabled."
-
-  };
-
-  return errors[error.code] || error.message;
-
-}
-
-
-// ADMIN LOGIN
-
-loginBtn.addEventListener("click", async () => {
-
-  const email = emailInput.value.trim();
-  const password = passwordInput.value;
-
-  if (!email || !password) {
-
-    showMessage("Enter email and password.", "error");
-
-    return;
-
-  }
-
-  loginBtn.disabled = true;
-
-  showMessage("Checking admin credentials...");
-
-  try {
-
-    await setPersistence(auth, browserLocalPersistence);
-
-    const result = await signInWithEmailAndPassword(
+    import {
       auth,
-      email,
-      password
-    );
+      ADMIN_UID
+    } from "./firebase.js";
 
-    if (result.user.uid !== ADMIN_UID) {
+    import {
+      signInWithEmailAndPassword,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-      await signOut(auth);
 
-      showMessage(
-        "Access denied. Unauthorized account.",
-        "error"
+    const loginForm = document.getElementById("loginForm");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const loginBtn = document.getElementById("loginBtn");
+    const messageBox = document.getElementById("message");
+    const togglePassword = document.getElementById("togglePassword");
+
+
+    let loginInProgress = false;
+
+
+    function showMessage(text, type = "error") {
+      messageBox.textContent = text;
+      messageBox.className = "message " + type;
+    }
+
+
+    function hideMessage() {
+      messageBox.textContent = "";
+      messageBox.className = "message";
+    }
+
+
+    function setLoading(loading) {
+      loginBtn.disabled = loading;
+
+      loginBtn.textContent = loading
+        ? "Verifying Admin Account..."
+        : "Secure Admin Login →";
+    }
+
+
+    function isSuperAdmin(user) {
+      return Boolean(
+        user &&
+        ADMIN_UID &&
+        user.uid === ADMIN_UID
       );
-
-      return;
-
     }
 
-    showMessage(
-      "Admin login successful.",
-      "success"
-    );
 
-  } catch (error) {
+    // Password visibility
+    togglePassword.addEventListener("click", () => {
 
-    showMessage(
-      friendlyError(error),
-      "error"
-    );
+      const isPassword =
+        passwordInput.type === "password";
 
-  } finally {
+      passwordInput.type =
+        isPassword ? "text" : "password";
 
-    loginBtn.disabled = false;
+      togglePassword.textContent =
+        isPassword ? "Hide" : "Show";
 
-  }
-
-});
+    });
 
 
-// FORGOT PASSWORD
+    // Check existing Firebase session
+    onAuthStateChanged(auth, async (user) => {
 
-resetBtn.addEventListener("click", async () => {
+      if (!user) {
+        return;
+      }
 
-  const email = emailInput.value.trim();
+      if (isSuperAdmin(user)) {
 
-  if (!email) {
+        window.location.replace("admin-dashboard.html");
 
-    showMessage(
-      "Enter your admin email first.",
-      "error"
-    );
+      } else {
 
-    return;
+        // Any non-admin user must not remain in this admin session.
+        await signOut(auth);
 
-  }
+        showMessage(
+          "Access denied. This account is not authorised as Super Admin."
+        );
 
-  resetBtn.disabled = true;
+      }
 
-  showMessage("Sending password reset email...");
-
-  try {
-
-    await sendPasswordResetEmail(auth, email);
-
-    showMessage(
-      "Password reset email sent. Check your inbox.",
-      "success"
-    );
-
-  } catch (error) {
-
-    showMessage(
-      friendlyError(error),
-      "error"
-    );
-
-  } finally {
-
-    resetBtn.disabled = false;
-
-  }
-
-});
+    });
 
 
-// AUTH SESSION MONITOR
+    // Admin Login
+    loginForm.addEventListener("submit", async (event) => {
 
-onAuthStateChanged(auth, async (user) => {
+      event.preventDefault();
 
-  if (user && user.uid === ADMIN_UID) {
+      if (loginInProgress) {
+        return;
+      }
 
-    loginBox.classList.add("hidden");
+      hideMessage();
 
-    adminBox.classList.remove("hidden");
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
 
-    document.getElementById("adminEmail").textContent =
-      user.email || "Admin";
+      if (!email || !password) {
 
-    document.getElementById("adminUID").textContent =
-      user.uid;
+        showMessage("Please enter your email and password.");
+        return;
 
-    document.getElementById("sessionStatus").textContent =
-      "Session Active";
+      }
 
-  } else {
+      loginInProgress = true;
+      setLoading(true);
 
-    loginBox.classList.remove("hidden");
+      try {
 
-    adminBox.classList.add("hidden");
+        const credential =
+          await signInWithEmailAndPassword(
+            auth,
+            email,
+            password
+          );
 
-    if (user && user.uid !== ADMIN_UID) {
+        const user = credential.user;
 
-      await signOut(auth);
+        if (!isSuperAdmin(user)) {
 
-    }
+          await signOut(auth);
 
-  }
+          showMessage(
+            "Access denied. Your account does not have Super Admin permission."
+          );
 
-});
+          return;
 
+        }
 
-// OPEN ADMIN DASHBOARD
+        showMessage(
+          "Login successful! Opening dashboard...",
+          "success"
+        );
 
-dashboardBtn.addEventListener("click", () => {
+        window.location.replace("admin-dashboard.html");
 
-  window.location.href = "admin-dashboard.html";
+      } catch (error) {
 
-});
+        console.error("Admin login error:", error);
 
+        let errorMessage =
+          "Login failed. Please try again.";
 
-// LOGOUT
+        if (
+          error.code === "auth/invalid-credential" ||
+          error.code === "auth/wrong-password" ||
+          error.code === "auth/user-not-found"
+        ) {
 
-logoutBtn.addEventListener("click", async () => {
+          errorMessage =
+            "Incorrect email or password.";
 
-  logoutBtn.disabled = true;
+        } else if (
+          error.code === "auth/too-many-requests"
+        ) {
 
-  try {
+          errorMessage =
+            "Too many attempts. Please try again later.";
 
-    await signOut(auth);
+        } else if (
+          error.code === "auth/network-request-failed"
+        ) {
 
-    showMessage("Logged out successfully.", "success");
+          errorMessage =
+            "Network error. Please check your internet connection.";
 
-  } catch (error) {
+        } else if (
+          error.code === "auth/invalid-email"
+        ) {
 
-    alert("Logout failed: " + friendlyError(error));
+          errorMessage =
+            "Please enter a valid email address.";
 
-  } finally {
+        }
 
-    logoutBtn.disabled = false;
+        showMessage(errorMessage);
 
-  }
+      } finally {
 
-});
+        loginInProgress = false;
+        setLoading(false);
 
-</script>
+      }
+
+    });
+
+  </script>
 
 </body>
-      </html>
+                                       </html>
