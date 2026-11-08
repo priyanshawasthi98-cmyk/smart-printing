@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop Registration | Smart Printing</title>
+<style>
+:root{
+  --blue:#1769e0;
+  --dark:#10366f;
+  --light:#edf5ff;
+  --text:#1c2d45;
+  --muted:#718096;
+  --border:#dfe8f5;
+  --green:#159b65;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  color:var(--text);
+  background:#f3f7ff;
+}
+header{
+  background:white;
+  border-bottom:1px solid var(--border);
+  padding:17px 6%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.logo{font-size:23px;font-weight:800;color:var(--dark)}
+.logo span{color:var(--blue)}
+header a{
+  color:var(--blue);
+  text-decoration:none;
+  font-size:14px;
+  font-weight:700;
+}
+.hero{
+  text-align:center;
+  padding:35px 15px 15px;
+}
+.hero h1{font-size:29px;margin:0 0 10px}
+.hero p{color:var(--muted);font-size:14px;line-height:1.6}
+.container{
+  width:min(760px,94%);
+  margin:20px auto 45px;
+}
+.form-card{
+  background:white;
+  padding:28px;
+  border-radius:18px;
+  border:1px solid var(--border);
+  box-shadow:0 10px 35px rgba(25,75,140,.07);
+}
+.section-title{
+  font-size:17px;
+  font-weight:800;
+  color:var(--dark);
+  margin:8px 0 17px;
+}
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+.field{margin-bottom:16px}
+label{
+  display:block;
+  font-size:13px;
+  font-weight:700;
+  margin-bottom:7px;
+}
+input,select,textarea{
+  width:100%;
+  padding:12px 13px;
+  border:1px solid var(--border);
+  border-radius:9px;
+  outline:none;
+  background:#fff;
+  color:var(--text);
+  font:inherit;
+  font-size:14px;
+}
+input:focus,select:focus,textarea:focus{
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(23,105,224,.09);
+}
+textarea{resize:vertical;min-height:85px}
+.divider{
+  border:0;
+  border-top:1px solid var(--border);
+  margin:22px 0;
+}
+.password-wrap{position:relative}
+.password-wrap input{padding-right:70px}
+.show-password{
+  position:absolute;
+  right:10px;
+  top:50%;
+  transform:translateY(-50%);
+  border:0;
+  background:none;
+  color:var(--blue);
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+}
+.check{
+  display:flex;
+  gap:9px;
+  align-items:flex-start;
+  font-size:13px;
+  color:var(--muted);
+  line-height:1.5;
+  margin:8px 0 18px;
+}
+.check input{width:17px;height:17px;margin:1px 0 0}
+.submit{
+  width:100%;
+  padding:14px;
+  background:linear-gradient(110deg,#1769e0,#318df2);
+  border:0;
+  border-radius:10px;
+  color:white;
+  font-size:15px;
+  font-weight:800;
+  cursor:pointer;
+}
+.submit:hover{filter:brightness(.95)}
+.demo{
+  padding:12px 14px;
+  background:#fff5df;
+  color:#875a0b;
+  border:1px solid #f1d99d;
+  border-radius:10px;
+  font-size:12px;
+  line-height:1.6;
+  margin-bottom:20px;
+}
+.success{
+  display:none;
+  padding:25px 15px;
+  text-align:center;
+  background:#e9f8f0;
+  border:1px solid #c6ead7;
+  border-radius:12px;
+}
+.success h2{color:var(--green)}
+.success p{font-size:14px;line-height:1.6;color:#456}
+footer{
+  text-align:center;
+  color:#8b9ab0;
+  font-size:12px;
+  padding:20px;
+}
+@media(max-width:600px){
+  header{padding:15px 4%}
+  .logo{font-size:20px}
+  .hero h1{font-size:24px}
+  .form-card{padding:19px}
+  .grid{grid-template-columns:1fr;gap:0}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Smart <span>Printing</span></div>
+  <a href="index.html">Customer Website →</a>
+</header>
+
+<section class="hero">
+  <h1>Join Smart Printing Network</h1>
+  <p>Apni printing shop ko online customers se jodiye.<br>
+  Registration submit karein aur approval ka intezar karein.</p>
+</section>
+
+<main class="container">
+  <div class="form-card">
+
+    <div class="demo">
+      <strong>Demo Mode:</strong> Ye registration form abhi preview hai.
+      Submit karne par real account ya shop application create nahi hogi.
+      Firebase integration baad mein karenge.
+    </div>
+
+    <form id="registrationForm">
+
+      <h2 class="section-title">1. Shop Information</h2>
+
+      <div class="field">
+        <label for="shopName">Shop Name *</label>
+        <input id="shopName" required maxlength="80"
+          placeholder="Example: Rahul Digital Prints">
+      </div>
+
+      <div class="grid">
+        <div class="field">
+          <label for="shopType">Shop Type *</label>
+          <select id="shopType" required>
+            <option value="">Select shop type</option>
+            <option>Photocopy and Printing</option>
+            <option>Digital Printing</option>
+            <option>Stationery and Printing</option>
+            <option>Cyber Cafe</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="college">Nearby College</label>
+          <input id="college" maxlength="100"
+            placeholder="College name">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="address">Full Shop Address *</label>
+        <textarea id="address" required maxlength="300"
+          placeholder="Shop number, street, area..."></textarea>
+      </div>
+
+      <div class="grid">
+        <div class="field">
+          <label for="city">City *</label>
+          <input id="city" required maxlength="60" placeholder="City">
+        </div>
+        <div class="field">
+          <label for="pincode">PIN Code *</label>
+          <input id="pincode" required inputmode="numeric"
+            pattern="[0-9]{6}" maxlength="6" placeholder="6-digit PIN">
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <h2 class="section-title">2. Owner Information</h2>
+
+      <div class="grid">
+        <div class="field">
+          <label for="ownerName">Owner Full Name *</label>
+          <input id="ownerName" required maxlength="80"
+            placeholder="Your full name">
+        </div>
+        <div class="field">
+          <label for="phone">Mobile Number *</label>
+          <input id="phone" required inputmode="numeric"
+            pattern="[6-9][0-9]{9}" maxlength="10"
+            placeholder="10-digit mobile number">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="email">Email Address *</label>
+        <input id="email" type="email" required maxlength="120"
+          placeholder="you@example.com">
+      </div>
+
+      <hr class="divider">
+
+      <h2 class="section-title">3. Account Security</h2>
+
+      <div class="field">
+        <label for="password">Create Password *</label>
+        <div class="password-wrap">
+          <input id="password" type="password" required minlength="8"
+            maxlength="64" placeholder="Minimum 8 characters">
+          <button class="show-password" type="button"
+            data-target="password">Show</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="confirmPassword">Confirm Password *</label>
+        <div class="password-wrap">
+          <input id="confirmPassword" type="password" required
+            minlength="8" maxlength="64" placeholder="Enter password again">
+          <button class="show-password" type="button"
+            data-target="confirmPassword">Show</button>
+        </div>
+      </div>
+
+      <label class="check">
+        <input type="checkbox" id="agreement" required>
+        <span>
+          Main confirm karta/karti hoon ki di gayi information sahi hai
+          aur shop registration ke liye submit ki ja rahi hai.
+        </span>
+      </label>
+
+      <button class="submit" type="submit">
+        Preview Registration
+      </button>
+    </form>
+
+    <div class="success" id="success">
+      <div style="font-size:42px">✓</div>
+      <h2>Form Preview Successful!</h2>
+      <p id="successMessage"></p>
+      <p><strong>Note:</strong> Abhi koi real registration submit nahi hua.
+      Firebase integration ke baad application admin approval ke liye jayegi.</p>
+      <button class="submit" type="button" id="backButton">
+        Back to Form
+      </button>
+    </div>
+
+  </div>
+</main>
+
+<footer>© Smart Printing Network · Shop Partner Registration</footer>
+
+<script>
+const form = document.getElementById("registrationForm");
+const success = document.getElementById("success");
+
+document.querySelectorAll(".show-password").forEach(button => {
+  button.addEventListener("click", () => {
+    const input = document.getElementById(button.dataset.target);
+    const show = input.type === "password";
+    input.type = show ? "text" : "password";
+    button.textContent = show ? "Hide" : "Show";
+  });
+});
+
+form.addEventListener("submit", event => {
+  event.preventDefault();
+
+  const password = document.getElementById("password").value;
+  const confirm = document.getElementById("confirmPassword").value;
+
+  if(password !== confirm){
+    alert("Password aur Confirm Password match nahi kar rahe.");
+    return;
+  }
+
+  if(!form.reportValidity()) return;
+
+  const shopName = document.getElementById("shopName").value.trim();
+
+  document.getElementById("successMessage").textContent =
+    shopName + " ke registration form ka preview complete ho gaya.";
+
+  form.style.display = "none";
+  success.style.display = "block";
+});
+
+document.getElementById("backButton").addEventListener("click", () => {
+  success.style.display = "none";
+  form.style.display = "block";
+});
+</script>
+
+</body>
+</html>
