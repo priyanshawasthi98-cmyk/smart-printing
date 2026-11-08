@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Printing Management | Smart Printing</title>
+<style>
+:root {
+  --blue:#1769e0;
+  --dark:#123b78;
+  --light:#edf5ff;
+  --white:#fff;
+  --text:#1c2d45;
+  --muted:#718096;
+  --border:#e2eaf5;
+  --green:#159b65;
+  --orange:#e58a19;
+  --red:#d94a4a;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  color:var(--text);
+  background:#f4f8ff;
+}
+button,select{font:inherit}
+.layout{display:flex;min-height:100vh}
+.sidebar{
+  width:245px;background:#102f61;color:white;
+  padding:25px 16px;flex-shrink:0;
+}
+.brand{font-size:23px;font-weight:800;margin:0 8px 30px}
+.brand span{color:#69b4ff}
+.nav a{
+  display:block;color:#dceaff;text-decoration:none;
+  padding:13px 14px;border-radius:10px;margin:5px 0;
+  font-size:14px;
+}
+.nav a:hover,.nav a.active{background:#24549a;color:white}
+.main{flex:1;min-width:0;padding:28px}
+.topbar{
+  display:flex;justify-content:space-between;
+  align-items:center;gap:15px;margin-bottom:25px;
+}
+h1{font-size:27px;margin:0 0 7px}
+.subtitle{color:var(--muted);font-size:14px}
+.admin{font-size:13px;color:var(--muted)}
+.demo{
+  background:#fff5df;color:#885a08;border:1px solid #f3d99e;
+  padding:12px 15px;border-radius:10px;font-size:13px;
+  margin-bottom:20px;
+}
+.stats{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:15px;margin-bottom:22px;
+}
+.card{
+  background:white;border:1px solid var(--border);
+  border-radius:15px;padding:19px;
+  box-shadow:0 5px 20px rgba(25,75,140,.04);
+}
+.stat-label{font-size:13px;color:var(--muted)}
+.stat-value{font-size:27px;font-weight:800;margin-top:9px}
+.stat-value.blue{color:var(--blue)}
+.stat-value.green{color:var(--green)}
+.stat-value.orange{color:var(--orange)}
+.grid{
+  display:grid;grid-template-columns:minmax(0,1.6fr) minmax(260px,.8fr);
+  gap:18px;align-items:start;
+}
+.section-title{
+  font-size:18px;font-weight:750;margin:0 0 17px;
+}
+.toolbar{
+  display:flex;gap:10px;flex-wrap:wrap;margin-bottom:15px;
+}
+input,select{
+  padding:11px 12px;border:1px solid var(--border);
+  border-radius:9px;background:white;color:var(--text);
+  min-width:0;
+}
+input{flex:1}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:560px}
+th,td{
+  text-align:left;padding:13px 10px;
+  border-bottom:1px solid var(--border);font-size:13px;
+}
+th{color:var(--muted);font-weight:650}
+.status{
+  display:inline-block;padding:5px 9px;border-radius:20px;
+  font-size:11px;font-weight:700;background:#edf3ff;color:#2459a5;
+}
+.status.printing{background:#fff1d9;color:#9b6100}
+.status.completed{background:#e1f7ec;color:#08794a}
+.status.pending{background:#edf1f6;color:#526176}
+.btn{
+  border:0;border-radius:8px;padding:9px 12px;
+  background:var(--blue);color:white;cursor:pointer;
+  font-size:12px;font-weight:700;
+}
+.btn:hover{filter:brightness(.93)}
+.btn.secondary{background:#eaf2ff;color:#1758b5}
+.btn.danger{background:#fff0f0;color:#bd3434}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.printer{
+  display:flex;align-items:center;gap:12px;
+  padding:13px 0;border-bottom:1px solid var(--border);
+}
+.printer-icon{
+  width:43px;height:43px;border-radius:12px;
+  background:#eaf3ff;display:grid;place-items:center;
+  font-size:22px;
+}
+.printer-info{flex:1;min-width:0}
+.printer-name{font-weight:700;font-size:14px}
+.printer-small{font-size:12px;color:var(--muted);margin-top:5px}
+.dot{
+  width:9px;height:9px;border-radius:50%;
+  display:inline-block;background:var(--green);
+}
+.dot.off{background:var(--red)}
+.setting{margin-top:17px}
+.setting label{
+  display:block;font-size:13px;font-weight:650;margin-bottom:8px;
+}
+.setting select{width:100%}
+.notice{
+  background:var(--light);padding:13px;border-radius:10px;
+  color:#315a91;font-size:12px;line-height:1.6;margin-top:17px;
+}
+.empty{text-align:center;color:var(--muted);padding:25px}
+.footer{text-align:center;color:#98a6b8;font-size:12px;margin-top:25px}
+@media(max-width:1000px){
+ .stats{grid-template-columns:repeat(2,1fr)}
+ .grid{grid-template-columns:1fr}
+}
+@media(max-width:650px){
+ .layout{display:block}
+ .sidebar{width:100%;padding:15px}
+ .brand{margin-bottom:13px}
+ .nav{display:flex;overflow-x:auto;gap:5px}
+ .nav a{white-space:nowrap;padding:10px}
+ .main{padding:17px}
+ .topbar{align-items:flex-start}
+ h1{font-size:22px}
+ .stats{gap:9px}
+ .card{padding:14px}
+ .stat-value{font-size:23px}
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">Smart <span>Printing</span></div>
+    <nav class="nav">
+      <a href="admin-dashboard.html">Dashboard</a>
+      <a href="order-management.html">Orders</a>
+      <a href="payment-management.html">Payments</a>
+      <a href="pricing-management.html">Pricing</a>
+      <a href="shop-management.html">Shops</a>
+      <a href="college-management.html">Colleges</a>
+      <a href="commission-management.html">Commission</a>
+      <a href="wallet-management.html">Wallets</a>
+      <a href="notification-management.html">Notifications</a>
+      <a href="security-management.html">Security</a>
+      <a href="website-settings.html">Website Settings</a>
+      <a href="reports-management.html">Reports</a>
+      <a class="active" href="printing-management.html">Printing</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <h1>Printing Management</h1>
+        <div class="subtitle">Print queue and printer control centre</div>
+      </div>
+      <div class="admin" id="adminEmail">Admin</div>
+    </div>
+
+    <div class="demo">
+      <strong>Demo Mode:</strong> Ye page abhi sample data par kaam karta hai.
+      Real printer connection, live print queue aur automatic printing baad mein integrate honge.
+    </div>
+
+    <section class="stats">
+      <div class="card">
+        <div class="stat-label">Total Jobs</div>
+        <div class="stat-value blue" id="totalJobs">4</div>
+      </div>
+      <div class="card">
+        <div class="stat-label">Waiting</div>
+        <div class="stat-value orange" id="waitingJobs">2</div>
+      </div>
+      <div class="card">
+        <div class="stat-label">Printing</div>
+        <div class="stat-value blue" id="printingJobs">1</div>
+      </div>
+      <div class="card">
+        <div class="stat-label">Completed</div>
+        <div class="stat-value green" id="completedJobs">1</div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h2 class="section-title">Print Queue</h2>
+
+        <div class="toolbar">
+          <input id="search" placeholder="Search order ID or customer...">
+          <select id="filter">
+            <option value="ALL">All Jobs</option>
+            <option value="PENDING">Waiting</option>
+            <option value="PRINTING">Printing</option>
+            <option value="COMPLETED">Completed</option>
+          </select>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Print Details</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="queueBody"></tbody>
+          </table>
+        </div>
+        <div class="empty" id="emptyMessage" hidden>No print jobs found.</div>
+      </div>
+
+      <div class="card">
+        <h2 class="section-title">Printer Status</h2>
+
+        <div class="printer">
+          <div class="printer-icon">🖨️</div>
+          <div class="printer-info">
+            <div class="printer-name">Main Printer</div>
+            <div class="printer-small">Demo printer · USB</div>
+          </div>
+          <span class="dot"></span>
+        </div>
+
+        <div class="printer">
+          <div class="printer-icon">🖨️</div>
+          <div class="printer-info">
+            <div class="printer-name">Colour Printer</div>
+            <div class="printer-small">Demo printer · Network</div>
+          </div>
+          <span class="dot off"></span>
+        </div>
+
+        <div class="setting">
+          <label for="defaultPrinter">Default Printer</label>
+          <select id="defaultPrinter">
+            <option>Main Printer</option>
+            <option>Colour Printer</option>
+          </select>
+        </div>
+
+        <div class="setting">
+          <label for="printQuality">Print Quality</label>
+          <select id="printQuality">
+            <option>Normal</option>
+            <option>High</option>
+            <option>Draft</option>
+          </select>
+        </div>
+
+        <div class="setting">
+          <label for="paperSize">Paper Size</label>
+          <select id="paperSize">
+            <option>A4</option>
+            <option>A3</option>
+            <option>Letter</option>
+          </select>
+        </div>
+
+        <div class="notice">
+          Printer settings abhi sirf preview ke liye hain.
+          Actual printer ko connect karne ke liye owner app ya local
+          print service ki zarurat hogi.
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">Smart Printing · Printing Control Centre</div>
+  </main>
+</div>
+
+<script type="module">
+import { auth, ADMIN_UID } from "./firebase.js";
+import { onAuthStateChanged, signOut } from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const sampleJobs = [
+  {id:"SP-1001",name:"Rahul Sharma",pages:25,type:"B&W",copies:2,status:"PENDING"},
+  {id:"SP-1002",name:"Aman Verma",pages:40,type:"Colour",copies:1,status:"PRINTING"},
+  {id:"SP-1003",name:"Priya Patel",pages:18,type:"B&W",copies:1,status:"COMPLETED"},
+  {id:"SP-1004",name:"Rohit Singh",pages:60,type:"Colour",copies:3,status:"PENDING"}
+];
+
+let jobs = sampleJobs.map(job => ({...job}));
+
+const body = document.getElementById("queueBody");
+const search = document.getElementById("search");
+const filter = document.getElementById("filter");
+
+function render(){
+  const term = search.value.trim().toLowerCase();
+  const selected = filter.value;
+
+  const visible = jobs.filter(job => {
+    const matchesText =
+      job.id.toLowerCase().includes(term) ||
+      job.name.toLowerCase().includes(term);
+
+    return matchesText &&
+      (selected === "ALL" || job.status === selected);
+  });
+
+  body.innerHTML = visible.map(job => {
+    const statusClass = job.status.toLowerCase();
+    let action = "";
+
+    if(job.status === "PENDING"){
+      action = `<button class="btn" data-action="start" data-id="${job.id}">Start</button>`;
+    } else if(job.status === "PRINTING"){
+      action = `<button class="btn" data-action="complete" data-id="${job.id}">Complete</button>`;
+    } else {
+      action = `<span style="color:#159b65;font-weight:700">Done ✓</span>`;
+    }
+
+    return `
+      <tr>
+        <td><strong>${job.id}</strong></td>
+        <td>${job.name}</td>
+        <td>${job.pages} pages · ${job.type} · ${job.copies} copies</td>
+        <td><span class="status ${statusClass}">${job.status}</span></td>
+        <td>${action}</td>
+      </tr>`;
+  }).join("");
+
+  document.getElementById("emptyMessage").hidden = visible.length !== 0;
+
+  document.getElementById("totalJobs").textContent = jobs.length;
+  document.getElementById("waitingJobs").textContent =
+    jobs.filter(j => j.status === "PENDING").length;
+  document.getElementById("printingJobs").textContent =
+    jobs.filter(j => j.status === "PRINTING").length;
+  document.getElementById("completedJobs").textContent =
+    jobs.filter(j => j.status === "COMPLETED").length;
+}
+
+body.addEventListener("click", event => {
+  const button = event.target.closest("button[data-action]");
+  if(!button) return;
+
+  const job = jobs.find(j => j.id === button.dataset.id);
+  if(!job) return;
+
+  if(button.dataset.action === "start" && job.status === "PENDING"){
+    job.status = "PRINTING";
+  } else if(button.dataset.action === "complete" && job.status === "PRINTING"){
+    job.status = "COMPLETED";
+  }
+
+  render();
+});
+
+search.addEventListener("input", render);
+filter.addEventListener("change", render);
+
+onAuthStateChanged(auth, async user => {
+  if(!user){
+    location.replace("admin.html");
+    return;
+  }
+
+  if(user.uid !== ADMIN_UID){
+    await signOut(auth);
+    location.replace("admin.html");
+    return;
+  }
+
+  document.getElementById("adminEmail").textContent =
+    user.email || "Super Admin";
+
+  render();
+});
+</script>
+</body>
+</html>
