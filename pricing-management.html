@@ -1,639 +1,415 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pricing Management - Smart Printing</title>
-
+  <title>Pricing Management | Smart Printing</title>
   <style>
-    * {
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
+    :root {
+      --blue: #1769e0;
+      --dark: #12315c;
+      --bg: #f3f7ff;
+      --muted: #64748b;
+      --border: #dce7f7;
+      --white: #fff;
+      --green: #12845b;
+      --red: #d83d4e;
     }
-
+    * { box-sizing: border-box; }
     body {
       margin: 0;
-      padding: 20px;
-      background: #f1f5f9;
-      color: #1e293b;
+      font-family: Arial, sans-serif;
+      color: var(--dark);
+      background: linear-gradient(135deg,#edf4ff,#fff 55%,#e9f2ff);
+      min-height: 100vh;
     }
-
-    .container {
-      max-width: 850px;
-      margin: auto;
+    header {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 17px 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      z-index: 5;
     }
-
-    .header {
-      background: #172554;
-      color: white;
-      padding: 22px;
-      border-radius: 12px;
-      margin-bottom: 20px;
-    }
-
-    .header h1 {
-      margin: 0 0 8px;
-    }
-
-    .header p {
-      margin: 0;
-      color: #cbd5e1;
-    }
-
-    .card {
-      background: white;
-      padding: 22px;
-      border-radius: 12px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    }
-
-    .card h2 {
-      margin-top: 0;
-      font-size: 20px;
-    }
-
-    .price-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-    }
-
-    .field label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 8px;
-    }
-
-    .field input {
-      width: 100%;
-      padding: 13px;
-      border: 1px solid #cbd5e1;
-      border-radius: 8px;
-      font-size: 17px;
-    }
-
-    .field small {
-      display: block;
-      color: #64748b;
-      margin-top: 5px;
-    }
-
+    .brand { font-size: 21px; font-weight: 800; color: var(--blue); }
+    .brand small { display:block; font-size:11px; color:var(--muted); margin-top:3px; }
     button {
-      border: none;
-      border-radius: 8px;
-      padding: 13px 18px;
-      font-size: 15px;
-      font-weight: bold;
+      border: 0;
+      border-radius: 11px;
+      padding: 12px 17px;
+      font-weight: 700;
       cursor: pointer;
-      margin: 5px 5px 5px 0;
+      transition: .2s;
     }
-
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
+    button:hover { transform: translateY(-2px); }
+    .logout { background:#fff0f1; color:var(--red); }
+    main { width:min(950px,92%); margin:30px auto 55px; }
+    .heading { margin-bottom:22px; }
+    .heading h1 { margin:0 0 8px; font-size:29px; }
+    .heading p { margin:0; color:var(--muted); line-height:1.6; }
+    .card {
+      background:rgba(255,255,255,.94);
+      border:1px solid var(--border);
+      border-radius:20px;
+      padding:24px;
+      margin-bottom:20px;
+      box-shadow:0 12px 35px rgba(30,75,140,.07);
+      animation:rise .5s ease both;
     }
-
-    .publish {
-      background: #16a34a;
-      color: white;
-      width: 100%;
-      margin-top: 20px;
+    @keyframes rise {
+      from { opacity:0; transform:translateY(12px); }
+      to { opacity:1; transform:translateY(0); }
     }
-
-    .default {
-      background: #e2e8f0;
-      color: #1e293b;
+    .card h2 { margin:0 0 7px; font-size:19px; }
+    .sub { color:var(--muted); font-size:13px; line-height:1.5; margin-bottom:20px; }
+    .grid {
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:17px;
     }
-
-    .reload {
-      background: #2563eb;
-      color: white;
+    .field label { display:block; font-size:13px; font-weight:700; margin-bottom:8px; }
+    .input-wrap { position:relative; }
+    .currency {
+      position:absolute; left:14px; top:50%;
+      transform:translateY(-50%); color:var(--muted); font-weight:700;
     }
-
-    .status {
-      padding: 12px;
-      border-radius: 8px;
-      margin-top: 15px;
-      background: #eff6ff;
-      color: #1d4ed8;
-      overflow-wrap: anywhere;
+    input {
+      width:100%; padding:14px 14px 14px 34px;
+      border:1px solid var(--border); border-radius:11px;
+      outline:none; font-size:17px; font-weight:700;
+      color:var(--dark); background:#fbfdff;
     }
-
-    .success {
-      background: #dcfce7;
-      color: #166534;
+    input:focus { border-color:var(--blue); box-shadow:0 0 0 3px #1769e018; }
+    .preview {
+      display:flex; justify-content:space-between; gap:10px;
+      padding:13px 0; border-bottom:1px solid var(--border);
+      font-size:14px;
     }
-
-    .error {
-      background: #fee2e2;
-      color: #991b1b;
+    .preview:last-child { border:0; }
+    .preview strong { color:var(--blue); }
+    .actions { display:flex; gap:12px; flex-wrap:wrap; margin-top:20px; }
+    .save { background:var(--blue); color:white; flex:1; min-width:170px; }
+    .reset { background:#edf3ff; color:var(--blue); }
+    .notice {
+      display:none; padding:13px 15px; border-radius:11px;
+      margin-top:16px; font-size:14px; line-height:1.5;
     }
-
+    .notice.success { display:block; color:#086b49; background:#e8fff5; }
+    .notice.error { display:block; color:#a32435; background:#fff0f1; }
+    .meta { color:var(--muted); font-size:12px; line-height:1.7; }
     .history-item {
-      border-bottom: 1px solid #e2e8f0;
-      padding: 12px 0;
-      font-size: 14px;
+      padding:13px 0; border-bottom:1px solid var(--border);
+      font-size:13px; line-height:1.6;
     }
-
-    .history-item:last-child {
-      border-bottom: none;
-    }
-
-    .muted {
-      color: #64748b;
-      font-size: 13px;
-    }
-
-    @media(max-width: 550px) {
-      body {
-        padding: 12px;
-      }
-
-      .price-grid {
-        grid-template-columns: 1fr;
-      }
+    .history-item:last-child { border:0; }
+    .history-item strong { color:var(--blue); }
+    .loading { text-align:center; padding:30px; color:var(--muted); }
+    @media(max-width:600px) {
+      header { padding:14px 4%; }
+      main { width:92%; margin-top:22px; }
+      .grid { grid-template-columns:1fr; }
+      .card { padding:19px; }
+      .heading h1 { font-size:24px; }
     }
   </style>
 </head>
-
 <body>
+<header>
+  <div class="brand">
+    🖨️ Smart Printing
+    <small>Super Admin · Pricing Control</small>
+  </div>
+  <button class="logout" id="logoutBtn">Logout</button>
+</header>
 
-<div class="container">
-
-  <div class="header">
-    <h1>🖨️ Pricing Management</h1>
-    <p>Smart Printing Kiosk Network - Admin Panel</p>
+<main>
+  <div class="heading">
+    <h1>Pricing Management</h1>
+    <p>Yahan se customer ke printing rates manage karein. Save karne ke baad naye orders ke liye updated rates use honge, agar customer order page bhi inhi field names ko read karta hai.</p>
   </div>
 
-  <div class="card">
-    <h2>💰 Current Website Prices</h2>
+  <section class="card">
+    <h2>🖨️ Printing Rates</h2>
+    <div class="sub">Har rate per printed sheet ke hisaab se enter karein. Decimal rates bhi allowed hain.</div>
 
-    <div id="loadingStatus" class="status">
-      Loading prices...
+    <div class="grid">
+      <div class="field">
+        <label for="bwSingle">Black & White · Single Side</label>
+        <div class="input-wrap"><span class="currency">₹</span><input id="bwSingle" type="number" min="0" max="10000" step="0.01" value="2"></div>
+      </div>
+      <div class="field">
+        <label for="bwDouble">Black & White · Double Side</label>
+        <div class="input-wrap"><span class="currency">₹</span><input id="bwDouble" type="number" min="0" max="10000" step="0.01" value="3"></div>
+      </div>
+      <div class="field">
+        <label for="colourSingle">Colour · Single Side</label>
+        <div class="input-wrap"><span class="currency">₹</span><input id="colourSingle" type="number" min="0" max="10000" step="0.01" value="10"></div>
+      </div>
+      <div class="field">
+        <label for="colourDouble">Colour · Double Side</label>
+        <div class="input-wrap"><span class="currency">₹</span><input id="colourDouble" type="number" min="0" max="10000" step="0.01" value="15"></div>
+      </div>
     </div>
 
-    <div class="price-grid">
-
-      <div class="field">
-        <label>B&W Single Side (₹)</label>
-        <input type="number" id="bwSingle" min="0" step="0.01">
-        <small>Price per printed page</small>
-      </div>
-
-      <div class="field">
-        <label>B&W Double Side (₹)</label>
-        <input type="number" id="bwDouble" min="0" step="0.01">
-        <small>Price per sheet</small>
-      </div>
-
-      <div class="field">
-        <label>Colour Single Side (₹)</label>
-        <input type="number" id="colorSingle" min="0" step="0.01">
-        <small>Price per printed page</small>
-      </div>
-
-      <div class="field">
-        <label>Colour Double Side (₹)</label>
-        <input type="number" id="colorDouble" min="0" step="0.01">
-        <small>Price per sheet</small>
-      </div>
-
+    <div class="actions">
+      <button class="save" id="saveBtn">Save New Pricing</button>
+      <button class="reset" id="resetBtn">Restore Defaults</button>
     </div>
+    <div id="message" class="notice"></div>
+  </section>
 
-    <button class="publish" id="publishBtn">
-      🚀 Publish Prices
-    </button>
+  <section class="card">
+    <h2>👁️ Rate Preview</h2>
+    <div class="sub">Current form values ka preview.</div>
+    <div class="preview"><span>B&W Single Side</span><strong id="pBwS">₹2</strong></div>
+    <div class="preview"><span>B&W Double Side</span><strong id="pBwD">₹3</strong></div>
+    <div class="preview"><span>Colour Single Side</span><strong id="pCoS">₹10</strong></div>
+    <div class="preview"><span>Colour Double Side</span><strong id="pCoD">₹15</strong></div>
+  </section>
 
-    <button class="default" id="defaultBtn">
-      Restore Default Prices
-    </button>
+  <section class="card">
+    <h2>🕘 Pricing Information</h2>
+    <div class="meta" id="pricingMeta">Loading pricing information...</div>
+  </section>
 
-    <button class="reload" id="reloadBtn">
-      🔄 Reload Prices
-    </button>
-
-    <div id="message" class="status" style="display:none;"></div>
-  </div>
-
-  <div class="card">
-    <h2>📋 Price History</h2>
-    <p class="muted">Recently published prices</p>
-    <div id="history">
-      Loading history...
-    </div>
-  </div>
-
-  <div class="card">
-    <h2>ℹ️ Default Pricing</h2>
-
-    <p>B&W Single Side: ₹2</p>
-    <p>B&W Double Side: ₹3</p>
-    <p>Colour Single Side: ₹10</p>
-    <p>Colour Double Side: ₹15</p>
-
-    <p class="muted">
-      New prices will apply to new orders. Existing orders should retain
-      their previously saved pricing snapshots.
-    </p>
-  </div>
-
-</div>
+  <section class="card">
+    <h2>📜 Recent Pricing History</h2>
+    <div class="sub">Recent saved pricing changes.</div>
+    <div id="history"><div class="loading">Loading history...</div></div>
+  </section>
+</main>
 
 <script type="module">
-
-  import { auth, db } from "./firebase.js";
-
+  import { auth, db, ADMIN_UID } from "./firebase.js";
   import {
-    doc,
-    getDoc,
-    setDoc,
-    addDoc,
-    collection,
-    getDocs,
-    query,
-    orderBy,
-    limit,
-    serverTimestamp
+    onAuthStateChanged,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import {
+    doc, getDoc, setDoc, addDoc, collection,
+    getDocs, query, orderBy, limit, serverTimestamp
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  import {
-    onAuthStateChanged
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-
-  // ADMIN UID
-  const ADMIN_UID = "ibK3XWMUEYQIbBhPmGQRnW72MZg1";
-
-  // Default prices
-  const DEFAULT_PRICES = {
+  const $ = id => document.getElementById(id);
+  const defaults = {
     bwSingle: 2,
     bwDouble: 3,
-    colorSingle: 10,
-    colorDouble: 15
+    colourSingle: 10,
+    colourDouble: 15
   };
 
-  let currentVersion = 1;
-  let isAdmin = false;
+  let currentUser = null;
+  let currentPricing = {...defaults};
+  let pageReady = false;
 
-  const pricingRef = doc(db, "settings", "pricing");
-
-  const messageBox = document.getElementById("message");
-  const loadingStatus = document.getElementById("loadingStatus");
-
-  const publishBtn = document.getElementById("publishBtn");
-  const defaultBtn = document.getElementById("defaultBtn");
-  const reloadBtn = document.getElementById("reloadBtn");
-
-
-  // Show message
-  function showMessage(text, type = "success") {
-
-    messageBox.style.display = "block";
-    messageBox.textContent = text;
-
-    messageBox.className = "status " + type;
-
+  function showMessage(message, type) {
+    const box = $("message");
+    box.textContent = message;
+    box.className = "notice " + type;
   }
 
-
-  // Read input prices
-  function getPricesFromInputs() {
-
+  function getFormValues() {
     return {
-      bwSingle: Number(document.getElementById("bwSingle").value),
-      bwDouble: Number(document.getElementById("bwDouble").value),
-      colorSingle: Number(document.getElementById("colorSingle").value),
-      colorDouble: Number(document.getElementById("colorDouble").value)
+      bwSingle: Number($("bwSingle").value),
+      bwDouble: Number($("bwDouble").value),
+      colourSingle: Number($("colourSingle").value),
+      colourDouble: Number($("colourDouble").value)
     };
-
   }
 
-
-  // Validate prices
-  function validatePrices(prices) {
-
-    for (const [key, value] of Object.entries(prices)) {
-
-      if (
-        !Number.isFinite(value) ||
-        value < 0 ||
-        value > 100000
-      ) {
-        throw new Error("Please enter valid prices. Maximum allowed is ₹100000.");
+  function validateRates(rates) {
+    for (const key of Object.keys(defaults)) {
+      if (!Number.isFinite(rates[key]) || rates[key] < 0 || rates[key] > 10000) {
+        return "Sabhi rates 0 se 10000 ke beech valid number hone chahiye.";
       }
-
-      // Avoid excessive decimal places
-      if (Math.round(value * 100) !== value * 100) {
-        throw new Error("Prices can have a maximum of 2 decimal places.");
-      }
-
     }
-
-    return true;
-
+    return "";
   }
 
-
-  // Fill input fields
-  function fillInputs(prices) {
-
-    document.getElementById("bwSingle").value = prices.bwSingle;
-    document.getElementById("bwDouble").value = prices.bwDouble;
-
-    document.getElementById("colorSingle").value = prices.colorSingle;
-    document.getElementById("colorDouble").value = prices.colorDouble;
-
+  function money(value) {
+    return "₹" + Number(value).toFixed(2).replace(/\.00$/, "");
   }
 
+  function renderPreview() {
+    const r = getFormValues();
+    $("pBwS").textContent = money(r.bwSingle);
+    $("pBwD").textContent = money(r.bwDouble);
+    $("pCoS").textContent = money(r.colourSingle);
+    $("pCoD").textContent = money(r.colourDouble);
+  }
 
-  // Load prices from Firestore
-  async function loadPrices() {
+  function fillForm(rates) {
+    for (const key of Object.keys(defaults)) {
+      $(key).value = rates[key] ?? defaults[key];
+    }
+    renderPreview();
+  }
 
-    loadingStatus.textContent = "Loading prices...";
+  async function loadPricing() {
+    const ref = doc(db, "settings", "pricing");
+    const snap = await getDoc(ref);
 
+    if (snap.exists()) {
+      const data = snap.data();
+      currentPricing = {
+        bwSingle: Number(data.bwSingle ?? defaults.bwSingle),
+        bwDouble: Number(data.bwDouble ?? defaults.bwDouble),
+        colourSingle: Number(data.colourSingle ?? defaults.colourSingle),
+        colourDouble: Number(data.colourDouble ?? defaults.colourDouble)
+      };
+      fillForm(currentPricing);
+      $("pricingMeta").textContent =
+        "Version: " + (data.version ?? 1) +
+        " · Last updated: " + (data.updatedAt?.toDate?.().toLocaleString() ?? "Not available") +
+        " · Updated by UID: " + (data.updatedBy ?? "Unknown");
+    } else {
+      currentPricing = {...defaults};
+      fillForm(currentPricing);
+      $("pricingMeta").textContent =
+        "Abhi Firestore mein pricing document nahi hai. Default rates form mein dikh rahe hain. Save karne par document create hoga.";
+    }
+  }
+
+  async function loadHistory() {
+    const holder = $("history");
     try {
-
-      const snapshot = await getDoc(pricingRef);
-
-      if (snapshot.exists()) {
-
-        const data = snapshot.data();
-
-        const prices = {
-          bwSingle: data.bwSingle,
-          bwDouble: data.bwDouble,
-          colorSingle: data.colorSingle,
-          colorDouble: data.colorDouble
-        };
-
-        validatePrices(prices);
-
-        fillInputs(prices);
-
-        currentVersion = Number(data.version) || 1;
-
-        loadingStatus.textContent =
-          "✅ Prices loaded successfully. Version: " + currentVersion;
-
-        loadingStatus.className = "status success";
-
-      } else {
-
-        fillInputs(DEFAULT_PRICES);
-
-        currentVersion = 1;
-
-        loadingStatus.textContent =
-          "Default prices loaded. Publish to save them to the website.";
-
-        loadingStatus.className = "status";
-
+      const q = query(
+        collection(db, "pricingHistory"),
+        orderBy("createdAt", "desc"),
+        limit(10)
+      );
+      const snap = await getDocs(q);
+      if (snap.empty) {
+        holder.textContent = "Abhi koi pricing update history nahi hai.";
+        return;
       }
-
-      await loadHistory();
-
+      holder.replaceChildren();
+      snap.forEach(item => {
+        const d = item.data();
+        const row = document.createElement("div");
+        row.className = "history-item";
+        const date = d.createdAt?.toDate?.().toLocaleString() ?? "Date unavailable";
+        const oldRates = d.oldPricing || {};
+        const newRates = d.newPricing || {};
+        row.textContent =
+          date + " — " +
+          "B&W Single: " + money(newRates.bwSingle ?? 0) + ", " +
+          "B&W Double: " + money(newRates.bwDouble ?? 0) + ", " +
+          "Colour Single: " + money(newRates.colourSingle ?? 0) + ", " +
+          "Colour Double: " + money(newRates.colourDouble ?? 0);
+        holder.appendChild(row);
+      });
     } catch (error) {
-
-      console.error(error);
-
-      loadingStatus.textContent =
-        "Error loading prices: " + error.message;
-
-      loadingStatus.className = "status error";
-
-      showMessage(error.message, "error");
-
+      holder.textContent = "History load nahi hui: " + error.message;
     }
-
   }
 
-
-  // Publish prices
-  async function publishPrices() {
-
-    if (!isAdmin) {
-      showMessage("Admin permission required.", "error");
+  async function savePricing() {
+    if (!currentUser || currentUser.uid !== ADMIN_UID) {
+      showMessage("Access denied. Super Admin login required.", "error");
       return;
     }
 
+    const newRates = getFormValues();
+    const validation = validateRates(newRates);
+    if (validation) {
+      showMessage(validation, "error");
+      return;
+    }
+
+    const btn = $("saveBtn");
+    btn.disabled = true;
+    btn.textContent = "Saving...";
+
     try {
-
-      const prices = getPricesFromInputs();
-
-      validatePrices(prices);
-
-      const confirmed = confirm(
-        "Kya aap ye prices main website par publish karna chahte hain?"
-      );
-
-      if (!confirmed) return;
-
-      publishBtn.disabled = true;
-      publishBtn.textContent = "Publishing...";
-
-      const newVersion = currentVersion + 1;
-
-      const priceData = {
-        ...prices,
-        version: newVersion,
-        updatedAt: serverTimestamp(),
-        updatedBy: auth.currentUser.uid
+      const pricingRef = doc(db, "settings", "pricing");
+      const snap = await getDoc(pricingRef);
+      const oldData = snap.exists() ? snap.data() : {};
+      const oldRates = {
+        bwSingle: Number(oldData.bwSingle ?? defaults.bwSingle),
+        bwDouble: Number(oldData.bwDouble ?? defaults.bwDouble),
+        colourSingle: Number(oldData.colourSingle ?? defaults.colourSingle),
+        colourDouble: Number(oldData.colourDouble ?? defaults.colourDouble)
       };
 
-      // Save current pricing
-      await setDoc(pricingRef, priceData, { merge: true });
+      const version = Number(oldData.version || 0) + 1;
 
-      // Save pricing history
+      await setDoc(pricingRef, {
+        ...newRates,
+        version,
+        updatedAt: serverTimestamp(),
+        updatedBy: currentUser.uid
+      });
+
       await addDoc(collection(db, "pricingHistory"), {
-        ...prices,
-        version: newVersion,
-        publishedAt: serverTimestamp(),
-        publishedBy: auth.currentUser.uid
+        oldPricing: oldRates,
+        newPricing: newRates,
+        version,
+        updatedAt: serverTimestamp(),
+        createdAt: serverTimestamp(),
+        updatedBy: currentUser.uid
       });
 
-      currentVersion = newVersion;
-
-      showMessage(
-        "✅ Prices successfully published! Main website ab naye orders ke liye updated rates read karegi.",
-        "success"
-      );
-
-      loadingStatus.textContent =
-        "Current pricing version: " + currentVersion;
-
+      currentPricing = {...newRates};
+      $("pricingMeta").textContent =
+        "Version: " + version + " · Updated just now · Updated by UID: " + currentUser.uid;
+      showMessage("Pricing successfully save ho gayi. Version " + version, "success");
       await loadHistory();
-
     } catch (error) {
-
       console.error(error);
-
-      showMessage(
-        "Price publish failed: " + error.message,
-        "error"
-      );
-
+      showMessage("Save failed: " + error.message, "error");
     } finally {
-
-      publishBtn.disabled = false;
-      publishBtn.textContent = "🚀 Publish Prices";
-
+      btn.disabled = false;
+      btn.textContent = "Save New Pricing";
     }
-
   }
 
+  $("saveBtn").addEventListener("click", savePricing);
 
-  // Restore default prices
-  function restoreDefaults() {
+  $("resetBtn").addEventListener("click", () => {
+    fillForm(defaults);
+    showMessage("Default rates form mein load ho gaye. Save karne par hi Firestore update hoga.", "success");
+  });
 
-    if (!isAdmin) {
-      showMessage("Admin permission required.", "error");
-      return;
-    }
+  ["bwSingle","bwDouble","colourSingle","colourDouble"].forEach(id => {
+    $(id).addEventListener("input", renderPreview);
+  });
 
-    const confirmed = confirm(
-      "Default prices restore karna chahte hain?\n\nB&W Single ₹2\nB&W Double ₹3\nColour Single ₹10\nColour Double ₹15"
-    );
+  $("logoutBtn").addEventListener("click", async () => {
+    await signOut(auth);
+    location.replace("admin.html");
+  });
 
-    if (!confirmed) return;
-
-    fillInputs(DEFAULT_PRICES);
-
-    showMessage(
-      "Default prices fields mein set ho gaye hain. Website par apply karne ke liye Publish Prices dabayein.",
-      "success"
-    );
-
-  }
-
-
-  // Load pricing history
-  async function loadHistory() {
-
-    const historyBox = document.getElementById("history");
-
-    historyBox.textContent = "Loading history...";
-
-    try {
-
-      const historyQuery = query(
-        collection(db, "pricingHistory"),
-        orderBy("publishedAt", "desc"),
-        limit(20)
-      );
-
-      const snapshot = await getDocs(historyQuery);
-
-      historyBox.innerHTML = "";
-
-      if (snapshot.empty) {
-
-        historyBox.textContent = "No pricing history available.";
-
-        return;
-
-      }
-
-      snapshot.forEach((item) => {
-
-        const data = item.data();
-
-        const date = data.publishedAt?.toDate
-          ? data.publishedAt.toDate().toLocaleString("en-IN")
-          : "Date unavailable";
-
-        const div = document.createElement("div");
-
-        div.className = "history-item";
-
-        const heading = document.createElement("strong");
-        heading.textContent = "Version " + (data.version || "-");
-
-        const details = document.createElement("div");
-        details.textContent =
-          "B&W: ₹" + data.bwSingle + " / ₹" + data.bwDouble +
-          " | Colour: ₹" + data.colorSingle + " / ₹" + data.colorDouble;
-
-        const dateText = document.createElement("div");
-        dateText.className = "muted";
-        dateText.textContent = date;
-
-        div.append(heading, details, dateText);
-
-        historyBox.appendChild(div);
-
-      });
-
-    } catch (error) {
-
-      console.error(error);
-
-      historyBox.textContent =
-        "History load failed: " + error.message;
-
-    }
-
-  }
-
-
-  // Admin authentication
-  onAuthStateChanged(auth, async (user) => {
-
+  let unsubscribe = () => {};
+  unsubscribe = onAuthStateChanged(auth, async user => {
     if (!user) {
-
-      isAdmin = false;
-
-      loadingStatus.textContent =
-        "Please login through the Admin Panel first.";
-
-      loadingStatus.className = "status error";
-
-      publishBtn.disabled = true;
-      defaultBtn.disabled = true;
-
+      location.replace("admin.html");
       return;
-
     }
-
     if (user.uid !== ADMIN_UID) {
-
-      isAdmin = false;
-
-      loadingStatus.textContent =
-        "Access denied. Only authorized admin can manage pricing.";
-
-      loadingStatus.className = "status error";
-
-      publishBtn.disabled = true;
-      defaultBtn.disabled = true;
-
+      await signOut(auth);
+      location.replace("admin.html");
       return;
-
     }
 
-    isAdmin = true;
-
-    publishBtn.disabled = false;
-    defaultBtn.disabled = false;
-
-    await loadPrices();
-
-  });
-
-
-  publishBtn.addEventListener("click", publishPrices);
-
-  defaultBtn.addEventListener("click", restoreDefaults);
-
-  reloadBtn.addEventListener("click", () => {
-
-    if (isAdmin) {
-      loadPrices();
+    currentUser = user;
+    try {
+      await loadPricing();
+      await loadHistory();
+      pageReady = true;
+    } catch (error) {
+      console.error(error);
+      showMessage("Pricing load nahi hui: " + error.message, "error");
+      $("pricingMeta").textContent = "Firestore read error. Security Rules aur connection check karein.";
     }
-
   });
-
 </script>
-
 </body>
   </html>
+        
