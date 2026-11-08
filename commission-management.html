@@ -1,476 +1,237 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Commission & Earnings | Smart Printing</title>
-
+<title>Commission Management | Smart Printing</title>
 <style>
 :root {
-  --bg:#0b1120;
-  --panel:#131d30;
-  --card:#19263c;
-  --border:#293951;
-  --text:#f1f5f9;
-  --muted:#9aabc1;
-  --green:#22c55e;
-  --blue:#38bdf8;
-  --yellow:#fbbf24;
-  --red:#fb7185;
+  --blue:#1769e0;
+  --dark:#12315c;
+  --muted:#64748b;
+  --border:#dce7f7;
+  --green:#12845b;
+  --red:#d83d4e;
 }
-
 * { box-sizing:border-box; }
-
 body {
   margin:0;
+  min-height:100vh;
   font-family:Arial,sans-serif;
-  background:var(--bg);
-  color:var(--text);
+  color:var(--dark);
+  background:linear-gradient(135deg,#edf4ff,#fff 55%,#e9f2ff);
 }
-
-button,input {
-  font:inherit;
-}
-
 header {
-  padding:20px;
-  background:#101a2d;
+  background:#fff;
   border-bottom:1px solid var(--border);
+  padding:16px 5%;
   display:flex;
   justify-content:space-between;
   align-items:center;
+  gap:12px;
   flex-wrap:wrap;
-  gap:12px;
+  position:sticky;
+  top:0;
+  z-index:5;
 }
-
-.brand {
-  display:flex;
-  align-items:center;
-  gap:12px;
+.brand { color:var(--blue); font-size:21px; font-weight:800; }
+.brand small {
+  display:block;
+  font-size:11px;
+  color:var(--muted);
+  margin-top:3px;
 }
-
-.logo {
-  width:46px;
-  height:46px;
-  display:grid;
-  place-items:center;
-  border-radius:14px;
-  background:linear-gradient(135deg,#16a34a,#0ea5e9);
-  font-size:25px;
-  animation:float 3s infinite ease-in-out;
-}
-
-@keyframes float {
-  50% { transform:translateY(-5px); }
-}
-
-h1 { font-size:20px; margin:0; }
-.subtitle { color:var(--muted); font-size:12px; margin-top:5px; }
-
+button,input { font:inherit; }
 button {
   border:0;
-  padding:11px 15px;
-  border-radius:9px;
-  cursor:pointer;
+  border-radius:10px;
+  padding:12px 16px;
   font-weight:700;
+  cursor:pointer;
   transition:.2s;
 }
-
-button:hover {
-  transform:translateY(-2px);
-  filter:brightness(1.1);
-}
-
-.primary { background:#2563eb; color:white; }
-.success { background:#15803d; color:white; }
-.danger { background:#be123c; color:white; }
-.secondary { background:#334155; color:white; }
-
-.container {
-  max-width:1250px;
-  margin:auto;
-  padding:22px;
-}
-
-.welcome {
-  padding:25px;
-  border-radius:18px;
-  background:linear-gradient(120deg,#123b37,#14335c,#29265d);
-  margin-bottom:22px;
-  position:relative;
-  overflow:hidden;
-}
-
-.welcome h2 { margin:0 0 8px; }
-.welcome p { color:#cbd5e1; margin:0; }
-
-.coin {
-  position:absolute;
-  right:35px;
-  top:20px;
-  font-size:65px;
-  animation:spin 6s linear infinite;
-}
-
-@keyframes spin {
-  from { transform:rotateY(0deg); }
-  to { transform:rotateY(360deg); }
-}
-
-.grid {
-  display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:15px;
-  margin-bottom:22px;
-}
-
+button:hover { transform:translateY(-2px); }
+button:disabled { opacity:.55; cursor:not-allowed; transform:none; }
+.logout { background:#fff0f1; color:var(--red); }
+main { width:min(900px,92%); margin:30px auto 55px; }
+.heading { margin-bottom:22px; }
+.heading h1 { margin:0 0 8px; font-size:29px; }
+.heading p { margin:0; color:var(--muted); line-height:1.6; }
 .card {
-  background:var(--panel);
+  background:rgba(255,255,255,.96);
   border:1px solid var(--border);
-  border-radius:15px;
-  padding:19px;
-  animation:appear .5s ease both;
+  border-radius:19px;
+  padding:24px;
+  margin-bottom:20px;
+  box-shadow:0 12px 35px rgba(30,75,140,.07);
+  animation:rise .45s ease both;
 }
-
-@keyframes appear {
+@keyframes rise {
   from { opacity:0; transform:translateY(12px); }
   to { opacity:1; transform:translateY(0); }
 }
-
-.card-icon { font-size:26px; }
-.card-label { color:var(--muted); font-size:13px; margin-top:12px; }
-.card-value { font-size:25px; font-weight:800; margin-top:7px; }
-.green { color:var(--green); }
-.blue { color:var(--blue); }
-.yellow { color:var(--yellow); }
-.red { color:var(--red); }
-
-.section {
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:15px;
-  padding:20px;
-  margin-bottom:20px;
-}
-
-.section h3 { margin:0 0 16px; }
-
-.form-row {
+.card h2 { margin:0 0 8px; font-size:19px; }
+.sub { color:var(--muted); font-size:13px; line-height:1.6; margin-bottom:20px; }
+.rate-area {
   display:flex;
+  align-items:center;
   gap:12px;
-  flex-wrap:wrap;
-  align-items:end;
+  max-width:420px;
 }
-
-.field {
-  flex:1;
-  min-width:180px;
-}
-
-label {
-  display:block;
-  color:var(--muted);
-  font-size:13px;
-  margin-bottom:7px;
-}
-
-input {
+.rate-area input {
   width:100%;
-  padding:12px;
-  border-radius:9px;
+  padding:17px;
   border:1px solid var(--border);
-  background:#0b1425;
-  color:white;
+  border-radius:12px;
   outline:none;
+  font-size:25px;
+  font-weight:800;
+  color:var(--blue);
 }
-
-input:focus { border-color:var(--blue); }
-
-.note {
-  color:var(--muted);
-  font-size:12px;
-  margin-top:12px;
+.rate-area input:focus {
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px #1769e018;
+}
+.percent { font-size:25px; font-weight:800; color:var(--blue); }
+.actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:20px; }
+.save { background:var(--blue); color:#fff; flex:1; min-width:170px; }
+.reset { background:#edf3ff; color:var(--blue); }
+.message {
+  display:none;
+  padding:13px 15px;
+  border-radius:10px;
+  margin-top:15px;
+  font-size:13px;
+  line-height:1.5;
+}
+.message.success { display:block; color:#086b49; background:#e8fff5; }
+.message.error { display:block; color:#a32435; background:#fff0f1; }
+.example {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+}
+.example-item {
+  background:#f5f8ff;
+  border:1px solid var(--border);
+  border-radius:13px;
+  padding:16px;
+}
+.example-item span { color:var(--muted); font-size:12px; }
+.example-item strong {
+  display:block;
+  font-size:22px;
+  color:var(--blue);
+  margin-top:8px;
+}
+.meta { font-size:12px; color:var(--muted); line-height:1.8; }
+.history-item {
+  border-bottom:1px solid var(--border);
+  padding:13px 0;
+  font-size:13px;
   line-height:1.6;
 }
-
-.table-wrap { overflow-x:auto; }
-
-table {
-  width:100%;
-  border-collapse:collapse;
-  min-width:650px;
-}
-
-th,td {
-  padding:13px 11px;
-  text-align:left;
-  border-bottom:1px solid var(--border);
+.history-item:last-child { border:0; }
+.note {
+  background:#fff8e7;
+  border:1px solid #f4dfaa;
+  color:#79530d;
+  padding:14px;
+  border-radius:12px;
   font-size:13px;
+  line-height:1.6;
 }
-
-th { color:var(--muted); font-weight:600; }
-
-.badge {
-  padding:5px 9px;
-  border-radius:20px;
-  font-size:11px;
-  font-weight:bold;
-  background:#334155;
-}
-
-.badge.paid { color:#86efac; background:#14532d; }
-.badge.pending { color:#fde68a; background:#713f12; }
-
-.tabs {
-  display:flex;
-  gap:9px;
-  flex-wrap:wrap;
-  margin-bottom:16px;
-}
-
-.tab {
-  background:#25344c;
-  color:#cbd5e1;
-}
-
-.tab.active {
-  background:#2563eb;
-  color:white;
-}
-
-.message {
-  margin:12px 0;
-  font-size:13px;
-  color:var(--yellow);
-}
-
-.empty {
-  text-align:center;
-  color:var(--muted);
-  padding:25px;
-}
-
-footer {
-  text-align:center;
-  padding:25px;
-  color:var(--muted);
-  font-size:12px;
-}
-
-@media(max-width:900px) {
-  .grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
-}
-
-@media(max-width:520px) {
-  .container { padding:13px; }
-  header { padding:15px; }
-  .grid { gap:10px; }
-  .card { padding:14px; }
-  .card-value { font-size:20px; }
-  .coin { opacity:.25; right:15px; }
-  .welcome { padding:20px; }
-  .section { padding:15px; }
-}
-
-@media(prefers-reduced-motion:reduce) {
-  *,*::before,*::after {
-    animation-duration:.01ms !important;
-    transition-duration:.01ms !important;
-  }
+@media(max-width:650px) {
+  main { margin-top:22px; }
+  .heading h1 { font-size:24px; }
+  .card { padding:18px; }
+  .example { grid-template-columns:1fr; }
+  .rate-area { max-width:100%; }
 }
 </style>
 </head>
-
 <body>
 
 <header>
   <div class="brand">
-    <div class="logo">₹</div>
-    <div>
-      <h1>Commission & Earnings</h1>
-      <div class="subtitle">Smart Printing Admin Panel · Phase 7</div>
-    </div>
+    🖨️ Smart Printing
+    <small>Super Admin · Commission Control</small>
   </div>
-
-  <button class="secondary" id="backBtn">← Dashboard</button>
+  <button class="logout" id="logoutBtn">Logout</button>
 </header>
 
-<main class="container">
-
-  <div class="welcome">
-    <h2>💰 Earnings Control Center</h2>
-    <p>Platform commission, shop earnings aur payouts ek hi jagah manage karein.</p>
-    <div class="coin">🪙</div>
+<main>
+  <div class="heading">
+    <h1>Commission Management</h1>
+    <p>Har successful order par Smart Printing ki commission percentage manage karein.</p>
   </div>
 
-  <div class="grid">
-    <div class="card">
-      <div class="card-icon">💵</div>
-      <div class="card-label">Platform Earnings</div>
-      <div class="card-value green" id="platformEarnings">₹0</div>
+  <section class="card">
+    <h2>⚙️ Commission Settings</h2>
+    <div class="sub">
+      Commission percentage enter karein. Default commission 2% hai.
+      Maximum allowed commission 100% hai.
     </div>
 
-    <div class="card">
-      <div class="card-icon">🏪</div>
-      <div class="card-label">Shop Earnings</div>
-      <div class="card-value blue" id="shopEarnings">₹0</div>
+    <div class="rate-area">
+      <input id="commissionRate" type="number"
+        min="0" max="100" step="0.01" value="2"
+        aria-label="Commission percentage">
+      <span class="percent">%</span>
     </div>
 
-    <div class="card">
-      <div class="card-icon">⏳</div>
-      <div class="card-label">Pending Shop Payout</div>
-      <div class="card-value yellow" id="pendingPayout">₹0</div>
+    <div class="actions">
+      <button class="save" id="saveBtn">Save Commission</button>
+      <button class="reset" id="resetBtn">Restore Default</button>
     </div>
 
-    <div class="card">
-      <div class="card-icon">✅</div>
-      <div class="card-label">Total Paid Payout</div>
-      <div class="card-value green" id="paidPayout">₹0</div>
+    <div id="message" class="message"></div>
+  </section>
+
+  <section class="card">
+    <h2>💰 Commission Calculator</h2>
+    <div class="sub">
+      Commission percentage badalne par example amounts automatically update honge.
     </div>
+
+    <div class="example">
+      <div class="example-item">
+        <span>₹100 Order</span>
+        <strong id="example100">₹2</strong>
+      </div>
+      <div class="example-item">
+        <span>₹500 Order</span>
+        <strong id="example500">₹10</strong>
+      </div>
+      <div class="example-item">
+        <span>₹1000 Order</span>
+        <strong id="example1000">₹20</strong>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>📘 Commission Information</h2>
+    <div class="meta" id="commissionMeta">Loading commission settings...</div>
+  </section>
+
+  <section class="card">
+    <h2>📜 Commission Change History</h2>
+    <div class="sub">Recent commission percentage changes.</div>
+    <div id="history">Loading history...</div>
+  </section>
+
+  <div class="note">
+    <b>Important:</b> Is page se percentage setting save hoti hai.
+    Orders aur shop payouts mein commission automatically calculate karne ke liye
+    order-processing aur payout system ko bhi isi setting se connect karna hoga.
+    Browser-side calculation ko final payment authority na banayein.
   </div>
-
-  <!-- COMMISSION SETTINGS -->
-  <section class="section">
-    <h3>⚙️ Commission Settings</h3>
-
-    <div class="form-row">
-      <div class="field">
-        <label>Platform Commission (%)</label>
-        <input type="number" id="commissionRate" min="0" max="100"
-          step="0.01" value="10">
-      </div>
-
-      <button class="primary" id="saveRateBtn">Save Commission</button>
-    </div>
-
-    <div class="note">
-      Default commission 10% hai. Aap ise 5%, 8%, 10%, 15% ya apni
-      zaroorat ke hisaab se change kar sakte hain.
-      Nayi rate future calculations par apply hogi. Purane orders ki
-      commission history ko change nahi kiya jayega.
-    </div>
-
-    <div class="message" id="settingsMessage"></div>
-  </section>
-
-  <!-- SHOP EARNINGS -->
-  <section class="section">
-    <h3>🏪 Shop-wise Earnings</h3>
-
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Shop</th>
-            <th>Paid Orders</th>
-            <th>Order Revenue</th>
-            <th>Platform Commission</th>
-            <th>Shop Earning</th>
-            <th>Paid Payout</th>
-            <th>Pending</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="shopTable">
-          <tr><td colspan="8" class="empty">Loading...</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- PAYOUTS -->
-  <section class="section">
-    <h3>💸 Shop Payout Management</h3>
-
-    <div class="form-row">
-      <div class="field">
-        <label>Shop Name</label>
-        <input id="payoutShop" readonly placeholder="Select a shop from above">
-      </div>
-
-      <div class="field">
-        <label>Payout Amount (₹)</label>
-        <input id="payoutAmount" type="number" min="0.01" step="0.01"
-          placeholder="Enter amount">
-      </div>
-
-      <div class="field">
-        <label>Payment Reference / UTR</label>
-        <input id="payoutReference" placeholder="Optional reference">
-      </div>
-
-      <button class="success" id="createPayoutBtn">Create Payout</button>
-    </div>
-
-    <div class="note">
-      Payout create karne se payment automatically nahi hota.
-      Shop ko actual payment karne ke baad hi payout ko Paid mark karein.
-    </div>
-
-    <div class="message" id="payoutMessage"></div>
-  </section>
-
-  <!-- HISTORY -->
-  <section class="section">
-    <h3>📜 Payout History</h3>
-
-    <div class="tabs">
-      <button class="tab active" data-filter="ALL">All</button>
-      <button class="tab" data-filter="PENDING">Pending</button>
-      <button class="tab" data-filter="PAID">Paid</button>
-    </div>
-
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Shop</th>
-            <th>Amount</th>
-            <th>Reference</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="payoutTable">
-          <tr><td colspan="6" class="empty">Loading...</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- ORDER COMMISSION HISTORY -->
-  <section class="section">
-    <h3>🧾 Order-wise Commission History</h3>
-
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Order ID</th>
-            <th>Shop</th>
-            <th>Order Revenue</th>
-            <th>Commission Rate</th>
-            <th>Platform Earning</th>
-            <th>Shop Earning</th>
-            <th>Payment</th>
-          </tr>
-        </thead>
-        <tbody id="orderTable">
-          <tr><td colspan="7" class="empty">Loading...</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
 </main>
 
-<footer>
-  Smart Printing Network · Commission & Earnings Management
-</footer>
-
 <script type="module">
-import { auth, db } from "./firebase.js";
+import { auth, db, ADMIN_UID } from "./firebase.js";
 
 import {
   onAuthStateChanged,
@@ -478,386 +239,244 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
-  collection,
   doc,
   getDoc,
-  getDocs,
   setDoc,
   addDoc,
-  updateDoc,
+  collection,
+  getDocs,
+  query,
+  orderBy,
+  limit,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const ADMIN_UID = "ibK3XWMUEYQIbBhPmGQRnW72MZg1";
-
 const $ = id => document.getElementById(id);
 
-let currentAdmin = null;
-let currentRate = 10;
-let shops = [];
-let orders = [];
-let payouts = [];
-let selectedShop = null;
-let payoutFilter = "ALL";
+const DEFAULT_COMMISSION = 2;
+let currentUser = null;
+let savedRate = DEFAULT_COMMISSION;
+let saving = false;
 
-const money = value =>
-  "₹" + Number(value || 0).toLocaleString("en-IN", {
-    minimumFractionDigits:2,
-    maximumFractionDigits:2
-  });
-
-const safe = value =>
-  String(value ?? "").replace(/[&<>"']/g, char => ({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;",
-    "'":"&#39;"
-  })[char]);
-
-function message(id,text,isError=false) {
-  const el = $(id);
-  el.textContent = text;
-  el.style.color = isError ? "#fb7185" : "#22c55e";
+function money(value) {
+  return "₹" + Number(value).toFixed(2).replace(/\.00$/, "");
 }
 
-function getShopForOrder(order) {
-  const id = order.shopId || order.assignedShopId || "";
-  const name = order.shopName || order.assignedShopName || "";
-
-  return shops.find(s => s.id === id) ||
-    shops.find(s => name && s.shopName === name) ||
-    null;
+function showMessage(text, type) {
+  const box = $("message");
+  box.textContent = text;
+  box.className = "message " + type;
 }
 
-function orderRevenue(order) {
-  const value = Number(order.totalPrice || 0);
-  return Number.isFinite(value) ? Math.max(0,value) : 0;
+function readRate() {
+  return Number($("commissionRate").value);
 }
 
-function isPaid(order) {
-  return String(order.paymentStatus || "").toUpperCase() === "PAID";
+function validateRate(rate) {
+  if (!Number.isFinite(rate) || rate < 0 || rate > 100) {
+    return "Commission 0% se 100% ke beech honi chahiye.";
+  }
+  return "";
 }
 
-function getOrderRate(order) {
-  const savedRate = Number(order.commissionRate);
-  return Number.isFinite(savedRate) && savedRate >= 0 && savedRate <= 100
-    ? savedRate
-    : currentRate;
-}
+function updateCalculator() {
+  const rate = readRate();
 
-function calculate() {
-  const paidOrders = orders.filter(isPaid);
-
-  const rows = shops.map(shop => {
-    const shopOrders = paidOrders.filter(order =>
-      getShopForOrder(order)?.id === shop.id
-    );
-
-    let revenue = 0;
-    let platform = 0;
-    let shopEarn = 0;
-
-    shopOrders.forEach(order => {
-      const total = orderRevenue(order);
-      const rate = getOrderRate(order);
-
-      revenue += total;
-      platform += total * rate / 100;
-      shopEarn += total - (total * rate / 100);
-    });
-
-    const paid = payouts
-      .filter(p => p.shopId === shop.id &&
-        String(p.status).toUpperCase() === "PAID")
-      .reduce((sum,p) => sum + Number(p.amount || 0),0);
-
-    const pending = Math.max(0,shopEarn - paid);
-
-    return {
-      shop,
-      count:shopOrders.length,
-      revenue,
-      platform,
-      shopEarn,
-      paid,
-      pending
-    };
-  });
-
-  const totalPlatform = rows.reduce((s,r) => s + r.platform,0);
-  const totalShop = rows.reduce((s,r) => s + r.shopEarn,0);
-  const totalPaid = payouts
-    .filter(p => String(p.status).toUpperCase() === "PAID")
-    .reduce((s,p) => s + Number(p.amount || 0),0);
-
-  const totalPending = rows.reduce((s,r) => s + r.pending,0);
-
-  $("platformEarnings").textContent = money(totalPlatform);
-  $("shopEarnings").textContent = money(totalShop);
-  $("pendingPayout").textContent = money(totalPending);
-  $("paidPayout").textContent = money(totalPaid);
-
-  renderShops(rows);
-  renderOrders();
-  renderPayouts();
-}
-
-function renderShops(rows) {
-  const body = $("shopTable");
-
-  if (!rows.length) {
-    body.innerHTML = `<tr><td colspan="8" class="empty">
-      No shops found. Add shops in Shop Management first.
-    </td></tr>`;
+  if (!Number.isFinite(rate) || rate < 0 || rate > 100) {
+    $("example100").textContent = "Invalid";
+    $("example500").textContent = "Invalid";
+    $("example1000").textContent = "Invalid";
     return;
   }
 
-  body.innerHTML = rows.map(r => `
-    <tr>
-      <td><b>${safe(r.shop.shopName || "Unnamed Shop")}</b></td>
-      <td>${r.count}</td>
-      <td>${money(r.revenue)}</td>
-      <td class="green">${money(r.platform)}</td>
-      <td class="blue">${money(r.shopEarn)}</td>
-      <td>${money(r.paid)}</td>
-      <td class="yellow">${money(r.pending)}</td>
-      <td>
-        <button class="primary select-shop"
-          data-id="${safe(r.shop.id)}"
-          data-pending="${r.pending}">
-          Select
-        </button>
-      </td>
-    </tr>
-  `).join("");
-
-  body.querySelectorAll(".select-shop").forEach(btn => {
-    btn.addEventListener("click",() => {
-      selectedShop = shops.find(s => s.id === btn.dataset.id);
-      $("payoutShop").value = selectedShop?.shopName || "";
-      $("payoutAmount").value = Number(btn.dataset.pending).toFixed(2);
-      $("payoutAmount").max = Number(btn.dataset.pending).toFixed(2);
-      message("payoutMessage","Shop selected. Enter payout details.");
-    });
-  });
+  $("example100").textContent = money(100 * rate / 100);
+  $("example500").textContent = money(500 * rate / 100);
+  $("example1000").textContent = money(1000 * rate / 100);
 }
 
-function renderOrders() {
-  const body = $("orderTable");
-
-  const paidOrders = orders.filter(isPaid);
-
-  if (!paidOrders.length) {
-    body.innerHTML = `<tr><td colspan="7" class="empty">
-      No paid orders available.
-    </td></tr>`;
-    return;
-  }
-
-  body.innerHTML = paidOrders.map(order => {
-    const total = orderRevenue(order);
-    const rate = getOrderRate(order);
-    const commission = total * rate / 100;
-    const shop = getShopForOrder(order);
-
-    return `
-      <tr>
-        <td>${safe(order.orderId || order.id)}</td>
-        <td>${safe(shop?.shopName || order.shopName || "Not assigned")}</td>
-        <td>${money(total)}</td>
-        <td>${rate}%</td>
-        <td class="green">${money(commission)}</td>
-        <td class="blue">${money(total-commission)}</td>
-        <td><span class="badge paid">PAID</span></td>
-      </tr>
-    `;
-  }).join("");
-}
-
-function renderPayouts() {
-  const body = $("payoutTable");
-
-  const list = [...payouts]
-    .filter(p => payoutFilter === "ALL" ||
-      String(p.status).toUpperCase() === payoutFilter)
-    .sort((a,b) => {
-      const ad = a.createdAt?.toDate?.()?.getTime?.() || 0;
-      const bd = b.createdAt?.toDate?.()?.getTime?.() || 0;
-      return bd-ad;
-    });
-
-  if (!list.length) {
-    body.innerHTML = `<tr><td colspan="6" class="empty">
-      No payout records found.
-    </td></tr>`;
-    return;
-  }
-
-  body.innerHTML = list.map(p => {
-    const paid = String(p.status).toUpperCase() === "PAID";
-
-    let date = "—";
-    if (p.createdAt?.toDate) {
-      date = p.createdAt.toDate().toLocaleDateString("en-IN");
-    }
-
-    return `
-      <tr>
-        <td>${date}</td>
-        <td>${safe(p.shopName)}</td>
-        <td>${money(p.amount)}</td>
-        <td>${safe(p.reference || "—")}</td>
-        <td>
-          <span class="badge ${paid ? "paid":"pending"}">
-            ${paid ? "PAID":"PENDING"}
-          </span>
-        </td>
-        <td>
-          ${!paid ? `
-            <button class="success mark-paid" data-id="${safe(p.id)}">
-              Mark Paid
-            </button>
-          ` : "Completed"}
-        </td>
-      </tr>
-    `;
-  }).join("");
-
-  body.querySelectorAll(".mark-paid").forEach(btn => {
-    btn.addEventListener("click", async () => {
-      const confirmed = confirm(
-        "Kya aapne shop ko sach mein payment kar diya hai?"
-      );
-
-      if (!confirmed) return;
-
-      try {
-        btn.disabled = true;
-
-        await updateDoc(doc(db,"shopPayouts",btn.dataset.id),{
-          status:"PAID",
-          paidAt:serverTimestamp(),
-          paidBy:currentAdmin.uid,
-          updatedAt:serverTimestamp()
-        });
-
-        message("payoutMessage","Payout successfully marked as PAID.");
-        await loadData();
-
-      } catch(error) {
-        console.error(error);
-        alert("Payout update failed: " + error.message);
-        btn.disabled = false;
-      }
-    });
-  });
-}
-
-async function loadSettings() {
-  const ref = doc(db,"settings","commission");
+async function loadCommission() {
+  const ref = doc(db, "settings", "commission");
   const snap = await getDoc(ref);
 
   if (snap.exists()) {
-    const value = Number(snap.data().rate);
-    if (Number.isFinite(value) && value >= 0 && value <= 100) {
-      currentRate = value;
-    }
+    const data = snap.data();
+    savedRate = Number(data.rate ?? DEFAULT_COMMISSION);
+
+    const error = validateRate(savedRate);
+    if (error) throw new Error("Firestore mein saved commission invalid hai.");
+
+    $("commissionRate").value = savedRate;
+
+    $("commissionMeta").textContent =
+      "Current version: " + (data.version ?? 1) +
+      " | Last updated: " +
+      (data.updatedAt?.toDate?.().toLocaleString() ?? "Not available") +
+      " | Updated by UID: " + (data.updatedBy ?? "Unknown");
+  } else {
+    savedRate = DEFAULT_COMMISSION;
+    $("commissionRate").value = DEFAULT_COMMISSION;
+
+    $("commissionMeta").textContent =
+      "Firestore mein commission document abhi nahi hai. Default 2% load hua hai.";
   }
 
-  $("commissionRate").value = currentRate;
+  updateCalculator();
 }
 
-async function loadData() {
+async function loadHistory() {
+  const holder = $("history");
+
   try {
-    const [shopSnap,orderSnap,payoutSnap] = await Promise.all([
-      getDocs(collection(db,"shops")),
-      getDocs(collection(db,"orders")),
-      getDocs(collection(db,"shopPayouts"))
-    ]);
+    const q = query(
+      collection(db, "commissionHistory"),
+      orderBy("createdAt", "desc"),
+      limit(10)
+    );
 
-    shops = shopSnap.docs.map(d => ({id:d.id,...d.data()}));
-    orders = orderSnap.docs.map(d => ({id:d.id,...d.data()}));
-    payouts = payoutSnap.docs.map(d => ({id:d.id,...d.data()}));
+    const snap = await getDocs(q);
 
-    calculate();
+    if (snap.empty) {
+      holder.textContent = "Abhi koi commission change history nahi hai.";
+      return;
+    }
 
-  } catch(error) {
+    holder.replaceChildren();
+
+    snap.forEach(item => {
+      const data = item.data();
+      const row = document.createElement("div");
+      row.className = "history-item";
+
+      const date =
+        data.createdAt?.toDate?.().toLocaleString() ?? "Date unavailable";
+
+      row.textContent =
+        date + " — " +
+        Number(data.oldRate ?? 0) + "% se " +
+        Number(data.newRate ?? 0) + "%";
+      holder.appendChild(row);
+    });
+
+  } catch (error) {
     console.error(error);
-    alert("Data load error: " + error.message);
+    holder.textContent = "History load nahi hui: " + error.message;
   }
 }
 
-$("saveRateBtn").addEventListener("click",async () => {
-  const rate = Number($("commissionRate").value);
-
-  if (!Number.isFinite(rate) || rate < 0 || rate > 100) {
-    message("settingsMessage","Commission 0 se 100 ke beech honi chahiye.",true);
+async function saveCommission() {
+  if (!currentUser || currentUser.uid !== ADMIN_UID) {
+    showMessage("Access denied. Super Admin login required.", "error");
     return;
   }
 
-  try {
-    $("saveRateBtn").disabled = true;
+  if (saving) return;
 
-    await setDoc(doc(db,"settings","commission"),{
-      rate,
-      updatedAt:serverTimestamp(),
-      updatedBy:currentAdmin.uid
+  const newRate = readRate();
+  const validation = validateRate(newRate);
+
+  if (validation) {
+    showMessage(validation, "error");
+    return;
+  }
+
+  if (!confirm("Kya aap commission rate " + newRate + "% save karna chahte hain?")) {
+    return;
+  }
+
+  saving = true;
+  $("saveBtn").disabled = true;
+  $("saveBtn").textContent = "Saving...";
+
+  try {
+    const ref = doc(db, "settings", "commission");
+    const snap = await getDoc(ref);
+
+    const oldData = snap.exists() ? snap.data() : {};
+    const oldRate = Number(oldData.rate ?? DEFAULT_COMMISSION);
+    const version = Number(oldData.version || 0) + 1;
+
+    await setDoc(ref, {
+      rate: newRate,
+      version,
+      updatedAt: serverTimestamp(),
+      updatedBy: currentUser.uid
     });
 
-    currentRate = rate;
-    message("settingsMessage","Commission rate successfully saved.");
-    calculate();
+    await addDoc(collection(db, "commissionHistory"), {
+      oldRate,
+      newRate,
+      version,
+      createdAt: serverTimestamp(),
+      updatedBy: currentUser.uid
+    });
 
-  } catch(error) {
+    savedRate = newRate;
+
+    $("commissionMeta").textContent =
+      "Current version: " + version +
+      " | Updated just now | Updated by UID: " + currentUser.uid;
+
+    showMessage(
+      "Commission successfully save ho gayi. New rate: " + newRate + "%",
+      "success"
+    );
+
+    updateCalculator();
+    await loadHistory();
+
+  } catch (error) {
     console.error(error);
-    message("settingsMessage","Save failed: " + error.message,true);
+    showMessage("Commission save nahi hui: " + error.message, "error");
   } finally {
-    $("saveRateBtn").disabled = false;
+    saving = false;
+    $("saveBtn").disabled = false;
+    $("saveBtn").textContent = "Save Commission";
   }
+}
+
+$("commissionRate").addEventListener("input", updateCalculator);
+$("saveBtn").addEventListener("click", saveCommission);
+
+$("resetBtn").addEventListener("click", () => {
+  $("commissionRate").value = DEFAULT_COMMISSION;
+  updateCalculator();
+  showMessage(
+    "Default 2% form mein load ho gaya. Firestore mein save karne ke liye Save Commission dabayein.",
+    "success"
+  );
 });
 
-$("createPayoutBtn").addEventListener("click",async () => {
-  if (!selectedShop) {
-    message("payoutMessage","Pehle Shop-wise table se shop select karein.",true);
+$("logoutBtn").addEventListener("click", async () => {
+  await signOut(auth);
+  location.replace("admin.html");
+});
+
+onAuthStateChanged(auth, async user => {
+  if (!user) {
+    location.replace("admin.html");
     return;
   }
 
-  const amount = Number($("payoutAmount").value);
-  const reference = $("payoutReference").value.trim();
-
-  const shopRow = calculateShop(selectedShop.id);
-
-  if (!Number.isFinite(amount) || amount <= 0) {
-    message("payoutMessage","Valid payout amount enter karein.",true);
+  if (user.uid !== ADMIN_UID) {
+    await signOut(auth);
+    location.replace("admin.html");
     return;
   }
 
-  if (amount > shopRow.pending + 0.001) {
-    message("payoutMessage",
-      "Payout amount pending balance se zyada nahi ho sakta.",true);
-    return;
-  }
-
-  if (!confirm(
-    `Create ₹${amount.toFixed(2)} payout for ${selectedShop.shopName}?`
-  )) return;
+  currentUser = user;
 
   try {
-    $("createPayoutBtn").disabled = true;
+    await loadCommission();
+    await loadHistory();
+  } catch (error) {
+    console.error(error);
+    showMessage("Settings load nahi hui: " + error.message, "error");
+    $("commissionMeta").textContent =
+      "Firestore permission ya connection check karein.";
+  }
+});
+</script>
 
-    await addDoc(collection(db,"shopPayouts"),{
-      shopId:selectedShop.id,
-      shopName:selectedShop.shopName || "Unnamed Shop",
-      amount,
-      reference,
-      status:"PENDING",
-      createdAt:serverTimestamp(),
-      createdBy:currentAdmin.uid
-    });
-
-    $("payoutAmount").value = "";
-    $("payoutReference").value = "";
-
-    message("payoutMessage","Payout record created. Actual payment abhi pending hai.");
-    await loadData(
+</body>
+      </html>
+  
