@@ -1,469 +1,815 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Smart Printing - Admin Dashboard</title>
+<meta name="theme-color" content="#075bdb">
+<title>Admin Dashboard | Smart Printing</title>
 
 <style>
 :root {
-  --primary: #174ea6;
-  --primary-light: #eaf1ff;
-  --danger: #d93025;
-  --success: #188038;
-  --warning: #f9ab00;
-  --background: #f3f5f9;
-  --text: #202124;
-  --muted: #6b7280;
+  --blue:#075bdb;
+  --dark:#073b91;
+  --light:#edf5ff;
+  --text:#172b4d;
+  --muted:#718096;
+  --border:#e3ebf5;
+  --white:#fff;
+  --green:#159765;
+  --orange:#e99425;
+  --red:#dc4c55;
 }
 
 * {
-  box-sizing: border-box;
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial,Helvetica,sans-serif;
 }
 
 body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: var(--background);
-  color: var(--text);
+  background:#f4f8fe;
+  color:var(--text);
+  min-height:100vh;
 }
 
-header {
-  background: linear-gradient(120deg, #123b80, #2872d5);
-  color: white;
-  padding: 20px;
-  box-shadow: 0 3px 12px rgba(0,0,0,.12);
+button,a {
+  -webkit-tap-highlight-color:transparent;
 }
 
-.header-content {
-  max-width: 1200px;
-  margin: auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+.layout {
+  display:flex;
+  min-height:100vh;
 }
 
-header h2 {
-  margin: 0;
+/* SIDEBAR */
+.sidebar {
+  width:255px;
+  background:linear-gradient(180deg,#064ebd,#062e75);
+  color:white;
+  padding:24px 16px;
+  position:fixed;
+  left:0;
+  top:0;
+  bottom:0;
+  overflow-y:auto;
+  z-index:20;
+  transition:.3s;
 }
 
-button {
-  border: none;
-  padding: 11px 16px;
-  border-radius: 8px;
-  background: var(--primary);
-  color: white;
-  cursor: pointer;
-  font-size: 14px;
-  transition: transform .2s, opacity .2s, box-shadow .2s;
+.logo {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:0 10px 28px;
+  border-bottom:1px solid rgba(255,255,255,.15);
 }
 
-button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 12px rgba(0,0,0,.15);
+.logo-icon {
+  width:43px;
+  height:43px;
+  background:white;
+  color:var(--blue);
+  display:grid;
+  place-items:center;
+  border-radius:13px;
+  font-size:23px;
 }
 
-button:active:not(:disabled) {
-  transform: scale(.97);
+.logo h2 {
+  font-size:18px;
 }
 
-button:disabled {
-  opacity: .6;
-  cursor: not-allowed;
+.logo small {
+  display:block;
+  font-size:10px;
+  opacity:.75;
+  margin-top:4px;
 }
 
-.logout {
-  background: var(--danger);
+.menu-title {
+  font-size:10px;
+  opacity:.65;
+  letter-spacing:1.5px;
+  margin:26px 12px 12px;
 }
 
-main {
-  max-width: 1200px;
-  margin: auto;
-  padding: 22px;
+.menu {
+  display:flex;
+  flex-direction:column;
+  gap:6px;
 }
 
+.menu a {
+  text-decoration:none;
+  color:rgba(255,255,255,.82);
+  padding:12px 13px;
+  border-radius:10px;
+  display:flex;
+  gap:12px;
+  align-items:center;
+  font-size:13px;
+  transition:.2s;
+}
+
+.menu a:hover,
+.menu a.active {
+  color:white;
+  background:rgba(255,255,255,.17);
+  transform:translateX(3px);
+}
+
+.menu-icon {
+  width:20px;
+  text-align:center;
+  font-size:17px;
+}
+
+.sidebar-bottom {
+  margin-top:35px;
+  padding:14px;
+  background:rgba(255,255,255,.1);
+  border-radius:12px;
+  font-size:11px;
+  line-height:1.6;
+}
+
+/* MAIN */
+.main {
+  margin-left:255px;
+  width:calc(100% - 255px);
+  padding:25px 30px 40px;
+}
+
+.topbar {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin-bottom:28px;
+}
+
+.top-left {
+  display:flex;
+  align-items:center;
+  gap:13px;
+}
+
+.topbar h1 {
+  font-size:24px;
+}
+
+.topbar p {
+  color:var(--muted);
+  font-size:12px;
+  margin-top:5px;
+}
+
+.top-actions {
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.admin-profile {
+  display:flex;
+  align-items:center;
+  gap:9px;
+  background:white;
+  border:1px solid var(--border);
+  padding:8px 12px;
+  border-radius:12px;
+  font-size:12px;
+}
+
+.avatar {
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  background:var(--light);
+  display:grid;
+  place-items:center;
+  color:var(--blue);
+  font-weight:bold;
+}
+
+.logout-btn {
+  border:0;
+  background:#fff0f1;
+  color:#bd3440;
+  padding:11px 14px;
+  border-radius:10px;
+  font-weight:bold;
+  cursor:pointer;
+  font-size:12px;
+}
+
+.logout-btn:hover {
+  background:#ffe0e3;
+}
+
+.mobile-menu {
+  display:none;
+  border:0;
+  background:white;
+  width:40px;
+  height:40px;
+  border-radius:10px;
+  font-size:20px;
+  cursor:pointer;
+}
+
+/* WELCOME */
 .welcome {
-  margin: 10px 0 22px;
-  animation: fadeUp .5s ease both;
+  padding:25px;
+  border-radius:18px;
+  background:linear-gradient(120deg,#075bdb,#073b91);
+  color:white;
+  margin-bottom:25px;
+  position:relative;
+  overflow:hidden;
+  animation:slideUp .5s ease;
+}
+
+.welcome:after {
+  content:"🖨️";
+  position:absolute;
+  right:35px;
+  top:15px;
+  font-size:95px;
+  opacity:.13;
+  transform:rotate(-12deg);
 }
 
 .welcome h2 {
-  margin-bottom: 7px;
+  font-size:22px;
+  margin-bottom:9px;
 }
 
-.note {
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.6;
+.welcome p {
+  font-size:13px;
+  opacity:.85;
+  line-height:1.6;
+  max-width:520px;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 15px;
+/* STATS */
+.section-heading {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin:25px 0 15px;
 }
 
-.card {
-  background: white;
-  padding: 18px;
-  border-radius: 13px;
-  box-shadow: 0 3px 12px rgba(0,0,0,.05);
-  border-left: 4px solid var(--primary);
-  transition: transform .25s, box-shadow .25s;
-  animation: fadeUp .5s ease both;
+.section-heading h2 {
+  font-size:17px;
 }
 
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(0,0,0,.09);
+.section-heading span {
+  color:var(--muted);
+  font-size:11px;
 }
 
-.card p {
-  color: var(--muted);
-  font-size: 13px;
-  margin: 0 0 12px;
+.stats-grid {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
 }
 
-.card h2 {
-  margin: 0;
-  color: var(--primary);
-  font-size: 25px;
-  overflow-wrap: anywhere;
+.stat-card {
+  background:white;
+  border:1px solid var(--border);
+  border-radius:15px;
+  padding:19px;
+  transition:.25s;
+  animation:slideUp .5s ease;
 }
 
-.card:nth-child(2) { animation-delay: .04s; }
-.card:nth-child(3) { animation-delay: .08s; }
-.card:nth-child(4) { animation-delay: .12s; }
-.card:nth-child(5) { animation-delay: .16s; }
-.card:nth-child(6) { animation-delay: .20s; }
-.card:nth-child(7) { animation-delay: .24s; }
-.card:nth-child(8) { animation-delay: .28s; }
-.card:nth-child(9) { animation-delay: .32s; }
-.card:nth-child(10) { animation-delay: .36s; }
-.card:nth-child(11) { animation-delay: .40s; }
-
-.section {
-  background: white;
-  padding: 20px;
-  border-radius: 13px;
-  margin-top: 22px;
-  box-shadow: 0 3px 12px rgba(0,0,0,.05);
-  animation: fadeUp .5s ease both;
+.stat-card:hover {
+  transform:translateY(-4px);
+  box-shadow:0 12px 25px rgba(28,74,130,.08);
 }
 
-.section h3 {
-  margin-top: 0;
+.stat-top {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 }
 
-.manage-section {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 15px;
-  flex-wrap: wrap;
-  border-left: 4px solid #188038;
+.stat-icon {
+  width:42px;
+  height:42px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  font-size:20px;
 }
 
-.manage-section p {
-  color: var(--muted);
-  font-size: 13px;
-  margin-bottom: 0;
+.stat-card h3 {
+  font-size:26px;
+  margin-top:18px;
 }
 
-.manage-btn {
-  background: linear-gradient(120deg, #174ea6, #2872d5);
-  padding: 13px 20px;
-  font-weight: bold;
+.stat-card p {
+  color:var(--muted);
+  font-size:12px;
+  margin-top:6px;
+}
+
+.blue-bg {background:#e9f2ff;color:#075bdb;}
+.green-bg {background:#e8f8f0;color:#159765;}
+.orange-bg {background:#fff4e5;color:#d98719;}
+.red-bg {background:#fff0f1;color:#dc4c55;}
+
+.stat-loading {
+  color:#91a1b5;
+  font-size:12px;
+}
+
+/* QUICK LINKS */
+.quick-grid {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:15px;
+}
+
+.quick-card {
+  background:white;
+  border:1px solid var(--border);
+  padding:19px;
+  border-radius:15px;
+  text-decoration:none;
+  color:var(--text);
+  transition:.25s;
+}
+
+.quick-card:hover {
+  transform:translateY(-4px);
+  border-color:#b6d2fa;
+  box-shadow:0 12px 25px rgba(28,74,130,.07);
+}
+
+.quick-card .quick-icon {
+  font-size:25px;
+  margin-bottom:13px;
+}
+
+.quick-card h3 {
+  font-size:14px;
+  margin-bottom:7px;
+}
+
+.quick-card p {
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.5;
+}
+
+.arrow {
+  display:block;
+  color:var(--blue);
+  margin-top:14px;
+  font-size:12px;
+  font-weight:bold;
+}
+
+/* RECENT ORDERS */
+.table-card {
+  background:white;
+  border:1px solid var(--border);
+  border-radius:15px;
+  overflow:hidden;
+}
+
+.table-scroll {
+  overflow-x:auto;
 }
 
 table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 650px;
+  width:100%;
+  border-collapse:collapse;
+  min-width:600px;
 }
 
-th, td {
-  padding: 13px;
-  text-align: left;
-  border-bottom: 1px solid #eee;
-  font-size: 13px;
+th,td {
+  padding:14px 17px;
+  border-bottom:1px solid #edf1f7;
+  text-align:left;
+  font-size:12px;
 }
 
 th {
-  background: #f2f5fa;
+  background:#f8fbff;
+  color:#6c7d94;
+  font-weight:bold;
 }
 
-.table-wrap {
-  overflow-x: auto;
-  border-radius: 8px;
+td {
+  color:#344767;
 }
 
 .status {
-  display: inline-block;
-  padding: 5px 9px;
-  border-radius: 6px;
-  background: #fff3cd;
-  color: #856404;
-  font-size: 11px;
-  font-weight: bold;
+  display:inline-block;
+  padding:6px 9px;
+  border-radius:20px;
+  background:#fff4e5;
+  color:#b87515;
+  font-size:10px;
+  font-weight:bold;
 }
 
-.message {
-  padding: 12px;
-  text-align: center;
-  color: var(--muted);
+.empty {
+  text-align:center;
+  padding:28px;
+  color:var(--muted);
+  font-size:12px;
 }
 
-.refresh-btn {
-  margin-top: 16px;
+.notice {
+  margin-top:20px;
+  padding:14px;
+  background:#fff8e9;
+  border:1px solid #f5e4bd;
+  border-radius:12px;
+  color:#89651e;
+  font-size:11px;
+  line-height:1.6;
 }
 
-.loading-dot {
-  display: inline-block;
-  width: 7px;
-  height: 7px;
-  background: var(--primary);
-  border-radius: 50%;
-  margin: 0 2px;
-  animation: bounce .7s infinite alternate;
+.error-box {
+  display:none;
+  background:#fff0f1;
+  color:#b52d39;
+  padding:12px;
+  border-radius:10px;
+  font-size:12px;
+  margin-bottom:15px;
 }
 
-.loading-dot:nth-child(2) {
-  animation-delay: .2s;
+.loading-screen {
+  position:fixed;
+  inset:0;
+  background:#f4f8fe;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:100;
+  flex-direction:column;
+  gap:14px;
+  color:var(--blue);
+  font-size:13px;
 }
 
-.loading-dot:nth-child(3) {
-  animation-delay: .4s;
+.spinner {
+  width:38px;
+  height:38px;
+  border:4px solid #dceaff;
+  border-top-color:var(--blue);
+  border-radius:50%;
+  animation:spin .8s linear infinite;
 }
 
-.footer-note {
-  margin-top: 20px;
+@keyframes spin {
+  to {transform:rotate(360deg);}
 }
 
-@keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
+@keyframes slideUp {
+  from {opacity:0;transform:translateY(15px);}
+  to {opacity:1;transform:translateY(0);}
+}
+
+@media(max-width:1100px) {
+  .stats-grid {grid-template-columns:repeat(2,1fr);}
+  .quick-grid {grid-template-columns:repeat(2,1fr);}
+}
+
+@media(max-width:700px) {
+  .sidebar {
+    transform:translateX(-100%);
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  .sidebar.open {
+    transform:translateX(0);
+    box-shadow:10px 0 40px rgba(0,0,0,.15);
+  }
+
+  .main {
+    margin-left:0;
+    width:100%;
+    padding:18px 15px 30px;
+  }
+
+  .mobile-menu {
+    display:block;
+  }
+
+  .topbar h1 {
+    font-size:19px;
+  }
+
+  .admin-profile {
+    display:none;
+  }
+
+  .welcome {
+    padding:21px;
+  }
+
+  .welcome h2 {
+    font-size:19px;
+  }
+
+  .welcome:after {
+    right:10px;
+    font-size:65px;
+  }
+
+  .stats-grid {
+    gap:10px;
+  }
+
+  .stat-card {
+    padding:14px;
+  }
+
+  .stat-card h3 {
+    font-size:22px;
+  }
+
+  .quick-grid {
+    grid-template-columns:1fr;
   }
 }
 
-@keyframes bounce {
-  to {
-    opacity: .3;
-    transform: translateY(-5px);
-  }
-}
-
-@media(max-width:850px) {
-  .grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media(max-width:600px) {
-  main {
-    padding: 13px;
+@media(max-width:380px) {
+  .logout-btn {
+    padding:9px;
   }
 
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-  }
-
-  .card {
-    padding: 14px;
-  }
-
-  .card h2 {
-    font-size: 21px;
-  }
-
-  .section {
-    padding: 15px;
-  }
-
-  header {
-    padding: 16px;
-  }
-
-  header h2 {
-    font-size: 19px;
-  }
-
-  .manage-section {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .manage-btn {
-    width: 100%;
-  }
-}
-
-@media(max-width:350px) {
-  .grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media(prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: .01ms !important;
-    transition-duration: .01ms !important;
+  .stats-grid {
+    grid-template-columns:1fr 1fr;
   }
 }
 </style>
-
 </head>
 
 <body>
 
-<header>
-  <div class="header-content">
-    <h2>🖨️ Smart Printing Admin</h2>
-    <button class="logout" id="logoutBtn">Logout</button>
-  </div>
-</header>
+<div class="loading-screen" id="loadingScreen">
+  <div class="spinner"></div>
+  <strong>Verifying Admin Security...</strong>
+</div>
 
-<main>
+<div class="layout" id="app" style="display:none">
 
-  <div class="welcome">
-    <h2>Dashboard Overview</h2>
-    <p id="adminEmail">Checking Admin...</p>
-    <p id="lastUpdated" class="note"></p>
-  </div>
+  <aside class="sidebar" id="sidebar">
 
-  <!-- DASHBOARD STATISTICS -->
-
-  <div class="grid">
-
-    <div class="card">
-      <p>Total Orders</p>
-      <h2 id="totalOrders">-</h2>
+    <div class="logo">
+      <div class="logo-icon">🖨️</div>
+      <div>
+        <h2>Smart Printing</h2>
+        <small>ADMIN CONTROL CENTER</small>
+      </div>
     </div>
 
-    <div class="card">
-      <p>Today's Orders</p>
-      <h2 id="todayOrders">-</h2>
+    <div class="menu-title">MAIN MENU</div>
+
+    <nav class="menu">
+      <a href="admin-dashboard.html" class="active">
+        <span class="menu-icon">📊</span> Dashboard
+      </a>
+
+      <a href="order-management.html">
+        <span class="menu-icon">📦</span> Orders
+      </a>
+
+      <a href="payment-management.html">
+        <span class="menu-icon">💳</span> Payments
+      </a>
+
+      <a href="pricing-management.html">
+        <span class="menu-icon">💰</span> Pricing Management
+      </a>
+    </nav>
+
+    <div class="menu-title">NETWORK MANAGEMENT</div>
+
+    <nav class="menu">
+      <a href="shop-management.html">
+        <span class="menu-icon">🏪</span> Shops
+      </a>
+
+      <a href="college-management.html">
+        <span class="menu-icon">🎓</span> Colleges
+      </a>
+
+      <a href="customer-management.html">
+        <span class="menu-icon">👥</span> Customers
+      </a>
+
+      <a href="commission-management.html">
+        <span class="menu-icon">📈</span> Commission
+      </a>
+    </nav>
+
+    <div class="menu-title">ANALYTICS</div>
+
+    <nav class="menu">
+      <a href="reports-analytics.html">
+        <span class="menu-icon">📉</span> Reports & Analytics
+      </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      🔒 Protected Admin Area<br>
+      Only authorised administrators can access this dashboard.
     </div>
 
-    <div class="card">
-      <p>Pending Orders</p>
-      <h2 id="pendingOrders">-</h2>
+  </aside>
+
+  <main class="main">
+
+    <header class="topbar">
+
+      <div class="top-left">
+        <button class="mobile-menu" id="menuBtn">☰</button>
+
+        <div>
+          <h1>Dashboard</h1>
+          <p>Smart Printing Network Overview</p>
+        </div>
+      </div>
+
+      <div class="top-actions">
+
+        <div class="admin-profile">
+          <div class="avatar">SA</div>
+          <div>
+            <strong>Super Admin</strong><br>
+            <span style="color:#718096;font-size:10px">Authorised Account</span>
+          </div>
+        </div>
+
+        <button class="logout-btn" id="logoutBtn">
+          Logout ↗
+        </button>
+
+      </div>
+
+    </header>
+
+    <div class="error-box" id="errorBox"></div>
+
+    <section class="welcome">
+      <h2>Welcome to Smart Printing 👋</h2>
+      <p>
+        Manage your printing network, customer orders, payments,
+        partner shops and business performance from one place.
+      </p>
+    </section>
+
+    <div class="section-heading">
+      <h2>Business Overview</h2>
+      <span id="lastUpdated">Loading data...</span>
     </div>
 
-    <div class="card">
-      <p>Accepted Orders</p>
-      <h2 id="acceptedOrders">-</h2>
+    <section class="stats-grid">
+
+      <div class="stat-card">
+        <div class="stat-top">
+          <span style="font-size:12px;color:#718096">Total Orders</span>
+          <div class="stat-icon blue-bg">📦</div>
+        </div>
+        <h3 id="totalOrders">—</h3>
+        <p>Orders received</p>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-top">
+          <span style="font-size:12px;color:#718096">Pending Orders</span>
+          <div class="stat-icon orange-bg">⏳</div>
+        </div>
+        <h3 id="pendingOrders">—</h3>
+        <p>Awaiting action</p>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-top">
+          <span style="font-size:12px;color:#718096">Completed Orders</span>
+          <div class="stat-icon green-bg">✅</div>
+        </div>
+        <h3 id="completedOrders">—</h3>
+        <p>Successfully completed</p>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-top">
+          <span style="font-size:12px;color:#718096">Pending Payments</span>
+          <div class="stat-icon red-bg">💳</div>
+        </div>
+        <h3 id="pendingPayments">—</h3>
+        <p>Payment verification pending</p>
+      </div>
+
+    </section>
+
+    <div class="section-heading">
+      <h2>Quick Management</h2>
+      <span>Manage your business</span>
     </div>
 
-    <div class="card">
-      <p>Printing Orders</p>
-      <h2 id="printingOrders">-</h2>
+    <section class="quick-grid">
+
+      <a href="order-management.html" class="quick-card">
+        <div class="quick-icon">📦</div>
+        <h3>Order Management</h3>
+        <p>View orders and manage printing status.</p>
+        <span class="arrow">Open Orders →</span>
+      </a>
+
+      <a href="payment-management.html" class="quick-card">
+        <div class="quick-icon">💳</div>
+        <h3>Payment Management</h3>
+        <p>Verify UTR numbers and update payment status.</p>
+        <span class="arrow">Manage Payments →</span>
+      </a>
+
+      <a href="pricing-management.html" class="quick-card">
+        <div class="quick-icon">💰</div>
+        <h3>Pricing Control</h3>
+        <p>Manage B&W and colour printing rates.</p>
+        <span class="arrow">Manage Pricing →</span>
+      </a>
+
+      <a href="shop-management.html" class="quick-card">
+        <div class="quick-icon">🏪</div>
+        <h3>Shop Management</h3>
+        <p>Manage partner printing shops and approvals.</p>
+        <span class="arrow">Manage Shops →</span>
+      </a>
+
+      <a href="college-management.html" class="quick-card">
+        <div class="quick-icon">🎓</div>
+        <h3>College Management</h3>
+        <p>Manage colleges and printing locations.</p>
+        <span class="arrow">Manage Colleges →</span>
+      </a>
+
+      <a href="reports-analytics.html" class="quick-card">
+        <div class="quick-icon">📊</div>
+        <h3>Reports & Analytics</h3>
+        <p>Analyse orders and business performance.</p>
+        <span class="arrow">View Reports →</span>
+      </a>
+
+    </section>
+
+    <div class="section-heading">
+      <h2>Recent Orders</h2>
+      <a href="order-management.html"
+         style="color:#075bdb;font-size:11px;text-decoration:none;font-weight:bold">
+        View All →
+      </a>
     </div>
 
-    <div class="card">
-      <p>Completed Orders</p>
-      <h2 id="completedOrders">-</h2>
+    <section class="table-card">
+
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Amount</th>
+              <th>Payment</th>
+              <th>Order Status</th>
+            </tr>
+          </thead>
+
+          <tbody id="recentOrders">
+            <tr>
+              <td colspan="5" class="empty">Loading orders...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
+    <div class="notice">
+      ⚠️ <strong>Payment Security:</strong>
+      UTR submit karne se payment automatically verified nahi hota.
+      Bank transaction confirm karne ke baad hi payment ko Paid mark karein.
     </div>
 
-    <div class="card">
-      <p>Rejected Orders</p>
-      <h2 id="rejectedOrders">-</h2>
-    </div>
+  </main>
 
-    <div class="card">
-      <p>Pending Payments</p>
-      <h2 id="pendingPayments">-</h2>
-    </div>
-
-    <div class="card">
-      <p>Total Revenue</p>
-      <h2 id="totalRevenue">₹-</h2>
-    </div>
-
-    <div class="card">
-      <p>Today's Revenue</p>
-      <h2 id="todayRevenue">₹-</h2>
-    </div>
-
-    <div class="card">
-      <p>Total Commission</p>
-      <h2 id="totalCommission">₹-</h2>
-    </div>
-
-  </div>
-
-  <!-- ORDER MANAGEMENT NAVIGATION -->
-
-  <div class="section manage-section">
-
-    <div>
-      <h3>📦 Order Management</h3>
-      <p>Manage customer orders, update statuses and handle deleted orders.</p>
-    </div>
-
-    <button class="manage-btn" id="manageOrdersBtn">
-      Manage All Orders →
-    </button>
-
-  </div>
-
-  <!-- RECENT ORDERS -->
-
-  <div class="section">
-
-    <h3>Recent Orders</h3>
-
-    <div id="ordersMessage" class="message">
-      Loading orders...
-    </div>
-
-    <div class="table-wrap">
-
-      <table>
-        <thead>
-          <tr>
-            <th>Order ID</th>
-            <th>Customer</th>
-            <th>Phone</th>
-            <th>Amount</th>
-            <th>Payment</th>
-            <th>Order Status</th>
-          </tr>
-        </thead>
-
-        <tbody id="recentOrders"></tbody>
-
-      </table>
-
-    </div>
-
-    <button class="refresh-btn" id="refreshBtn">
-      ↻ Refresh Dashboard
-    </button>
-
-  </div>
-
-  <p class="note footer-note">
-    Revenue is calculated from orders marked PAID.
-    Commission will be calculated after shop cost and commission
-    settings are implemented in a later phase.
-  </p>
-
-</main>
+</div>
 
 <script type="module">
 
-import { auth, db } from "./firebase.js";
+import { auth, db, ADMIN_UID } from "./firebase.js";
 
 import {
   onAuthStateChanged,
@@ -474,248 +820,222 @@ import {
   collection,
   getDocs,
   query,
-  orderBy
+  orderBy,
+  limit
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const ADMIN_UID = "ibK3XWMUEYQIbBhPmGQRnW72MZg1";
 
-const $ = id => document.getElementById(id);
+const loadingScreen = document.getElementById("loadingScreen");
+const app = document.getElementById("app");
+const errorBox = document.getElementById("errorBox");
 
-let currentUser = null;
-let loading = false;
+let dashboardLoaded = false;
 
-function money(value) {
+
+function isSuperAdmin(user) {
+  return Boolean(
+    user &&
+    ADMIN_UID &&
+    user.uid === ADMIN_UID
+  );
+}
+
+
+function showError(message) {
+  errorBox.textContent = message;
+  errorBox.style.display = "block";
+}
+
+
+function formatMoney(value) {
   return "₹" + Number(value || 0).toLocaleString("en-IN");
 }
 
-function getDate(value) {
-  if (!value) return null;
 
-  if (typeof value.toDate === "function") {
-    return value.toDate();
-  }
-
-  return null;
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  })[char]);
 }
+
 
 function setText(id, value) {
-  $(id).textContent = value;
+  document.getElementById(id).textContent = value;
 }
 
-function showError(error) {
-  $("ordersMessage").textContent =
-    "Error loading orders: " + error.message;
+
+function getStatusClass(status) {
+  const value = String(status || "").toUpperCase();
+
+  if (value === "COMPLETED") return "status";
+  if (value === "PENDING") return "status";
+
+  return "status";
 }
+
 
 async function loadDashboard() {
 
-  if (!currentUser || loading) return;
-
-  loading = true;
-
-  $("refreshBtn").disabled = true;
-  $("ordersMessage").textContent = "Loading dashboard...";
-
   try {
 
-    const ordersQuery = query(
-      collection(db, "orders"),
-      orderBy("createdAt", "desc")
-    );
+    const ordersRef = collection(db, "orders");
 
-    const snapshot = await getDocs(ordersQuery);
+    const snapshot = await getDocs(ordersRef);
 
-    const orders = snapshot.docs.map(d => ({
-      id: d.id,
-      ...d.data()
+    const orders = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
     }));
 
-    const now = new Date();
+    const total = orders.length;
 
-    const todayStart = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate()
-    );
+    const pending = orders.filter(order =>
+      String(order.orderStatus).toUpperCase() === "PENDING"
+    ).length;
 
-    let todayCount = 0;
-    let pending = 0;
-    let accepted = 0;
-    let printing = 0;
-    let completed = 0;
-    let rejected = 0;
-    let pendingPayment = 0;
+    const completed = orders.filter(order =>
+      String(order.orderStatus).toUpperCase() === "COMPLETED"
+    ).length;
 
-    let totalRevenue = 0;
-    let todayRevenue = 0;
+    const pendingPay = orders.filter(order =>
+      String(order.paymentStatus).toUpperCase() === "PENDING"
+    ).length;
 
-    for (const order of orders) {
-
-      const orderStatus = order.orderStatus || "PENDING";
-      const paymentStatus = order.paymentStatus || "PENDING";
-
-      const createdAt = getDate(order.createdAt);
-
-      if (createdAt && createdAt >= todayStart) {
-        todayCount++;
-      }
-
-      if (orderStatus === "PENDING") pending++;
-      if (orderStatus === "ACCEPTED") accepted++;
-      if (orderStatus === "PRINTING") printing++;
-      if (orderStatus === "COMPLETED") completed++;
-      if (orderStatus === "REJECTED") rejected++;
-
-      if (paymentStatus !== "PAID") {
-        pendingPayment++;
-      }
-
-      if (paymentStatus === "PAID") {
-
-        const amount = Number(order.totalPrice) || 0;
-
-        totalRevenue += amount;
-
-        if (createdAt && createdAt >= todayStart) {
-          todayRevenue += amount;
-        }
-
-      }
-
-    }
-
-    setText("totalOrders", orders.length);
-    setText("todayOrders", todayCount);
+    setText("totalOrders", total);
     setText("pendingOrders", pending);
-    setText("acceptedOrders", accepted);
-    setText("printingOrders", printing);
     setText("completedOrders", completed);
-    setText("rejectedOrders", rejected);
-    setText("pendingPayments", pendingPayment);
+    setText("pendingPayments", pendingPay);
 
-    setText("totalRevenue", money(totalRevenue));
-    setText("todayRevenue", money(todayRevenue));
+    orders.sort((a,b) => {
+      const timeA = a.createdAt?.toMillis?.() || 0;
+      const timeB = b.createdAt?.toMillis?.() || 0;
+      return timeB - timeA;
+    });
 
-    setText("totalCommission", "Not configured");
-
-    // RECENT ORDERS
-
-    const recent = orders.slice(0, 10);
-    const tbody = $("recentOrders");
-
-    tbody.replaceChildren();
+    const recent = orders.slice(0, 5);
+    const tbody = document.getElementById("recentOrders");
 
     if (recent.length === 0) {
 
-      $("ordersMessage").textContent = "No orders found.";
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="5" class="empty">
+            Abhi tak koi order receive nahi hua.
+          </td>
+        </tr>
+      `;
 
     } else {
 
-      $("ordersMessage").textContent =
-        "Showing latest " + recent.length + " orders.";
+      tbody.innerHTML = recent.map(order => {
 
-      recent.forEach(order => {
+        const id = escapeHTML(order.orderId || order.id);
+        const name = escapeHTML(order.name || "Customer");
+        const amount = formatMoney(order.totalPrice);
+        const payment = escapeHTML(order.paymentStatus || "PENDING");
+        const status = escapeHTML(order.orderStatus || "PENDING");
 
-        const row = document.createElement("tr");
+        return `
+          <tr>
+            <td><strong>${id}</strong></td>
+            <td>${name}</td>
+            <td><strong>${amount}</strong></td>
+            <td><span class="status">${payment}</span></td>
+            <td><span class="status">${status}</span></td>
+          </tr>
+        `;
 
-        const values = [
-          order.orderId || order.id,
-          order.name || "-",
-          order.phone || "-",
-          money(order.totalPrice),
-          order.paymentStatus || "PENDING",
-          order.orderStatus || "PENDING"
-        ];
-
-        values.forEach(value => {
-
-          const cell = document.createElement("td");
-          cell.textContent = value;
-          row.appendChild(cell);
-
-        });
-
-        tbody.appendChild(row);
-
-      });
+      }).join("");
 
     }
 
     setText(
       "lastUpdated",
-      "Last updated: " + now.toLocaleString("en-IN")
+      "Updated: " + new Date().toLocaleTimeString("en-IN")
     );
 
   } catch (error) {
 
-    showError(error);
+    console.error("Dashboard data error:", error);
 
-  } finally {
+    showError(
+      "Dashboard data load nahi ho saka. Firestore Security Rules aur network connection check karein."
+    );
 
-    loading = false;
-    $("refreshBtn").disabled = false;
+    setText("totalOrders", "!");
+    setText("pendingOrders", "!");
+    setText("completedOrders", "!");
+    setText("pendingPayments", "!");
+
+    document.getElementById("recentOrders").innerHTML = `
+      <tr>
+        <td colspan="5" class="empty">
+          Orders load nahi ho sake.
+        </td>
+      </tr>
+    `;
 
   }
 
 }
 
 
-// AUTHENTICATION CHECK
+// Mobile sidebar
+document.getElementById("menuBtn").addEventListener("click", () => {
+  document.getElementById("sidebar").classList.toggle("open");
+});
 
-onAuthStateChanged(auth, async user => {
 
-  if (!user || user.uid !== ADMIN_UID) {
+// Logout
+document.getElementById("logoutBtn").addEventListener("click", async () => {
 
-    if (user) {
-      await signOut(auth);
-    }
+  const confirmLogout = confirm("Are you sure you want to logout?");
+
+  if (!confirmLogout) return;
+
+  try {
+
+    await signOut(auth);
+    window.location.replace("admin.html");
+
+  } catch (error) {
+
+    console.error(error);
+    alert("Logout failed. Please try again.");
+
+  }
+
+});
+
+
+// Authentication guard
+onAuthStateChanged(auth, async (user) => {
+
+  if (!user) {
 
     window.location.replace("admin.html");
     return;
 
   }
 
-  currentUser = user;
-
-  setText("adminEmail", user.email || "Admin");
-
-  await loadDashboard();
-
-});
-
-
-// REFRESH DASHBOARD
-
-$("refreshBtn").addEventListener("click", loadDashboard);
-
-
-// OPEN ORDER MANAGEMENT
-
-$("manageOrdersBtn").addEventListener("click", () => {
-
-  window.location.href = "order-management.html";
-
-});
-
-
-// LOGOUT
-
-$("logoutBtn").addEventListener("click", async () => {
-
-  $("logoutBtn").disabled = true;
-
-  try {
+  if (!isSuperAdmin(user)) {
 
     await signOut(auth);
-
     window.location.replace("admin.html");
+    return;
 
-  } catch (error) {
+  }
 
-    alert("Logout failed: " + error.message);
+  loadingScreen.style.display = "none";
+  app.style.display = "flex";
 
-    $("logoutBtn").disabled = false;
-
+  if (!dashboardLoaded) {
+    dashboardLoaded = true;
+    await loadDashboard();
   }
 
 });
