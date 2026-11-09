@@ -12,7 +12,6 @@
       --blue: #1769e0;
       --dark: #103b78;
       --light: #eef5ff;
-      --white: #ffffff;
       --text: #172b4d;
       --muted: #64748b;
       --border: #dbe6f5;
@@ -20,15 +19,13 @@
       --red: #dc3545;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       color: var(--text);
-      background: linear-gradient(135deg, #edf5ff, #ffffff, #e7f0ff);
+      background: linear-gradient(135deg, #edf5ff, #fff, #e7f0ff);
       min-height: 100vh;
     }
 
@@ -40,15 +37,8 @@
       box-shadow: 0 5px 20px #1769e033;
     }
 
-    header h1 {
-      margin: 0;
-      font-size: 27px;
-    }
-
-    header p {
-      margin: 8px 0 0;
-      opacity: .9;
-    }
+    header h1 { margin: 0; font-size: 27px; }
+    header p { margin: 8px 0 0; opacity: .9; }
 
     .container {
       max-width: 760px;
@@ -112,11 +102,6 @@
       line-height: 1.6;
     }
 
-    .file-list {
-      margin-top: 12px;
-      font-size: 14px;
-    }
-
     .file-item {
       background: #f4f8ff;
       border: 1px solid var(--border);
@@ -124,6 +109,7 @@
       padding: 10px;
       margin-top: 7px;
       overflow-wrap: anywhere;
+      font-size: 14px;
     }
 
     .grid {
@@ -148,9 +134,7 @@
       font-size: 14px;
     }
 
-    .summary-row:last-child {
-      border-bottom: none;
-    }
+    .summary-row:last-child { border-bottom: none; }
 
     .total {
       font-size: 25px;
@@ -163,15 +147,11 @@
       margin-top: 10px;
       color: var(--muted);
       min-height: 18px;
+      line-height: 1.5;
     }
 
-    .error {
-      color: var(--red);
-    }
-
-    .success {
-      color: var(--green);
-    }
+    .error { color: var(--red); }
+    .success { color: var(--green); }
 
     button {
       border: none;
@@ -199,18 +179,9 @@
     }
 
     @media(max-width: 520px) {
-      .grid {
-        grid-template-columns: 1fr;
-        gap: 0;
-      }
-
-      .card {
-        padding: 17px;
-      }
-
-      header h1 {
-        font-size: 23px;
-      }
+      .grid { grid-template-columns: 1fr; gap: 0; }
+      .card { padding: 17px; }
+      header h1 { font-size: 23px; }
     }
   </style>
 </head>
@@ -239,18 +210,22 @@
       >
     </div>
 
-    <div id="fileList" class="file-list"></div>
-    <div id="pageStatus" class="status">Abhi koi file select nahi ki gayi.</div>
+    <div id="fileList"></div>
+    <div id="pageStatus" class="status">
+      Abhi koi file select nahi ki gayi.
+    </div>
   </section>
 
   <section class="card">
     <h2>👤 2. Customer Details</h2>
 
     <label for="customerName">Aapka naam</label>
-    <input id="customerName" type="text" placeholder="Apna naam likhein" maxlength="70">
+    <input id="customerName" type="text"
+      placeholder="Apna naam likhein" maxlength="70">
 
     <label for="phone">Mobile number</label>
-    <input id="phone" type="tel" inputmode="numeric" maxlength="10" placeholder="10 digit mobile number">
+    <input id="phone" type="tel" inputmode="numeric"
+      maxlength="10" placeholder="10 digit mobile number">
   </section>
 
   <section class="card">
@@ -311,10 +286,11 @@
 
     <p class="hint" style="margin-top:12px">
       Double Side mein 2 pages ko 1 physical sheet maana gaya hai.
-      Isliye sheets = har copy ke pages ÷ 2 (upar ki taraf round).
     </p>
 
-    <div id="priceStatus" class="status">Default pricing dikhayi ja rahi hai.</div>
+    <div id="priceStatus" class="status">
+      Default pricing dikhayi ja rahi hai.
+    </div>
 
     <button id="submitBtn" type="button" disabled>
       Order Submit Karein
@@ -333,7 +309,6 @@
   import {
     auth,
     db,
-    supabase,
     APP_CONFIG,
     generateOrderId,
     signInAnonymously,
@@ -343,6 +318,14 @@
     setDoc,
     serverTimestamp
   } from "./firebase.js";
+
+  const SUPABASE_URL = "https://lhpxgxgqhyvcfgmlzdpi.supabase.co";
+
+  const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_RjOjldVe9q4NF-UeeEQCA_Wbm7oDoV";
+
+  const UPLOAD_FUNCTION_URL =
+    SUPABASE_URL + "/functions/v1/secure-file-upload";
 
   const $ = id => document.getElementById(id);
 
@@ -365,9 +348,8 @@
   let selectedFiles = [];
   let pagesPerCopy = 0;
   let filesReady = false;
-  let customerUid = null;
-  let pricingLoaded = false;
   let selectionToken = 0;
+  let pricingLoaded = false;
 
   if (window.pdfjsLib) {
     pdfjsLib.GlobalWorkerOptions.workerSrc =
@@ -375,31 +357,34 @@
   }
 
   function money(value) {
-    return "₹" + Number(value || 0).toFixed(2).replace(/\.00$/, "");
+    return "₹" + Number(value || 0)
+      .toFixed(2).replace(/\.00$/, "");
   }
 
   function safePrice(value, fallback) {
     const number = Number(value);
-    return Number.isFinite(number) && number >= 0 ? number : fallback;
+    return Number.isFinite(number) && number >= 0
+      ? number : fallback;
   }
 
   function getCopies() {
     const value = Number(copiesInput.value);
+
     if (!Number.isInteger(value) || value < 1 || value > 1000) {
       return null;
     }
+
     return value;
   }
 
   function getCurrentRate() {
-    const type = typeInput.value;
-    const side = sideInput.value;
-
-    if (type === "bw") {
-      return side === "double" ? prices.bwDouble : prices.bwSingle;
+    if (typeInput.value === "bw") {
+      return sideInput.value === "double"
+        ? prices.bwDouble : prices.bwSingle;
     }
 
-    return side === "double" ? prices.colourDouble : prices.colourSingle;
+    return sideInput.value === "double"
+      ? prices.colourDouble : prices.colourSingle;
   }
 
   function calculatePrice() {
@@ -413,7 +398,7 @@
         sheetsPerCopy: 0,
         totalSheets: 0,
         totalPrice: 0,
-        totalPages: pagesPerCopy * (copies || 0)
+        totalPages: 0
       };
     }
 
@@ -422,14 +407,13 @@
       : pagesPerCopy;
 
     const totalSheets = sheetsPerCopy * copies;
-    const totalPrice = totalSheets * rate;
 
     return {
       copies,
       rate,
       sheetsPerCopy,
       totalSheets,
-      totalPrice,
+      totalPrice: totalSheets * rate,
       totalPages: pagesPerCopy * copies
     };
   }
@@ -443,69 +427,66 @@
     $("copyCount").textContent = result.copies || "Invalid";
     $("totalPrice").textContent = money(result.totalPrice);
 
-    const validCopies = result.copies >= 1 && result.copies <= 1000;
-    const validOrder = filesReady && pagesPerCopy > 0 && validCopies;
+    const valid = filesReady &&
+      pagesPerCopy > 0 &&
+      result.copies >= 1 &&
+      result.copies <= 1000 &&
+      pricingLoaded;
 
-    submitBtn.disabled = !validOrder;
+    submitBtn.disabled = !valid;
 
-    if (!validCopies) {
-      $("priceStatus").textContent = "Copies 1 se 1000 ke beech honi chahiye.";
+    if (!valid && getCopies() === null) {
+      $("priceStatus").textContent =
+        "Copies 1 se 1000 ke beech honi chahiye.";
       $("priceStatus").className = "status error";
+    } else if (!pricingLoaded) {
+      $("priceStatus").textContent = "Pricing load ho rahi hai...";
+      $("priceStatus").className = "status";
     } else {
       $("priceStatus").textContent =
-        `Total ${result.totalSheets} physical sheets × ${money(result.rate)} per sheet`;
+        `Total ${result.totalSheets} sheets × ${money(result.rate)} per sheet`;
       $("priceStatus").className = "status";
     }
   }
 
   async function loadLivePrices() {
     try {
-      const ref = doc(db, "settings", "pricing");
-      const snap = await getDoc(ref);
+      const snap = await getDoc(doc(db, "settings", "pricing"));
 
       if (snap.exists()) {
         const data = snap.data();
 
         prices = {
-          bwSingle: safePrice(data.bwSingle, DEFAULT_PRICES.bwSingle),
-          bwDouble: safePrice(data.bwDouble, DEFAULT_PRICES.bwDouble),
-
-          // "colour" aur purane "color" dono field names support hain.
+          bwSingle: safePrice(data.bwSingle, 2),
+          bwDouble: safePrice(data.bwDouble, 3),
           colourSingle: safePrice(
-            data.colourSingle ?? data.colorSingle,
-            DEFAULT_PRICES.colourSingle
+            data.colourSingle ?? data.colorSingle, 10
           ),
-
           colourDouble: safePrice(
-            data.colourDouble ?? data.colorDouble,
-            DEFAULT_PRICES.colourDouble
+            data.colourDouble ?? data.colorDouble, 15
           )
         };
-
-        $("priceStatus").textContent = "Live pricing load ho gayi.";
-        $("priceStatus").className = "status success";
-      } else {
-        $("priceStatus").textContent = "Default pricing use ho rahi hai.";
       }
 
-      pricingLoaded = true;
-      updateSummary();
+      $("priceStatus").textContent = "Pricing load ho gayi.";
+      $("priceStatus").className = "status success";
 
     } catch (error) {
-      console.error("Pricing load error:", error);
+      console.error("Pricing error:", error);
+
       $("priceStatus").textContent =
         "Live pricing load nahi hui. Default rates use ho rahe hain.";
       $("priceStatus").className = "status error";
-
-      pricingLoaded = true;
-      updateSummary();
     }
+
+    pricingLoaded = true;
+    updateSummary();
   }
 
   async function countOneFile(file) {
     const extension = file.name.split(".").pop().toLowerCase();
 
-    if (file.size <= 0) {
+    if (!file.size) {
       throw new Error(file.name + " file empty hai.");
     }
 
@@ -519,6 +500,7 @@
       }
 
       const buffer = await file.arrayBuffer();
+
       const pdf = await pdfjsLib.getDocument({
         data: new Uint8Array(buffer)
       }).promise;
@@ -533,6 +515,16 @@
     throw new Error(file.name + " supported format nahi hai.");
   }
 
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, char => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;"
+    })[char]);
+  }
+
   async function processFiles() {
     const token = ++selectionToken;
     const files = Array.from(fileInput.files || []);
@@ -543,7 +535,6 @@
 
     $("fileList").innerHTML = "";
     $("pageStatus").textContent = "";
-    $("pageStatus").className = "status";
 
     updateSummary();
 
@@ -584,37 +575,54 @@
       $("pageStatus").className = "status success";
 
     } catch (error) {
-      if (token !== selectionToken) return;
-
       pagesPerCopy = 0;
       filesReady = false;
 
-      $("pageStatus").textContent = error.message || "File read nahi ho payi.";
+      $("pageStatus").textContent = error.message;
       $("pageStatus").className = "status error";
     }
 
     updateSummary();
   }
 
-  function escapeHtml(value) {
-    return String(value).replace(/[&<>"']/g, char => ({
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#039;"
-    })[char]);
-  }
-
   async function getCustomerAuth() {
     if (auth.currentUser) {
-      customerUid = auth.currentUser.uid;
-      return customerUid;
+      return auth.currentUser;
     }
 
     const result = await signInAnonymously(auth);
-    customerUid = result.user.uid;
-    return customerUid;
+    return result.user;
+  }
+
+  async function uploadOneFile(file, orderId, user) {
+    const idToken = await user.getIdToken(true);
+
+    const response = await fetch(UPLOAD_FUNCTION_URL, {
+      method: "POST",
+
+      headers: {
+        "apikey": SUPABASE_PUBLISHABLE_KEY,
+        "Authorization": "Bearer " + idToken,
+        "x-order-id": orderId,
+        "x-file-name": encodeURIComponent(file.name)
+      },
+
+      body: file
+    });
+
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok || !result.success || !result.path) {
+      throw new Error(
+        result.error || "Supabase upload failed. HTTP " + response.status
+      );
+    }
+
+    if (result.uid !== user.uid || result.orderId !== orderId) {
+      throw new Error("Upload response verification failed.");
+    }
+
+    return result.path;
   }
 
   function validateCustomer() {
@@ -630,76 +638,55 @@
     }
 
     if (!filesReady || pagesPerCopy <= 0) {
-      throw new Error("Pehle valid PDF ya photo upload karein.");
+      throw new Error("Pehle valid document upload karein.");
     }
 
     if (getCopies() === null) {
-      throw new Error("Copies ki sankhya 1 se 1000 ke beech honi chahiye.");
+      throw new Error("Copies 1 se 1000 ke beech honi chahiye.");
     }
 
     return { name, phone };
   }
 
-  async function uploadFiles(orderId) {
-    const uploadedPaths = [];
-
-    for (const file of selectedFiles) {
-      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-      const path = `${orderId}/${Date.now()}_${safeName}`;
-
-      const { error } = await supabase
-        .storage
-        .from("print-files")
-        .upload(path, file, {
-          cacheControl: "3600",
-          upsert: false,
-          contentType: file.type || "application/octet-stream"
-        });
-
-      if (error) {
-        throw new Error("File upload fail hua: " + file.name + ". " + error.message);
-      }
-
-      uploadedPaths.push(path);
-    }
-
-    return uploadedPaths;
-  }
-
   async function submitOrder() {
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Please wait...";
     $("submitStatus").textContent = "";
-    $("submitStatus").className = "status";
+
+    let uploadedPaths = [];
 
     try {
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Please wait...";
-
       const customer = validateCustomer();
+      const user = await getCustomerAuth();
       const result = calculatePrice();
 
-      if (!Number.isFinite(result.totalPrice) || result.totalPrice <= 0) {
+      if (!result.totalPrice || result.totalPrice <= 0) {
         throw new Error("Order price calculate nahi ho paya.");
       }
 
-      const uid = await getCustomerAuth();
       const orderId = generateOrderId();
 
-      $("submitStatus").textContent = "Files upload ho rahi hain...";
+      $("submitStatus").textContent = "Secure upload shuru ho raha hai...";
 
-      const filePaths = await uploadFiles(orderId);
-      const fileNames = selectedFiles.map(file => file.name);
+      for (const file of selectedFiles) {
+        $("submitStatus").textContent =
+          "Uploading " + (uploadedPaths.length + 1) +
+          " of " + selectedFiles.length + " files...";
+
+        const path = await uploadOneFile(file, orderId, user);
+        uploadedPaths.push(path);
+      }
 
       const orderData = {
         orderId,
-        uid,
+        uid: user.uid,
 
         name: customer.name,
         phone: customer.phone,
 
-        fileNames,
-        filePaths,
+        fileNames: selectedFiles.map(file => file.name),
+        filePaths: uploadedPaths,
 
-        // totalPages = sabhi copies ke pages
         totalPages: result.totalPages,
         pagesPerCopy,
 
@@ -722,6 +709,8 @@
 
         createdAt: serverTimestamp()
       };
+
+      $("submitStatus").textContent = "Order save ho raha hai...";
 
       await setDoc(doc(db, "orders", orderId), orderData);
 
@@ -748,7 +737,7 @@
       console.error("Order submit error:", error);
 
       $("submitStatus").textContent =
-        error.message || "Order submit nahi ho paya. Dobara try karein.";
+        error.message || "Order submit nahi ho paya.";
       $("submitStatus").className = "status error";
 
       submitBtn.disabled = false;
@@ -770,7 +759,7 @@
 
   onAuthStateChanged(auth, user => {
     if (user) {
-      customerUid = user.uid;
+      console.log("Customer Firebase authentication ready.");
     }
   });
 
@@ -779,4 +768,4 @@
 </script>
 
 </body>
-      </html>
+  </html>
