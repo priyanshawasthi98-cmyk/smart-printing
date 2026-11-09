@@ -1,1117 +1,782 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#155eef">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Printing | Online Print Order</title>
 
-<title>Smart Printing | Online Print Order</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
-<style>
-:root {
-  --blue:#155eef;
-  --dark:#123a91;
-  --light:#eff6ff;
-  --text:#172b4d;
-  --muted:#64748b;
-  --white:#fff;
-  --green:#059669;
-  --border:#dbe5f5;
-}
+  <style>
+    :root {
+      --blue: #1769e0;
+      --dark: #103b78;
+      --light: #eef5ff;
+      --white: #ffffff;
+      --text: #172b4d;
+      --muted: #64748b;
+      --border: #dbe6f5;
+      --green: #16a36a;
+      --red: #dc3545;
+    }
 
-* {
-  box-sizing:border-box;
-}
+    * {
+      box-sizing: border-box;
+    }
 
-body {
-  margin:0;
-  font-family:Arial, sans-serif;
-  color:var(--text);
-  background:#f5f8ff;
-  overflow-x:hidden;
-}
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: var(--text);
+      background: linear-gradient(135deg, #edf5ff, #ffffff, #e7f0ff);
+      min-height: 100vh;
+    }
 
-/* Animated background */
+    header {
+      background: linear-gradient(110deg, #104ca8, #2185f5);
+      color: white;
+      padding: 22px 16px;
+      text-align: center;
+      box-shadow: 0 5px 20px #1769e033;
+    }
 
-.background {
-  position:fixed;
-  inset:0;
-  z-index:-1;
-  overflow:hidden;
-  pointer-events:none;
-}
+    header h1 {
+      margin: 0;
+      font-size: 27px;
+    }
 
-.bubble {
-  position:absolute;
-  border-radius:50%;
-  background:linear-gradient(135deg,#bfdbfe,#dbeafe);
-  opacity:.5;
-  animation:float 8s ease-in-out infinite;
-}
+    header p {
+      margin: 8px 0 0;
+      opacity: .9;
+    }
 
-.b1 {
-  width:190px;
-  height:190px;
-  top:10%;
-  left:-70px;
-}
+    .container {
+      max-width: 760px;
+      margin: 25px auto;
+      padding: 0 14px 35px;
+    }
 
-.b2 {
-  width:130px;
-  height:130px;
-  top:55%;
-  right:-40px;
-  animation-delay:2s;
-}
+    .card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      margin-bottom: 18px;
+      box-shadow: 0 8px 28px #174b8b0c;
+    }
 
-.b3 {
-  width:90px;
-  height:90px;
-  bottom:5%;
-  left:20%;
-  animation-delay:4s;
-}
+    h2 {
+      font-size: 19px;
+      margin: 0 0 16px;
+      color: var(--dark);
+    }
 
-@keyframes float {
-  0%,100% { transform:translateY(0) rotate(0); }
-  50% { transform:translateY(-30px) rotate(15deg); }
-}
+    label {
+      display: block;
+      font-weight: bold;
+      margin: 15px 0 7px;
+      font-size: 14px;
+    }
 
-/* Header */
+    input, select {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fbfdff;
+      font-size: 15px;
+      outline: none;
+    }
 
-header {
-  color:white;
-  text-align:center;
-  padding:35px 15px 45px;
-  background:linear-gradient(130deg,#123a91,#155eef,#4285ff);
-  border-radius:0 0 30px 30px;
-  box-shadow:0 10px 35px #155eef30;
-  animation:slideDown .8s ease both;
-}
+    input:focus, select:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px #1769e01c;
+    }
 
-.logo {
-  font-size:42px;
-  display:inline-block;
-  animation:logoMove 3s ease-in-out infinite;
-}
+    .upload-box {
+      border: 2px dashed #8bb8f4;
+      background: var(--light);
+      border-radius: 14px;
+      padding: 24px 14px;
+      text-align: center;
+    }
 
-header h1 {
-  font-size:30px;
-  margin:10px 0;
-  letter-spacing:.5px;
-}
+    .upload-box input {
+      background: white;
+      margin-top: 12px;
+    }
 
-header p {
-  margin:0;
-  color:#e5efff;
-  font-size:15px;
-}
+    .hint {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
 
-@keyframes slideDown {
-  from { opacity:0; transform:translateY(-30px); }
-  to { opacity:1; transform:translateY(0); }
-}
+    .file-list {
+      margin-top: 12px;
+      font-size: 14px;
+    }
 
-@keyframes logoMove {
-  0%,100% { transform:translateY(0); }
-  50% { transform:translateY(-7px); }
-}
+    .file-item {
+      background: #f4f8ff;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 10px;
+      margin-top: 7px;
+      overflow-wrap: anywhere;
+    }
 
-/* Main */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
 
-main {
-  width:100%;
-  max-width:620px;
-  margin:25px auto;
-  padding:0 15px 35px;
-}
+    .summary {
+      background: #f2f7ff;
+      border: 1px solid #d9e8ff;
+      padding: 16px;
+      border-radius: 13px;
+    }
 
-.card {
-  background:rgba(255,255,255,.96);
-  border:1px solid #e5edfa;
-  border-radius:23px;
-  padding:24px;
-  box-shadow:0 12px 40px #1e40af12;
-  animation:cardShow .8s ease both;
-  backdrop-filter:blur(10px);
-}
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 9px 0;
+      border-bottom: 1px solid #dce8f8;
+      font-size: 14px;
+    }
 
-@keyframes cardShow {
-  from { opacity:0; transform:translateY(25px); }
-  to { opacity:1; transform:translateY(0); }
-}
+    .summary-row:last-child {
+      border-bottom: none;
+    }
 
-.card h2 {
-  font-size:22px;
-  margin:0 0 7px;
-}
+    .total {
+      font-size: 25px;
+      color: var(--green);
+      font-weight: bold;
+    }
 
-.subtitle {
-  color:var(--muted);
-  font-size:13px;
-  margin-bottom:22px;
-}
+    .status {
+      font-size: 13px;
+      margin-top: 10px;
+      color: var(--muted);
+      min-height: 18px;
+    }
 
-/* Labels and inputs */
+    .error {
+      color: var(--red);
+    }
 
-label {
-  display:block;
-  font-weight:700;
-  font-size:14px;
-  margin:18px 0 8px;
-}
+    .success {
+      color: var(--green);
+    }
 
-input,select {
-  width:100%;
-  padding:14px;
-  font-size:15px;
-  color:var(--text);
-  background:#fff;
-  border:1.5px solid var(--border);
-  border-radius:12px;
-  outline:none;
-  transition:.25s;
-}
+    button {
+      border: none;
+      border-radius: 11px;
+      padding: 15px;
+      width: 100%;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      color: white;
+      background: linear-gradient(110deg, #1769e0, #2588f7);
+      margin-top: 17px;
+    }
 
-input:focus,select:focus {
-  border-color:var(--blue);
-  box-shadow:0 0 0 4px #155eef15;
-}
+    button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
 
-input[type=file] {
-  background:var(--light);
-  border:2px dashed #93b4f8;
-  cursor:pointer;
-  padding:18px 12px;
-}
+    footer {
+      text-align: center;
+      padding: 18px;
+      color: var(--muted);
+      font-size: 13px;
+    }
 
-input[type=file]:hover {
-  background:#e4efff;
-  border-color:var(--blue);
-}
+    @media(max-width: 520px) {
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
 
-/* Summary */
+      .card {
+        padding: 17px;
+      }
 
-.summary {
-  background:linear-gradient(135deg,#eff6ff,#f8fbff);
-  border:1px solid #d7e5ff;
-  border-radius:15px;
-  padding:16px;
-  margin-top:16px;
-}
-
-.summary p {
-  margin:8px 0;
-  font-size:14px;
-  overflow-wrap:anywhere;
-}
-
-.price {
-  color:var(--blue);
-  font-size:23px !important;
-  font-weight:800;
-}
-
-#priceInfo {
-  font-size:12px;
-  color:var(--muted);
-  line-height:1.5;
-}
-
-/* Runner animation */
-
-.runner-box {
-  display:none;
-  margin-top:16px;
-  padding:15px;
-  background:#eff6ff;
-  border:1px solid #d7e5ff;
-  border-radius:15px;
-  text-align:center;
-  overflow:hidden;
-}
-
-.runner-box.active {
-  display:block;
-  animation:fadeIn .4s ease;
-}
-
-.runner-track {
-  height:55px;
-  position:relative;
-  border-bottom:2px dashed #9db8ef;
-  overflow:hidden;
-}
-
-.runner {
-  position:absolute;
-  left:-70px;
-  bottom:5px;
-  font-size:30px;
-  white-space:nowrap;
-}
-
-.runner-box.running .runner {
-  animation:run 2.3s linear infinite;
-}
-
-@keyframes run {
-  from { left:-70px; }
-  to { left:calc(100% + 70px); }
-}
-
-#runnerText {
-  color:var(--blue);
-  font-weight:bold;
-  font-size:13px;
-  margin:10px 0 0;
-}
-
-/* Button */
-
-button {
-  width:100%;
-  padding:16px;
-  margin-top:22px;
-  border:0;
-  border-radius:13px;
-  background:linear-gradient(110deg,#155eef,#347cff);
-  color:white;
-  font-size:15px;
-  font-weight:bold;
-  cursor:pointer;
-  box-shadow:0 7px 18px #155eef30;
-  transition:transform .25s,box-shadow .25s;
-}
-
-button:not(:disabled):hover {
-  transform:translateY(-3px);
-  box-shadow:0 12px 25px #155eef45;
-}
-
-button:not(:disabled):active {
-  transform:scale(.98);
-}
-
-button:disabled {
-  background:#9aa9c0;
-  box-shadow:none;
-  cursor:not-allowed;
-}
-
-/* Messages */
-
-#result {
-  margin-top:14px;
-  font-size:14px;
-  line-height:1.5;
-  overflow-wrap:anywhere;
-}
-
-.error { color:#dc2626; }
-.ok { color:var(--green); }
-
-.note {
-  color:var(--muted);
-  font-size:12px;
-  line-height:1.6;
-  margin-top:18px;
-}
-
-/* Features */
-
-.features {
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
-  margin:18px 0;
-}
-
-.feature {
-  background:#fff;
-  padding:13px 5px;
-  text-align:center;
-  border:1px solid var(--border);
-  border-radius:13px;
-  transition:.25s;
-}
-
-.feature:hover {
-  transform:translateY(-4px);
-  box-shadow:0 7px 18px #155eef15;
-}
-
-.feature span {
-  display:block;
-  font-size:24px;
-  margin-bottom:7px;
-}
-
-.feature small {
-  font-size:11px;
-  color:var(--muted);
-  font-weight:bold;
-}
-
-/* Footer */
-
-footer {
-  text-align:center;
-  padding:20px;
-  color:var(--muted);
-  font-size:12px;
-}
-
-@keyframes fadeIn {
-  from { opacity:0; }
-  to { opacity:1; }
-}
-
-@media(max-width:450px) {
-  header h1 { font-size:25px; }
-  .card { padding:18px; }
-  .features { gap:7px; }
-  .feature small { font-size:10px; }
-}
-
-@media(prefers-reduced-motion:reduce) {
-  *,*::before,*::after {
-    animation:none !important;
-    transition:none !important;
-  }
-}
-</style>
+      header h1 {
+        font-size: 23px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="background">
-  <div class="bubble b1"></div>
-  <div class="bubble b2"></div>
-  <div class="bubble b3"></div>
-</div>
-
 <header>
-  <div class="logo">🖨️</div>
-  <h1>Smart Printing</h1>
-  <p>Upload Karo • Online Order Karo • Shop Se Collect Karo</p>
+  <h1>🖨️ Smart Printing</h1>
+  <p>Upload karo • Print select karo • Online order karo</p>
 </header>
 
-<main>
+<main class="container">
 
-<div class="features">
-  <div class="feature">
-    <span>📄</span>
-    <small>Easy Upload</small>
-  </div>
-  <div class="feature">
-    <span>⚡</span>
-    <small>Quick Order</small>
-  </div>
-  <div class="feature">
-    <span>🔒</span>
-    <small>Secure Storage</small>
-  </div>
-</div>
+  <section class="card">
+    <h2>📄 1. Upload Documents</h2>
 
-<div class="card">
+    <div class="upload-box">
+      <div style="font-size:38px">📁</div>
+      <strong>Apni PDF ya Photos select karein</strong>
+      <p class="hint">PDF, JPG, JPEG, PNG | Maximum 15 MB per file</p>
+      <input
+        type="file"
+        id="files"
+        accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+        multiple
+      >
+    </div>
 
-<h2>✨ Apna Print Order Banayein</h2>
+    <div id="fileList" class="file-list"></div>
+    <div id="pageStatus" class="status">Abhi koi file select nahi ki gayi.</div>
+  </section>
 
-<p class="subtitle">
-Apni PDF ya photo upload karein aur printing details select karein.
-</p>
+  <section class="card">
+    <h2>👤 2. Customer Details</h2>
 
-<form id="printForm">
+    <label for="customerName">Aapka naam</label>
+    <input id="customerName" type="text" placeholder="Apna naam likhein" maxlength="70">
 
-<label for="file">📁 PDF ya Photo Select Karein</label>
+    <label for="phone">Mobile number</label>
+    <input id="phone" type="tel" inputmode="numeric" maxlength="10" placeholder="10 digit mobile number">
+  </section>
 
-<input
-  type="file"
-  id="file"
-  accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
-  multiple
-  required
->
+  <section class="card">
+    <h2>🖨️ 3. Print Settings</h2>
 
-<div class="summary" aria-live="polite">
+    <div class="grid">
+      <div>
+        <label for="printType">Print Type</label>
+        <select id="printType">
+          <option value="bw">Black & White</option>
+          <option value="colour">Colour</option>
+        </select>
+      </div>
 
-<p id="fileStatus">📂 Abhi koi file select nahi hui.</p>
+      <div>
+        <label for="printSide">Print Side</label>
+        <select id="printSide">
+          <option value="single">Single Side</option>
+          <option value="double">Double Side</option>
+        </select>
+      </div>
+    </div>
 
-<p id="pageCount">
-<strong>Total Pages:</strong> 0
-</p>
+    <label for="copies">Number of Copies</label>
+    <input id="copies" type="number" min="1" max="1000" value="1">
+    <p class="hint">Copies ki sankhya 1 se 1000 ke beech honi chahiye.</p>
+  </section>
 
-<p id="totalPrice" class="price">
-Total Price: ₹0
-</p>
+  <section class="card">
+    <h2>💳 4. Order Summary</h2>
 
-<div id="priceInfo">
-Latest website prices load ho rahe hain...
-</div>
+    <div class="summary">
+      <div class="summary-row">
+        <span>Pages (1 copy)</span>
+        <strong id="pageCount">0</strong>
+      </div>
 
-</div>
+      <div class="summary-row">
+        <span>Total pages (all copies)</span>
+        <strong id="totalPageCount">0</strong>
+      </div>
 
-<div id="runnerBox" class="runner-box" aria-live="polite">
+      <div class="summary-row">
+        <span>Rate per sheet</span>
+        <strong id="rate">₹2</strong>
+      </div>
 
-<div class="runner-track">
-  <span class="runner">🏃‍♂️📄</span>
-</div>
+      <div class="summary-row">
+        <span>Copies</span>
+        <strong id="copyCount">1</strong>
+      </div>
 
-<p id="runnerText">
-Aapki files ka intezar hai...
-</p>
+      <div class="summary-row">
+        <span>Estimated total</span>
+        <strong class="total" id="totalPrice">₹0</strong>
+      </div>
+    </div>
 
-</div>
+    <p class="hint" style="margin-top:12px">
+      Double Side mein 2 pages ko 1 physical sheet maana gaya hai.
+      Isliye sheets = har copy ke pages ÷ 2 (upar ki taraf round).
+    </p>
 
-<label for="type">🖨️ Printing Type</label>
+    <div id="priceStatus" class="status">Default pricing dikhayi ja rahi hai.</div>
 
-<select id="type">
-  <option value="Black & White">Black & White</option>
-  <option value="Colour">Colour</option>
-</select>
+    <button id="submitBtn" type="button" disabled>
+      Order Submit Karein
+    </button>
 
-<label for="side">📃 Printing Side</label>
+    <div id="submitStatus" class="status"></div>
+  </section>
 
-<select id="side">
-  <option value="Single Side">Single Side</option>
-  <option value="Double Side">Double Side</option>
-</select>
-
-<label for="copies">📚 Number of Copies</label>
-
-<input
-  type="number"
-  id="copies"
-  min="1"
-  max="1000"
-  step="1"
-  value="1"
-  required
->
-
-<label for="name">👤 Aapka Naam</label>
-
-<input
-  type="text"
-  id="name"
-  maxlength="60"
-  placeholder="Apna poora naam likhein"
-  required
->
-
-<label for="phone">📱 Mobile Number</label>
-
-<input
-  type="tel"
-  id="phone"
-  inputmode="numeric"
-  pattern="[0-9]{10}"
-  maxlength="10"
-  placeholder="10 digit mobile number"
-  required
->
-
-<button type="submit" id="submitBtn" disabled>
-Continue to Order Confirmation →
-</button>
-
-</form>
-
-<div id="result" aria-live="polite"></div>
-
-<p class="note">
-🔐 Aapki uploaded files private storage mein save hoti hain.
-Payment verify hone ke baad hi shop printing shuru karegi.
-</p>
-
-</div>
 </main>
 
 <footer>
-© 2026 Smart Printing. All Rights Reserved.
-<br>
-Made for Students ❤️
+  © Smart Printing Network | Secure Print Ordering
 </footer>
 
 <script type="module">
+  import {
+    auth,
+    db,
+    supabase,
+    APP_CONFIG,
+    generateOrderId,
+    signInAnonymously,
+    onAuthStateChanged,
+    doc,
+    getDoc,
+    setDoc,
+    serverTimestamp
+  } from "./firebase.js";
 
-import {
-  db,
-  auth,
-  supabase
-} from "./firebase.js";
+  const $ = id => document.getElementById(id);
 
-import {
-  doc,
-  setDoc,
-  serverTimestamp,
-  getDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  const fileInput = $("files");
+  const nameInput = $("customerName");
+  const phoneInput = $("phone");
+  const typeInput = $("printType");
+  const sideInput = $("printSide");
+  const copiesInput = $("copies");
+  const submitBtn = $("submitBtn");
 
-import {
-  signInAnonymously
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  const DEFAULT_PRICES = {
+    bwSingle: 2,
+    bwDouble: 3,
+    colourSingle: 10,
+    colourDouble: 15
+  };
 
-"use strict";
+  let prices = { ...DEFAULT_PRICES };
+  let selectedFiles = [];
+  let pagesPerCopy = 0;
+  let filesReady = false;
+  let customerUid = null;
+  let pricingLoaded = false;
+  let selectionToken = 0;
 
-const PDFJS_VERSION = "3.11.174";
+  if (window.pdfjsLib) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  }
 
-const PDFJS_CDNS = [
-  `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJS_VERSION}/pdf.min.js`,
-  `https://cdn.jsdelivr.net/npm/pdfjs-dist@${PDFJS_VERSION}/build/pdf.min.js`
-];
+  function money(value) {
+    return "₹" + Number(value || 0).toFixed(2).replace(/\.00$/, "");
+  }
 
-const PDF_WORKER =
-  `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJS_VERSION}/pdf.worker.min.js`;
+  function safePrice(value, fallback) {
+    const number = Number(value);
+    return Number.isFinite(number) && number >= 0 ? number : fallback;
+  }
 
-const DEFAULT_PRICES = {
-  bwSingle:2,
-  bwDouble:3,
-  colorSingle:10,
-  colorDouble:15
-};
+  function getCopies() {
+    const value = Number(copiesInput.value);
+    if (!Number.isInteger(value) || value < 1 || value > 1000) {
+      return null;
+    }
+    return value;
+  }
 
-const fileInput = document.getElementById("file");
-const copiesInput = document.getElementById("copies");
-const typeInput = document.getElementById("type");
-const sideInput = document.getElementById("side");
+  function getCurrentRate() {
+    const type = typeInput.value;
+    const side = sideInput.value;
 
-const pageDisplay = document.getElementById("pageCount");
-const priceDisplay = document.getElementById("totalPrice");
-const fileStatus = document.getElementById("fileStatus");
-
-const submitBtn = document.getElementById("submitBtn");
-const result = document.getElementById("result");
-const form = document.getElementById("printForm");
-
-const runnerBox = document.getElementById("runnerBox");
-const runnerText = document.getElementById("runnerText");
-const priceInfo = document.getElementById("priceInfo");
-
-let totalPages = 0;
-let counting = false;
-let uploading = false;
-let selectionToken = 0;
-
-let prices = {...DEFAULT_PRICES};
-let pricingVersion = "DEFAULT";
-let pricesLoaded = false;
-
-
-// ====================================
-// MESSAGE AND ANIMATION
-// ====================================
-
-function showMessage(message, className="") {
-  result.className = className;
-  result.textContent = message;
-}
-
-function showRunner(message) {
-  runnerBox.classList.add("active","running");
-  runnerText.textContent = message;
-}
-
-function finishRunner(message) {
-  runnerBox.classList.add("active");
-  runnerBox.classList.remove("running");
-  runnerText.textContent = message;
-}
-
-function hideRunner() {
-  runnerBox.classList.remove("active","running");
-}
-
-
-// ====================================
-// LOAD LIVE PRICING
-// ====================================
-
-function validPrice(value,fallback) {
-
-  const n = Number(value);
-
-  return Number.isFinite(n) && n >= 0 && n <= 100000
-    ? n
-    : fallback;
-}
-
-async function loadLivePrices() {
-
-  try {
-
-    const snap = await getDoc(
-      doc(db,"settings","pricing")
-    );
-
-    if(snap.exists()) {
-
-      const data = snap.data();
-
-      prices = {
-        bwSingle:validPrice(data.bwSingle,DEFAULT_PRICES.bwSingle),
-        bwDouble:validPrice(data.bwDouble,DEFAULT_PRICES.bwDouble),
-        colorSingle:validPrice(data.colorSingle,DEFAULT_PRICES.colorSingle),
-        colorDouble:validPrice(data.colorDouble,DEFAULT_PRICES.colorDouble)
-      };
-
-      pricingVersion = data.version || "LIVE";
-
-      priceInfo.textContent =
-        "✅ Latest website prices loaded.";
-
-    } else {
-
-      prices = {...DEFAULT_PRICES};
-
-      pricingVersion = "DEFAULT";
-
-      priceInfo.textContent =
-        "Default prices active. Admin custom pricing abhi publish nahi hui hai.";
-
+    if (type === "bw") {
+      return side === "double" ? prices.bwDouble : prices.bwSingle;
     }
 
-  } catch(error) {
-
-    console.error("Pricing error:",error);
-
-    prices = {...DEFAULT_PRICES};
-
-    pricingVersion = "DEFAULT_FALLBACK";
-
-    priceInfo.textContent =
-      "⚠️ Live pricing load nahi hui. Default rates dikhaye ja rahe hain.";
-
+    return side === "double" ? prices.colourDouble : prices.colourSingle;
   }
 
-  pricesLoaded = true;
-  calculatePrice();
+  function calculatePrice() {
+    const copies = getCopies();
+    const rate = getCurrentRate();
 
-}
+    if (copies === null || pagesPerCopy <= 0) {
+      return {
+        copies: copies || 0,
+        rate,
+        sheetsPerCopy: 0,
+        totalSheets: 0,
+        totalPrice: 0,
+        totalPages: pagesPerCopy * (copies || 0)
+      };
+    }
 
+    const sheetsPerCopy = sideInput.value === "double"
+      ? Math.ceil(pagesPerCopy / 2)
+      : pagesPerCopy;
 
-// ====================================
-// PDF.JS LOADER
-// ====================================
+    const totalSheets = sheetsPerCopy * copies;
+    const totalPrice = totalSheets * rate;
 
-function loadScript(src) {
-
-  return new Promise((resolve,reject)=>{
-
-    const script = document.createElement("script");
-
-    script.src = src;
-    script.async = true;
-
-    script.onload = resolve;
-
-    script.onerror = ()=>{
-      script.remove();
-      reject(new Error("PDF.js library load nahi hui."));
+    return {
+      copies,
+      rate,
+      sheetsPerCopy,
+      totalSheets,
+      totalPrice,
+      totalPages: pagesPerCopy * copies
     };
-
-    document.head.appendChild(script);
-
-  });
-
-}
-
-async function ensurePdfJs() {
-
-  if(window.pdfjsLib) {
-    return window.pdfjsLib;
   }
 
-  let lastError;
+  function updateSummary() {
+    const result = calculatePrice();
 
-  for(const src of PDFJS_CDNS) {
+    $("pageCount").textContent = pagesPerCopy;
+    $("totalPageCount").textContent = result.totalPages;
+    $("rate").textContent = money(result.rate);
+    $("copyCount").textContent = result.copies || "Invalid";
+    $("totalPrice").textContent = money(result.totalPrice);
+
+    const validCopies = result.copies >= 1 && result.copies <= 1000;
+    const validOrder = filesReady && pagesPerCopy > 0 && validCopies;
+
+    submitBtn.disabled = !validOrder;
+
+    if (!validCopies) {
+      $("priceStatus").textContent = "Copies 1 se 1000 ke beech honi chahiye.";
+      $("priceStatus").className = "status error";
+    } else {
+      $("priceStatus").textContent =
+        `Total ${result.totalSheets} physical sheets × ${money(result.rate)} per sheet`;
+      $("priceStatus").className = "status";
+    }
+  }
+
+  async function loadLivePrices() {
+    try {
+      const ref = doc(db, "settings", "pricing");
+      const snap = await getDoc(ref);
+
+      if (snap.exists()) {
+        const data = snap.data();
+
+        prices = {
+          bwSingle: safePrice(data.bwSingle, DEFAULT_PRICES.bwSingle),
+          bwDouble: safePrice(data.bwDouble, DEFAULT_PRICES.bwDouble),
+
+          // "colour" aur purane "color" dono field names support hain.
+          colourSingle: safePrice(
+            data.colourSingle ?? data.colorSingle,
+            DEFAULT_PRICES.colourSingle
+          ),
+
+          colourDouble: safePrice(
+            data.colourDouble ?? data.colorDouble,
+            DEFAULT_PRICES.colourDouble
+          )
+        };
+
+        $("priceStatus").textContent = "Live pricing load ho gayi.";
+        $("priceStatus").className = "status success";
+      } else {
+        $("priceStatus").textContent = "Default pricing use ho rahi hai.";
+      }
+
+      pricingLoaded = true;
+      updateSummary();
+
+    } catch (error) {
+      console.error("Pricing load error:", error);
+      $("priceStatus").textContent =
+        "Live pricing load nahi hui. Default rates use ho rahe hain.";
+      $("priceStatus").className = "status error";
+
+      pricingLoaded = true;
+      updateSummary();
+    }
+  }
+
+  async function countOneFile(file) {
+    const extension = file.name.split(".").pop().toLowerCase();
+
+    if (file.size <= 0) {
+      throw new Error(file.name + " file empty hai.");
+    }
+
+    if (file.size > 15 * 1024 * 1024) {
+      throw new Error(file.name + " 15 MB se badi hai.");
+    }
+
+    if (extension === "pdf") {
+      if (!window.pdfjsLib) {
+        throw new Error("PDF reader load nahi hua. Internet check karein.");
+      }
+
+      const buffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({
+        data: new Uint8Array(buffer)
+      }).promise;
+
+      return pdf.numPages;
+    }
+
+    if (["jpg", "jpeg", "png"].includes(extension)) {
+      return 1;
+    }
+
+    throw new Error(file.name + " supported format nahi hai.");
+  }
+
+  async function processFiles() {
+    const token = ++selectionToken;
+    const files = Array.from(fileInput.files || []);
+
+    selectedFiles = files;
+    pagesPerCopy = 0;
+    filesReady = false;
+
+    $("fileList").innerHTML = "";
+    $("pageStatus").textContent = "";
+    $("pageStatus").className = "status";
+
+    updateSummary();
+
+    if (!files.length) {
+      $("pageStatus").textContent = "Abhi koi file select nahi ki gayi.";
+      return;
+    }
+
+    $("pageStatus").textContent = "Files ke pages count ho rahe hain...";
+
+    let total = 0;
+    const details = [];
 
     try {
+      for (const file of files) {
+        const pages = await countOneFile(file);
 
-      await loadScript(src);
+        if (token !== selectionToken) return;
 
-      if(window.pdfjsLib) {
-        return window.pdfjsLib;
+        total += pages;
+        details.push({ name: file.name, pages });
       }
 
-    } catch(error) {
+      if (token !== selectionToken) return;
 
-      lastError = error;
+      pagesPerCopy = total;
+      filesReady = total > 0;
 
+      $("fileList").innerHTML = details.map(item => `
+        <div class="file-item">
+          📄 ${escapeHtml(item.name)}
+          <strong style="float:right">${item.pages} page(s)</strong>
+        </div>
+      `).join("");
+
+      $("pageStatus").textContent =
+        `Successfully counted ${total} pages in ${files.length} file(s).`;
+      $("pageStatus").className = "status success";
+
+    } catch (error) {
+      if (token !== selectionToken) return;
+
+      pagesPerCopy = 0;
+      filesReady = false;
+
+      $("pageStatus").textContent = error.message || "File read nahi ho payi.";
+      $("pageStatus").className = "status error";
     }
 
+    updateSummary();
   }
 
-  throw lastError || new Error("PDF.js load nahi ho paayi.");
-
-}
-
-
-// ====================================
-// PRICE CALCULATION
-// ====================================
-
-function currentRate() {
-
-  if(typeInput.value === "Black & White") {
-
-    return sideInput.value === "Single Side"
-      ? prices.bwSingle
-      : prices.bwDouble;
-
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, char => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;"
+    })[char]);
   }
 
-  return sideInput.value === "Single Side"
-    ? prices.colorSingle
-    : prices.colorDouble;
-
-}
-
-function calculatePrice() {
-
-  const copies = Number(copiesInput.value);
-
-  if(
-    totalPages <= 0 ||
-    !Number.isInteger(copies) ||
-    copies < 1 ||
-    copies > 1000
-  ) {
-
-    priceDisplay.textContent = "Total Price: ₹0";
-    return 0;
-
-  }
-
-  const rate = currentRate();
-
-  const units = sideInput.value === "Single Side"
-    ? totalPages * copies
-    : Math.ceil(totalPages/2) * copies;
-
-  const total = units * rate;
-
-  priceDisplay.textContent =
-    "Total Price: ₹" +
-    total.toLocaleString("en-IN");
-
-  return total;
-
-}
-
-
-// ====================================
-// COUNT FILE PAGES
-// ====================================
-
-async function countPages() {
-
-  const token = ++selectionToken;
-
-  const files = Array.from(fileInput.files || []);
-
-  totalPages = 0;
-  calculatePrice();
-  showMessage("");
-
-  if(!files.length) {
-
-    pageDisplay.innerHTML =
-      "<strong>Total Pages:</strong> 0";
-
-    fileStatus.textContent =
-      "📂 Abhi koi file select nahi hui.";
-
-    submitBtn.disabled = true;
-    counting = false;
-
-    hideRunner();
-    return;
-
-  }
-
-  counting = true;
-  submitBtn.disabled = true;
-
-  showRunner("🏃‍♂️ Aapki files check kar raha hoon...");
-
-  pageDisplay.textContent = "Pages count ho rahe hain...";
-
-  priceDisplay.textContent = "Total Price: Calculating...";
-
-  fileStatus.textContent =
-    `${files.length} file(s) selected.`;
-
-  try {
-
-    let count = 0;
-    let pdfLib = null;
-
-    for(const file of files) {
-
-      if(token !== selectionToken) return;
-
-      if(file.size <= 0) {
-        throw new Error(`${file.name}: file khaali hai.`);
-      }
-
-      if(file.size > 15*1024*1024) {
-        throw new Error(`${file.name}: file 15 MB se badi hai.`);
-      }
-
-      const extension =
-        file.name.split(".").pop().toLowerCase();
-
-      if(extension === "pdf" || file.type === "application/pdf") {
-
-        if(!pdfLib) {
-
-          pdfLib = await ensurePdfJs();
-
-          pdfLib.GlobalWorkerOptions.workerSrc = PDF_WORKER;
-
-        }
-
-        const data = new Uint8Array(
-          await file.arrayBuffer()
-        );
-
-        const pdf = await pdfLib.getDocument({data}).promise;
-
-        count += pdf.numPages;
-
-        await pdf.destroy();
-
-      } else if(
-        ["jpg","jpeg","png"].includes(extension) ||
-        ["image/jpeg","image/png"].includes(file.type)
-      ) {
-
-        count += 1;
-
-      } else {
-
-        throw new Error(
-          `${file.name}: sirf PDF, JPG, JPEG aur PNG allowed hain.`
-        );
-
-      }
-
+  async function getCustomerAuth() {
+    if (auth.currentUser) {
+      customerUid = auth.currentUser.uid;
+      return customerUid;
     }
 
-    if(token !== selectionToken) return;
+    const result = await signInAnonymously(auth);
+    customerUid = result.user.uid;
+    return customerUid;
+  }
 
-    if(count < 1) {
-      throw new Error("Pages count nahi ho paaye.");
+  function validateCustomer() {
+    const name = nameInput.value.trim();
+    const phone = phoneInput.value.trim();
+
+    if (name.length < 2) {
+      throw new Error("Apna sahi naam enter karein.");
     }
 
-    totalPages = count;
-
-    pageDisplay.innerHTML =
-      `<strong>Total Pages (1 copy):</strong> ${totalPages}`;
-
-    calculatePrice();
-
-    fileStatus.textContent =
-      `✅ ${files.length} file(s) successfully read.`;
-
-    showMessage(
-      "Page counting successful!",
-      "ok"
-    );
-
-    finishRunner(
-      "🎉 Files ready! Ab aap order bana sakte hain."
-    );
-
-  } catch(error) {
-
-    if(token !== selectionToken) return;
-
-    console.error(error);
-
-    totalPages = 0;
-
-    pageDisplay.innerHTML =
-      "<strong>Total Pages:</strong> 0";
-
-    priceDisplay.textContent = "Total Price: ₹0";
-
-    fileStatus.textContent =
-      "File read nahi ho paayi.";
-
-    showMessage(error.message,"error");
-
-    finishRunner(
-      "⚠️ File check nahi ho paayi. Dobara select karein."
-    );
-
-  } finally {
-
-    if(token === selectionToken) {
-
-      counting = false;
-
-      submitBtn.disabled =
-        totalPages <= 0 || uploading;
-
+    if (!/^[6-9]\d{9}$/.test(phone)) {
+      throw new Error("10 digit ka valid mobile number enter karein.");
     }
 
-  }
-
-}
-
-
-// ====================================
-// FORM EVENTS
-// ====================================
-
-fileInput.addEventListener("change",countPages);
-
-copiesInput.addEventListener("input",calculatePrice);
-
-typeInput.addEventListener("change",calculatePrice);
-
-sideInput.addEventListener("change",calculatePrice);
-
-
-// ====================================
-// CREATE PRINT ORDER
-// ====================================
-
-form.addEventListener("submit",async event=>{
-
-  event.preventDefault();
-
-  if(uploading) return;
-
-  const files = Array.from(fileInput.files || []);
-
-  const name =
-    document.getElementById("name").value.trim();
-
-  const phone =
-    document.getElementById("phone").value.trim();
-
-  const copies = Number(copiesInput.value);
-
-  const totalPrice = calculatePrice();
-
-  if(!pricesLoaded) {
-    showMessage("Pricing load hone ka wait karein.","error");
-    return;
-  }
-
-  if(counting) {
-    showMessage("Page counting complete hone ka wait karein.","error");
-    return;
-  }
-
-  if(!files.length || totalPages <= 0) {
-    showMessage("Pehle valid PDF ya photo select karein.","error");
-    return;
-  }
-
-  if(!Number.isInteger(copies) || copies < 1 || copies > 1000) {
-    showMessage("Copies 1 se 1000 ke beech honi chahiye.","error");
-    return;
-  }
-
-  if(!name) {
-    showMessage("Apna naam likhein.","error");
-    return;
-  }
-
-  if(!/^[0-9]{10}$/.test(phone)) {
-    showMessage("Sahi 10 digit mobile number likhein.","error");
-    return;
-  }
-
-  if(!Number.isFinite(totalPrice) || totalPrice <= 0) {
-    showMessage("Price calculate nahi ho paayi.","error");
-    return;
-  }
-
-  uploading = true;
-
-  submitBtn.disabled = true;
-
-  submitBtn.textContent =
-    "Order process ho raha hai...";
-
-  showRunner(
-    "🏃‍♂️ Aapki files upload kar raha hoon..."
-  );
-
-  const uploadedPaths = [];
-
-  try {
-
-    if(!auth.currentUser) {
-      await signInAnonymously(auth);
+    if (!filesReady || pagesPerCopy <= 0) {
+      throw new Error("Pehle valid PDF ya photo upload karein.");
     }
 
-    const customerUid = auth.currentUser.uid;
+    if (getCopies() === null) {
+      throw new Error("Copies ki sankhya 1 se 1000 ke beech honi chahiye.");
+    }
 
-    const orderId = "SP-" + Date.now();
+    return { name, phone };
+  }
 
-    const filePaths = [];
-    const fileNames = [];
+  async function uploadFiles(orderId) {
+    const uploadedPaths = [];
 
-    for(const file of files) {
+    for (const file of selectedFiles) {
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+      const path = `${orderId}/${Date.now()}_${safeName}`;
 
-      const safeName =
-        file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
-
-      const path =
-        `${orderId}/${Date.now()}_${safeName}`;
-
-      const {error} = await supabase.storage
+      const { error } = await supabase
+        .storage
         .from("print-files")
-        .upload(path,file,{
-          cacheControl:"3600",
-          upsert:false,
-          contentType:file.type || "application/octet-stream"
+        .upload(path, file, {
+          cacheControl: "3600",
+          upsert: false,
+          contentType: file.type || "application/octet-stream"
         });
 
-      if(error) throw error;
+      if (error) {
+        throw new Error("File upload fail hua: " + file.name + ". " + error.message);
+      }
 
       uploadedPaths.push(path);
-
-      filePaths.push(path);
-
-      fileNames.push(file.name);
-
     }
 
-    const orderData = {
+    return uploadedPaths;
+  }
 
-      orderId,
-      uid:customerUid,
+  async function submitOrder() {
+    $("submitStatus").textContent = "";
+    $("submitStatus").className = "status";
 
-      name,
-      phone,
+    try {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Please wait...";
 
-      fileNames,
-      filePaths,
+      const customer = validateCustomer();
+      const result = calculatePrice();
 
-      totalPages:totalPages * copies,
+      if (!Number.isFinite(result.totalPrice) || result.totalPrice <= 0) {
+        throw new Error("Order price calculate nahi ho paya.");
+      }
 
-      printType:typeInput.value,
-      printSide:sideInput.value,
+      const uid = await getCustomerAuth();
+      const orderId = generateOrderId();
 
-      copies,
-      totalPrice,
+      $("submitStatus").textContent = "Files upload ho rahi hain...";
 
-      unitPrice:currentRate(),
+      const filePaths = await uploadFiles(orderId);
+      const fileNames = selectedFiles.map(file => file.name);
 
-      pricingVersion,
-      pricingSnapshot:{...prices},
+      const orderData = {
+        orderId,
+        uid,
 
-      utr:"",
+        name: customer.name,
+        phone: customer.phone,
 
-      paymentStatus:"PENDING",
-      orderStatus:"PENDING",
+        fileNames,
+        filePaths,
 
-      createdAt:serverTimest
+        // totalPages = sabhi copies ke pages
+        totalPages: result.totalPages,
+        pagesPerCopy,
+
+        printType: typeInput.value,
+        printSide: sideInput.value,
+
+        copies: result.copies,
+        sheetsPerCopy: result.sheetsPerCopy,
+        totalSheets: result.totalSheets,
+
+        totalPrice: result.totalPrice,
+        unitPrice: result.rate,
+
+        pricingVersion: 1,
+        pricingSnapshot: { ...prices },
+
+        utr: "",
+        paymentStatus: "PENDING",
+        orderStatus: "PENDING",
+
+        createdAt: serverTimestamp()
+      };
+
+      await setDoc(doc(db, "orders", orderId), orderData);
+
+      sessionStorage.setItem("orderId", orderId);
+
+      sessionStorage.setItem("orderData", JSON.stringify({
+        orderId,
+        name: customer.name,
+        phone: customer.phone,
+        totalPages: result.totalPages,
+        pagesPerCopy,
+        copies: result.copies,
+        totalPrice: result.totalPrice,
+        printType: typeInput.value,
+        printSide: sideInput.value
+      }));
+
+      $("submitStatus").textContent = "Order successfully create ho gaya!";
+      $("submitStatus").className = "status success";
+
+      window.location.href = "confirmation.html";
+
+    } catch (error) {
+      console.error("Order submit error:", error);
+
+      $("submitStatus").textContent =
+        error.message || "Order submit nahi ho paya. Dobara try karein.";
+      $("submitStatus").className = "status error";
+
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Order Submit Karein";
+    }
+  }
+
+  fileInput.addEventListener("change", processFiles);
+
+  typeInput.addEventListener("change", updateSummary);
+  sideInput.addEventListener("change", updateSummary);
+  copiesInput.addEventListener("input", updateSummary);
+
+  phoneInput.addEventListener("input", () => {
+    phoneInput.value = phoneInput.value.replace(/\D/g, "").slice(0, 10);
+  });
+
+  submitBtn.addEventListener("click", submitOrder);
+
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      customerUid = user.uid;
+    }
+  });
+
+  await loadLivePrices();
+  updateSummary();
+</script>
+
+</body>
+      </html>
