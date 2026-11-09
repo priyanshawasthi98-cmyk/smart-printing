@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop Dashboard | Smart Printing</title>
+<style>
+:root{
+  --blue:#1769e0;
+  --dark:#10366f;
+  --light:#edf5ff;
+  --text:#1c2d45;
+  --muted:#718096;
+  --border:#e1eaf5;
+  --green:#159b65;
+  --orange:#e58a19;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f4f8ff;
+  color:var(--text);
+}
+.layout{display:flex;min-height:100vh}
+.sidebar{
+  width:245px;
+  background:#102f61;
+  color:white;
+  padding:24px 15px;
+  flex-shrink:0;
+}
+.brand{font-size:23px;font-weight:800;margin:0 8px 28px}
+.brand span{color:#69b4ff}
+.nav a{
+  display:block;
+  color:#dceaff;
+  text-decoration:none;
+  padding:13px;
+  margin:5px 0;
+  border-radius:9px;
+  font-size:14px;
+}
+.nav a:hover,.nav a.active{background:#24549a;color:white}
+.main{flex:1;min-width:0;padding:27px}
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin-bottom:22px;
+}
+h1{font-size:27px;margin:0 0 7px}
+.subtitle{font-size:13px;color:var(--muted)}
+.profile{
+  background:white;
+  border:1px solid var(--border);
+  padding:10px 14px;
+  border-radius:12px;
+  font-size:13px;
+}
+.profile strong{display:block;margin-bottom:4px}
+.demo{
+  padding:12px 15px;
+  background:#fff5df;
+  color:#875a0b;
+  border:1px solid #f1d99d;
+  border-radius:10px;
+  font-size:12px;
+  line-height:1.6;
+  margin-bottom:20px;
+}
+.welcome{
+  background:linear-gradient(115deg,#1253b8,#2686f0);
+  color:white;
+  border-radius:17px;
+  padding:25px;
+  margin-bottom:20px;
+  position:relative;
+  overflow:hidden;
+}
+.welcome h2{margin:0 0 9px;font-size:23px}
+.welcome p{margin:0;color:#e3efff;font-size:13px;line-height:1.6}
+.welcome .emoji{
+  position:absolute;
+  right:28px;
+  top:18px;
+  font-size:55px;
+  opacity:.9;
+}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:14px;
+  margin-bottom:20px;
+}
+.card{
+  background:white;
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:18px;
+  box-shadow:0 5px 18px rgba(25,75,140,.04);
+}
+.stat-label{font-size:12px;color:var(--muted)}
+.stat-value{font-size:26px;font-weight:800;margin-top:10px}
+.blue{color:var(--blue)}
+.green{color:var(--green)}
+.orange{color:var(--orange)}
+.content-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1.5fr) minmax(240px,.8fr);
+  gap:17px;
+  align-items:start;
+}
+.section-title{font-size:17px;margin:0 0 17px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:480px}
+th,td{
+  padding:12px 9px;
+  border-bottom:1px solid var(--border);
+  text-align:left;
+  font-size:12px;
+}
+th{color:var(--muted)}
+.status{
+  display:inline-block;
+  padding:5px 8px;
+  border-radius:20px;
+  font-size:10px;
+  font-weight:700;
+  background:#edf3ff;
+  color:#2459a5;
+}
+.status.printing{background:#fff1d9;color:#9b6100}
+.status.completed{background:#e1f7ec;color:#08794a}
+.status.pending{background:#edf1f6;color:#526176}
+.btn{
+  display:inline-block;
+  border:0;
+  border-radius:8px;
+  background:var(--blue);
+  color:white;
+  padding:10px 13px;
+  text-decoration:none;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+}
+.btn.light{background:#eaf2ff;color:#1758b5}
+.quick-link{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:13px 0;
+  border-bottom:1px solid var(--border);
+  text-decoration:none;
+  color:var(--text);
+  font-size:13px;
+}
+.quick-link:last-child{border:0}
+.quick-icon{
+  width:39px;height:39px;
+  display:grid;place-items:center;
+  border-radius:11px;
+  background:var(--light);
+  font-size:19px;
+}
+.earning{
+  background:#e9f8f0;
+  border:1px solid #c9ecd9;
+  padding:16px;
+  border-radius:12px;
+  margin-top:17px;
+}
+.earning small{color:#40765b}
+.earning strong{
+  display:block;
+  color:#08794a;
+  font-size:25px;
+  margin-top:7px;
+}
+.footer{text-align:center;color:#98a6b8;font-size:12px;margin-top:25px}
+@media(max-width:1000px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .content-grid{grid-template-columns:1fr}
+}
+@media(max-width:650px){
+  .layout{display:block}
+  .sidebar{width:100%;padding:15px}
+  .brand{margin-bottom:12px}
+  .nav{display:flex;overflow-x:auto;gap:5px}
+  .nav a{white-space:nowrap;padding:10px}
+  .main{padding:16px}
+  h1{font-size:22px}
+  .welcome .emoji{font-size:39px;right:15px}
+  .welcome{padding:20px}
+  .stats{gap:9px}
+  .card{padding:14px}
+  .stat-value{font-size:22px}
+}
+</style>
+</head>
+
+<body>
+<div class="layout">
+
+<aside class="sidebar">
+  <div class="brand">Smart <span>Printing</span></div>
+  <nav class="nav">
+    <a class="active" href="shop-dashboard.html">Dashboard</a>
+    <a href="shop-orders.html">My Orders</a>
+    <a href="shop-earnings.html">Earnings</a>
+    <a href="shop-profile.html">Shop Profile</a>
+    <a href="support.html">Help & Support</a>
+    <a href="index.html">Customer Website</a>
+  </nav>
+</aside>
+
+<main class="main">
+
+  <div class="header">
+    <div>
+      <h1>Shop Dashboard</h1>
+      <div class="subtitle">Manage your printing business</div>
+    </div>
+    <div class="profile">
+      <strong id="ownerName">Shop Owner</strong>
+      <span id="shopName">Demo Printing Shop</span>
+    </div>
+  </div>
+
+  <div class="demo">
+    <strong>Demo Mode:</strong> Ye dashboard sample data use karta hai.
+    Abhi real shop login, live orders, wallet aur earnings Firebase se connected nahi hain.
+    Real shop accounts ke liye baad mein Email-Password authentication aur admin approval add hoga.
+  </div>
+
+  <section class="welcome">
+    <h2>Welcome to Smart Printing! 👋</h2>
+    <p>
+      Aapke shop dashboard mein swagat hai.
+      Yahan se aap orders, printing work aur earnings manage kar sakenge.
+    </p>
+    <div class="emoji">🖨️</div>
+  </section>
+
+  <section class="stats">
+    <div class="card">
+      <div class="stat-label">Total Orders</div>
+      <div class="stat-value blue" id="totalOrders">24</div>
+    </div>
+
+    <div class="card">
+      <div class="stat-label">New Orders</div>
+      <div class="stat-value orange" id="newOrders">5</div>
+    </div>
+
+    <div class="card">
+      <div class="stat-label">Printing</div>
+      <div class="stat-value blue" id="printingOrders">3</div>
+    </div>
+
+    <div class="card">
+      <div class="stat-label">Completed</div>
+      <div class="stat-value green" id="completedOrders">16</div>
+    </div>
+  </section>
+
+  <section class="content-grid">
+
+    <div class="card">
+      <h2 class="section-title">Recent Orders</h2>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Pages</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>SP-1001</td>
+              <td>Rahul</td>
+              <td>25</td>
+              <td><span class="status pending">PENDING</span></td>
+            </tr>
+            <tr>
+              <td>SP-1002</td>
+              <td>Aman</td>
+              <td>40</td>
+              <td><span class="status printing">PRINTING</span></td>
+            </tr>
+            <tr>
+              <td>SP-1003</td>
+              <td>Priya</td>
+              <td>18</td>
+              <td><span class="status completed">COMPLETED</span></td>
+            </tr>
+            <tr>
+              <td>SP-1004</td>
+              <td>Rohit</td>
+              <td>60</td>
+              <td><span class="status pending">PENDING</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top:17px">
+        <a class="btn" href="shop-orders.html">View All Orders →</a>
+      </div>
+
+      <div class="earning">
+        <small>Today's Demo Earnings</small>
+        <strong>₹850.00</strong>
+        <small>Illustrative amount — not actual withdrawable balance.</small>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 class="section-title">Quick Actions</h2>
+
+      <a class="quick-link" href="shop-orders.html">
+        <div class="quick-icon">📋</div>
+        <div><strong>Manage Orders</strong><br><span class="subtitle">View and update orders</span></div>
+      </a>
+
+      <a class="quick-link" href="shop-earnings.html">
+        <div class="quick-icon">💰</div>
+        <div><strong>My Earnings</strong><br><span class="subtitle">Check earnings and payouts</span></div>
+      </a>
+
+      <a class="quick-link" href="shop-profile.html">
+        <div class="quick-icon">🏪</div>
+        <div><strong>Shop Profile</strong><br><span class="subtitle">Manage shop information</span></div>
+      </a>
+
+      <a class="quick-link" href="support.html">
+        <div class="quick-icon">💬</div>
+        <div><strong>Help & Support</strong><br><span class="subtitle">Get assistance</span></div>
+      </a>
+    </div>
+
+  </section>
+
+  <div class="footer">
+    Smart Printing Network · Shop Partner Dashboard
+  </div>
+
+</main>
+</div>
+</body>
+  </html>
