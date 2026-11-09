@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop Profile | Smart Printing</title>
+<style>
+:root{
+  --blue:#1769e0;--dark:#10366f;--light:#edf5ff;
+  --text:#1c2d45;--muted:#718096;--border:#e1eaf5;
+  --green:#159b65;--orange:#e58a19;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f8ff;color:var(--text)}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:245px;background:#102f61;color:white;padding:24px 15px;flex-shrink:0}
+.brand{font-size:23px;font-weight:800;margin:0 8px 28px}
+.brand span{color:#69b4ff}
+.nav a{display:block;color:#dceaff;text-decoration:none;padding:13px;margin:5px 0;border-radius:9px;font-size:14px}
+.nav a:hover,.nav a.active{background:#24549a;color:white}
+.main{flex:1;min-width:0;padding:27px}
+.header{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:22px}
+h1{font-size:27px;margin:0 0 7px}
+.subtitle{font-size:13px;color:var(--muted)}
+.demo{padding:12px 15px;background:#fff5df;color:#875a0b;border:1px solid #f1d99d;border-radius:10px;font-size:12px;line-height:1.6;margin-bottom:20px}
+.grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(250px,.8fr);gap:17px;align-items:start}
+.card{background:white;border:1px solid var(--border);border-radius:14px;padding:21px;box-shadow:0 5px 18px rgba(25,75,140,.04)}
+.section-title{font-size:17px;margin:0 0 18px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:13px;font-weight:700;margin-bottom:7px}
+input,select,textarea{
+  width:100%;padding:12px;border:1px solid var(--border);
+  border-radius:9px;background:white;color:var(--text);
+  font:inherit;font-size:13px;outline:none
+}
+input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px #1769e015}
+textarea{resize:vertical;min-height:80px}
+input:disabled{background:#f4f6f9;color:#8995a5}
+.btn{border:0;border-radius:8px;padding:12px 16px;background:var(--blue);color:white;font-weight:700;font-size:13px;cursor:pointer}
+.btn.light{background:#eaf2ff;color:#1758b5}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:7px}
+.status{display:inline-block;padding:6px 10px;border-radius:20px;background:#e1f7ec;color:#08794a;font-size:11px;font-weight:700}
+.profile-icon{width:65px;height:65px;background:#eaf3ff;border-radius:17px;display:grid;place-items:center;font-size:32px;margin-bottom:14px}
+.info{padding:13px 0;border-bottom:1px solid var(--border);font-size:13px}
+.info:last-child{border:0}
+.info small{display:block;color:var(--muted);margin-bottom:5px}
+.facility{display:flex;gap:9px;align-items:center;font-size:13px;margin:13px 0}
+.facility input{width:17px;height:17px}
+.notice{background:var(--light);padding:13px;border-radius:10px;color:#315a91;font-size:12px;line-height:1.6;margin-top:16px}
+.message{display:none;padding:12px;background:#e9f8f0;color:#08794a;border-radius:9px;font-size:13px;margin-top:14px}
+.footer{text-align:center;color:#98a6b8;font-size:12px;margin-top:25px}
+@media(max-width:950px){.grid{grid-template-columns:1fr}}
+@media(max-width:650px){
+ .layout{display:block}.sidebar{width:100%;padding:15px}
+ .brand{margin-bottom:12px}.nav{display:flex;overflow-x:auto;gap:5px}
+ .nav a{white-space:nowrap;padding:10px}.main{padding:16px}
+ h1{font-size:22px}.card{padding:16px}
+ .form-grid{grid-template-columns:1fr;gap:0}
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">Smart <span>Printing</span></div>
+  <nav class="nav">
+    <a href="shop-dashboard.html">Dashboard</a>
+    <a href="shop-orders.html">My Orders</a>
+    <a href="shop-earnings.html">Earnings</a>
+    <a class="active" href="shop-profile.html">Shop Profile</a>
+    <a href="support.html">Help & Support</a>
+    <a href="index.html">Customer Website</a>
+  </nav>
+</aside>
+
+<main class="main">
+  <div class="header">
+    <div>
+      <h1>Shop Profile</h1>
+      <div class="subtitle">Manage your business information</div>
+    </div>
+    <span class="status">Demo Profile</span>
+  </div>
+
+  <div class="demo">
+    <strong>Demo Mode:</strong> Is page par changes abhi sirf browser preview mein rahenge.
+    Real profile saving, owner authentication aur approval Firebase integration ke baad hoga.
+  </div>
+
+  <section class="grid">
+    <div class="card">
+      <h2 class="section-title">Shop Information</h2>
+
+      <form id="profileForm">
+        <div class="field">
+          <label for="shopName">Shop Name *</label>
+          <input id="shopName" required maxlength="80" value="Demo Digital Prints">
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label for="ownerName">Owner Name *</label>
+            <input id="ownerName" required maxlength="80" value="Demo Shop Owner">
+          </div>
+          <div class="field">
+            <label for="shopType">Shop Type *</label>
+            <select id="shopType" required>
+              <option>Photocopy and Printing</option>
+              <option>Digital Printing</option>
+              <option>Stationery and Printing</option>
+              <option>Cyber Cafe</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label for="phone">Mobile Number *</label>
+            <input id="phone" required inputmode="numeric" pattern="[6-9][0-9]{9}" maxlength="10" value="9876543210">
+          </div>
+          <div class="field">
+            <label for="email">Email Address</label>
+            <input id="email" type="email" value="demo@example.com">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="address">Shop Address *</label>
+          <textarea id="address" required maxlength="300">Main Market, Near College Road</textarea>
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label for="city">City *</label>
+            <input id="city" required maxlength="60" value="Jabalpur">
+          </div>
+          <div class="field">
+            <label for="pincode">PIN Code *</label>
+            <input id="pincode" required pattern="[0-9]{6}" maxlength="6" inputmode="numeric" value="482001">
+          </div>
+        </div>
+
+        <hr style="border:0;border-top:1px solid var(--border);margin:12px 0 20px">
+
+        <h2 class="section-title">Shop Facilities</h2>
+
+        <label class="facility">
+          <input type="checkbox" id="bw" checked>
+          Black & White Printing
+        </label>
+        <label class="facility">
+          <input type="checkbox" id="colour" checked>
+          Colour Printing
+        </label>
+        <label class="facility">
+          <input type="checkbox" id="double" checked>
+          Double-Side Printing
+        </label>
+        <label class="facility">
+          <input type="checkbox" id="photocopy" checked>
+          Photocopy Service
+        </label>
+
+        <hr style="border:0;border-top:1px solid var(--border);margin:18px 0">
+
+        <h2 class="section-title">Opening Hours</h2>
+
+        <div class="form-grid">
+          <div class="field">
+            <label for="opening">Opening Time</label>
+            <input type="time" id="opening" value="09:00">
+          </div>
+          <div class="field">
+            <label for="closing">Closing Time</label>
+            <input type="time" id="closing" value="20:00">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="description">About Your Shop</label>
+          <textarea id="description" maxlength="300" placeholder="Write a short description...">Printing and photocopy services for students.</textarea>
+        </div>
+
+        <div class="actions">
+          <button class="btn" type="submit">Save Demo Changes</button>
+          <button class="btn light" type="reset">Reset Form</button>
+        </div>
+
+        <div class="message" id="message">Demo changes previewed successfully.</div>
+      </form>
+    </div>
+
+    <div>
+      <div class="card">
+        <div class="profile-icon">🏪</div>
+        <h2 class="section-title" id="previewName">Demo Digital Prints</h2>
+        <span class="status">Demo Status</span>
+
+        <div class="info">
+          <small>Owner</small>
+          <strong id="previewOwner">Demo Shop Owner</strong>
+        </div>
+        <div class="info">
+          <small>City</small>
+          <strong id="previewCity">Jabalpur</strong>
+        </div>
+        <div class="info">
+          <small>Shop Timings</small>
+          <strong id="previewHours">09:00 AM – 08:00 PM</strong>
+        </div>
+        <div class="info">
+          <small>Contact</small>
+          <strong id="previewPhone">9876543210</strong>
+        </div>
+
+        <div class="notice">
+          Shop approval, documents, bank details aur verified contact details
+          future account integration mein securely manage honge.
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:17px">
+        <h2 class="section-title">Account Information</h2>
+        <div class="info">
+          <small>Account Email</small>
+          <strong>demo@example.com</strong>
+        </div>
+        <div class="info">
+          <small>Account Security</small>
+          <strong>Email + Password (Planned)</strong>
+        </div>
+        <div class="info">
+          <small>Approval</small>
+          <strong>Admin Approval Required</strong>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">Smart Printing Network · Shop Profile</div>
+</main>
+</div>
+
+<script>
+const form=document.getElementById("profileForm");
+const message=document.getElementById("message");
+
+function updatePreview(){
+  document.getElementById("previewName").textContent=
+    document.getElementById("shopName").value || "Your Shop";
+
+  document.getElementById("previewOwner").textContent=
+    document.getElementById("ownerName").value || "Shop Owner";
+
+  document.getElementById("previewCity").textContent=
+    document.getElementById("city").value || "City";
+
+  document.getElementById("previewPhone").textContent=
+    document.getElementById("phone").value || "Not provided";
+
+  const opening=document.getElementById("opening").value;
+  const closing=document.getElementById("closing").value;
+
+  document.getElementById("previewHours").textContent=
+    (opening || "--:--")+" – "+(closing || "--:--");
+}
+
+form.addEventListener("input",updatePreview);
+
+form.addEventListener("submit",event=>{
+  event.preventDefault();
+
+  if(!form.reportValidity())return;
+
+  if(!document.getElementById("bw").checked &&
+     !document.getElementById("colour").checked){
+    alert("Kam se kam ek printing facility select karein.");
+    return;
+  }
+
+  updatePreview();
+  message.style.display="block";
+  message.textContent="Demo changes previewed successfully. Real profile abhi save nahi hua.";
+});
+
+form.addEventListener("reset",()=>{
+  setTimeout(()=>{
+    updatePreview();
+    message.style.display="none";
+  },0);
+});
+
+updatePreview();
+</script>
+</body>
+      </html>
