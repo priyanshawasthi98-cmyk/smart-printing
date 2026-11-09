@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Help & Support | Smart Printing</title>
+<style>
+:root{
+  --blue:#1769e0;
+  --dark:#12366d;
+  --light:#edf5ff;
+  --white:#fff;
+  --text:#23344d;
+  --muted:#718096;
+  --border:#dce8f7;
+  --shadow:0 12px 35px rgba(23,105,224,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  background:#f5f9ff;
+  color:var(--text);
+  line-height:1.6;
+}
+a{text-decoration:none;color:inherit}
+header{
+  background:white;
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:10;
+}
+.nav{
+  max-width:1150px;margin:auto;padding:15px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:15px;
+}
+.logo{font-size:21px;font-weight:800;color:var(--blue)}
+.logo span{color:var(--dark)}
+.nav-links{display:flex;gap:20px;align-items:center;font-size:14px}
+.nav-links a:hover{color:var(--blue)}
+.btn{
+  display:inline-block;background:var(--blue);color:white;
+  padding:11px 18px;border-radius:10px;font-weight:700;
+  border:0;cursor:pointer;transition:.25s;
+}
+.btn:hover{background:#0e50b8;transform:translateY(-2px)}
+.hero{
+  background:linear-gradient(120deg,#0e55bd,#2688f5);
+  color:white;text-align:center;padding:65px 20px;
+  position:relative;overflow:hidden;
+}
+.hero:before,.hero:after{
+  content:"";position:absolute;border:1px solid #ffffff25;
+  border-radius:50%;width:260px;height:260px;
+}
+.hero:before{top:-150px;left:-70px}
+.hero:after{bottom:-190px;right:-40px;width:350px;height:350px}
+.hero-content{position:relative;z-index:1}
+.hero h1{font-size:clamp(30px,5vw,45px);margin-bottom:12px}
+.hero p{max-width:620px;margin:auto;color:#e4efff}
+.container{max-width:1100px;margin:40px auto;padding:0 20px}
+.section-title{text-align:center;margin-bottom:25px}
+.section-title h2{font-size:27px;color:var(--dark)}
+.section-title p{color:var(--muted);font-size:14px}
+.help-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:18px;
+}
+.help-card{
+  background:white;border:1px solid var(--border);
+  border-radius:17px;padding:24px;box-shadow:var(--shadow);
+  transition:.25s;
+}
+.help-card:hover{transform:translateY(-5px)}
+.help-icon{
+  width:48px;height:48px;border-radius:14px;
+  background:var(--light);display:grid;place-items:center;
+  font-size:24px;margin-bottom:14px;
+}
+.help-card h3{color:var(--dark);margin-bottom:7px}
+.help-card p{color:var(--muted);font-size:14px}
+.faq-list{max-width:850px;margin:auto}
+.faq-item{
+  background:white;border:1px solid var(--border);
+  border-radius:12px;margin-bottom:12px;overflow:hidden;
+}
+.faq-question{
+  width:100%;background:white;border:0;text-align:left;
+  padding:17px 19px;font-size:15px;font-weight:700;
+  color:var(--dark);cursor:pointer;display:flex;
+  justify-content:space-between;gap:12px;
+}
+.faq-answer{display:none;padding:0 19px 18px;color:var(--muted);font-size:14px}
+.faq-item.active .faq-answer{display:block}
+.faq-item.active .plus{transform:rotate(45deg)}
+.plus{color:var(--blue);font-size:22px;transition:.2s}
+.support-layout{
+  display:grid;grid-template-columns:.85fr 1.15fr;
+  gap:22px;align-items:start;
+}
+.info-panel{
+  background:linear-gradient(145deg,#1459bd,#287ee8);
+  color:white;border-radius:18px;padding:28px;
+}
+.info-panel h2{font-size:24px;margin-bottom:10px}
+.info-panel p{color:#e4efff;font-size:14px}
+.info-point{margin-top:22px}
+.info-point strong{display:block;margin-bottom:3px}
+.form-panel{
+  background:white;border:1px solid var(--border);
+  border-radius:18px;padding:27px;box-shadow:var(--shadow);
+}
+.form-panel h2{color:var(--dark);margin-bottom:5px}
+.form-panel>p{font-size:13px;color:var(--muted);margin-bottom:20px}
+label{display:block;font-size:13px;font-weight:700;margin:13px 0 6px}
+input,select,textarea{
+  width:100%;padding:12px 13px;border:1px solid var(--border);
+  border-radius:9px;font-size:14px;outline:none;background:#fbfdff;
+}
+input:focus,select:focus,textarea:focus{
+  border-color:var(--blue);box-shadow:0 0 0 3px #1769e018;
+}
+textarea{min-height:115px;resize:vertical}
+.form-note{
+  margin-top:13px;padding:11px;background:#fff7e6;
+  color:#875b0a;border-radius:9px;font-size:12px;
+}
+.preview{
+  display:none;margin-top:15px;padding:15px;
+  background:#edf8f0;border:1px solid #c8e9d0;
+  border-radius:10px;font-size:13px;overflow-wrap:anywhere;
+}
+.preview h3{color:#18753b;margin-bottom:8px}
+footer{
+  margin-top:55px;background:#102e5b;color:white;
+  padding:30px 20px;text-align:center;
+}
+footer p{font-size:13px;color:#c9dcf7}
+footer a{color:white;text-decoration:underline}
+@media(max-width:750px){
+  .help-grid{grid-template-columns:1fr}
+  .support-layout{grid-template-columns:1fr}
+  .nav-links{gap:10px;font-size:12px}
+  .nav{padding:13px}
+}
+@media(max-width:420px){
+  .logo{font-size:18px}
+  .nav-links a:not(.btn){display:none}
+  .hero{padding:50px 17px}
+  .container{margin:30px auto;padding:0 14px}
+  .form-panel,.info-panel{padding:21px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="nav">
+    <a class="logo" href="index.html">🖨️ Smart <span>Printing</span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="payment.html">Payment</a>
+      <a href="confirmation.html">My Order</a>
+      <a class="btn" href="#contact">Get Help</a>
+    </div>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-content">
+    <h1>How can we help you?</h1>
+    <p>Printing, payments, orders ya shop collection se related help yahan paayein.</p>
+  </div>
+</section>
+
+<main>
+  <section class="container">
+    <div class="section-title">
+      <h2>What do you need help with?</h2>
+      <p>Apni problem ke according section select karein.</p>
+    </div>
+
+    <div class="help-grid">
+      <div class="help-card">
+        <div class="help-icon">📄</div>
+        <h3>Printing Orders</h3>
+        <p>File upload, page count, copies aur print options se related information.</p>
+      </div>
+      <div class="help-card">
+        <div class="help-icon">💳</div>
+        <h3>Payment Issues</h3>
+        <p>UPI payment, transaction reference aur payment status se related help.</p>
+      </div>
+      <div class="help-card">
+        <div class="help-icon">🏪</div>
+        <h3>Shop Collection</h3>
+        <p>Order acceptance, printing status aur shop se order collect karne ki information.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="container">
+    <div class="section-title">
+      <h2>Frequently Asked Questions</h2>
+      <p>Common questions ke answers.</p>
+    </div>
+
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-question">
+          Which file formats are supported?
+          <span class="plus">+</span>
+        </button>
+        <div class="faq-answer">
+          Website PDF, JPG, JPEG aur PNG files support karti hai. File size limit 15 MB per file hai.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          How can I pay for my order?
+          <span class="plus">+</span>
+        </button>
+        <div class="faq-answer">
+          Payment page par UPI ID aur QR code diya jata hai. Aap apne UPI app se payment kar sakte hain.
+          Payment status tabhi Paid maana jayega jab transaction verify ho.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          Does submitting UTR confirm my payment?
+          <span class="plus">+</span>
+        </button>
+        <div class="faq-answer">
+          Nahi. Sirf UTR submit karne se payment automatically verify nahi hota.
+          Payment ko bank ya UPI transaction record se check karna zaroori hai.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          Where can I collect my printed order?
+          <span class="plus">+</span>
+        </button>
+        <div class="faq-answer">
+          Order partner shop se collect kiya jayega. Collection se pehle order status aur shop ki instructions check karein.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          Can I change my order after submitting it?
+          <span class="plus">+</span>
+        </button>
+        <div class="faq-answer">
+          Order processing start hone ke baad changes possible nahi bhi ho sakte.
+          Zaroorat hone par support team se contact karein.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          What should I do if my payment is deducted but order is pending?
+          <span class="plus">+</span>
+        </button>
+        <div class="faq-answer">
+          Apna transaction record aur UTR safe rakhein. Dobara payment karne se pehle transaction status check karein.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="container" id="contact">
+    <div class="section-title">
+      <h2>Contact Support</h2>
+      <p>Apni problem ki details likhein.</p>
+    </div>
+
+    <div class="support-layout">
+      <div class="info-panel">
+        <h2>We're here to help!</h2>
+        <p>Apni problem clearly explain karein, taaki support team use samajh sake.</p>
+
+        <div class="info-point">
+          <strong>📄 Order related</strong>
+          <p>Order ID aur problem ki details ready rakhein.</p>
+        </div>
+
+        <div class="info-point">
+          <strong>💳 Payment related</strong>
+          <p>Transaction date, amount aur UTR sambhal kar rakhein.</p>
+        </div>
+
+        <div class="info-point">
+          <strong>🔒 Privacy</strong>
+          <p>Apna UPI PIN, password ya OTP kabhi share na karein.</p>
+        </div>
+      </div>
+
+      <div class="form-panel">
+        <h2>Send a Support Request</h2>
+        <p>Form fill karne ke baad aapko message ka preview dikhega.</p>
+
+        <form id="supportForm">
+          <label for="customerName">Your Name</label>
+          <input id="customerName" type="text" maxlength="60" required placeholder="Enter your name">
+
+          <label for="customerPhone">Mobile Number</label>
+          <input id="customerPhone" type="tel" inputmode="numeric"
+                 maxlength="10" pattern="[0-9]{10}" required placeholder="10-digit mobile number">
+
+          <label for="orderId">Order ID (if available)</label>
+          <input id="orderId" type="text" maxlength="40" placeholder="Example: SP-12345678">
+
+          <label for="issueType">Issue Type</label>
+          <select id="issueType" required>
+            <option value="">Select your issue</option>
+            <option>File Upload Problem</option>
+            <option>Printing Order Problem</option>
+            <option>Payment Problem</option>
+            <option>Shop Collection Problem</option>
+            <option>Other</option>
+          </select>
+
+          <label for="message">Describe Your Problem</label>
+          <textarea id="message" maxlength="1000" required
+                    placeholder="Explain your problem..."></textarea>
+
+          <button class="btn" type="submit" style="width:100%;margin-top:18px">
+            Generate Request Preview
+          </button>
+        </form>
+
+        <div class="form-note">
+          Demo Mode: Is form se abhi message send ya database mein save nahi hota.
+          Backend support system baad mein connect hoga.
+        </div>
+
+        <div class="preview" id="preview" aria-live="polite">
+          <h3>✓ Request Preview Ready</h3>
+          <div id="previewContent"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>© 2026 Smart Printing. All rights reserved.</p>
+  <p style="margin-top:8px">
+    <a href="index.html">Home</a> ·
+    <a href="payment.html">Payment</a> ·
+    <a href="shop-registration.html">Shop Registration</a>
+  </p>
+</footer>
+
+<script>
+document.querySelectorAll(".faq-question").forEach(function(button){
+  button.addEventListener("click",function(){
+    const item=this.parentElement;
+    item.classList.toggle("active");
+  });
+});
+
+document.getElementById("supportForm").addEventListener("submit",function(event){
+  event.preventDefault();
+
+  const name=document.getElementById("customerName").value.trim();
+  const phone=document.getElementById("customerPhone").value.trim();
+  const orderId=document.getElementById("orderId").value.trim();
+  const issue=document.getElementById("issueType").value;
+  const message=document.getElementById("message").value.trim();
+
+  if(!/^[0-9]{10}$/.test(phone)){
+    alert("Please enter a valid 10-digit mobile number.");
+    return;
+  }
+
+  if(!name || !issue || !message){
+    alert("Please fill all required fields.");
+    return;
+  }
+
+  const content=document.getElementById("previewContent");
+  content.replaceChildren();
+
+  const details=[
+    ["Name",name],
+    ["Mobile",phone],
+    ["Order ID",orderId || "Not provided"],
+    ["Issue",issue],
+    ["Message",message]
+  ];
+
+  details.forEach(function(detail){
+    const row=document.createElement("p");
+    const strong=document.createElement("strong");
+    strong.textContent=detail[0]+": ";
+    row.appendChild(strong);
+    row.appendChild(document.createTextNode(detail[1]));
+    row.style.marginBottom="6px";
+    content.appendChild(row);
+  });
+
+  document.getElementById("preview").style.display="block";
+  document.getElementById("preview").scrollIntoView({
+    behavior:"smooth",
+    block:"nearest"
+  });
+});
+</script>
+
+</body>
+  </html>
