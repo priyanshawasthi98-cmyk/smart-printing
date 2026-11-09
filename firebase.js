@@ -31,6 +31,7 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  signInAnonymously,
   signOut,
   sendPasswordResetEmail,
   setPersistence,
@@ -47,24 +48,12 @@ import {
 // ==========================================
 
 const firebaseConfig = {
-
   apiKey: "AIzaSyChFdnkCefAEGZQ9S4_-xFcWY0HFkBZA9M",
-
-  authDomain:
-    "smart-printing-network.firebaseapp.com",
-
-  projectId:
-    "smart-printing-network",
-
-  storageBucket:
-    "smart-printing-network.firebasestorage.app",
-
-  messagingSenderId:
-    "941474974449",
-
-  appId:
-    "1:941474974449:web:68b9b401d3170e56fbb750"
-
+  authDomain: "smart-printing-network.firebaseapp.com",
+  projectId: "smart-printing-network",
+  storageBucket: "smart-printing-network.firebasestorage.app",
+  messagingSenderId: "941474974449",
+  appId: "1:941474974449:web:68b9b401d3170e56fbb750"
 };
 
 
@@ -163,11 +152,6 @@ export function isAdmin(user) {
 }
 
 
-// NOTE:
-// Ye frontend helper sirf UI access ke liye hai.
-// Actual security Firebase Security Rules se enforce hogi.
-
-
 // ==========================================
 // 6. CURRENCY FORMATTER
 // ==========================================
@@ -198,6 +182,15 @@ export function validateFile(file) {
     return {
       valid: false,
       message: "Please select a file."
+    };
+
+  }
+
+  if (file.size <= 0) {
+
+    return {
+      valid: false,
+      message: "File is empty."
     };
 
   }
@@ -309,6 +302,7 @@ export {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  signInAnonymously,
   signOut,
   sendPasswordResetEmail,
   setPersistence,
