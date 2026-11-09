@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop Earnings | Smart Printing</title>
+<style>
+:root{
+  --blue:#1769e0;--dark:#10366f;--light:#edf5ff;
+  --text:#1c2d45;--muted:#718096;--border:#e1eaf5;
+  --green:#159b65;--orange:#e58a19;--red:#d94a4a;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f8ff;color:var(--text)}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:245px;background:#102f61;color:white;padding:24px 15px;flex-shrink:0}
+.brand{font-size:23px;font-weight:800;margin:0 8px 28px}
+.brand span{color:#69b4ff}
+.nav a{display:block;color:#dceaff;text-decoration:none;padding:13px;margin:5px 0;border-radius:9px;font-size:14px}
+.nav a:hover,.nav a.active{background:#24549a;color:white}
+.main{flex:1;min-width:0;padding:27px}
+.header{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:22px}
+h1{font-size:27px;margin:0 0 7px}
+.subtitle{font-size:13px;color:var(--muted)}
+.demo{padding:12px 15px;background:#fff5df;color:#875a0b;border:1px solid #f1d99d;border-radius:10px;font-size:12px;line-height:1.6;margin-bottom:20px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:20px}
+.card{background:white;border:1px solid var(--border);border-radius:14px;padding:19px;box-shadow:0 5px 18px rgba(25,75,140,.04)}
+.label{font-size:12px;color:var(--muted)}
+.value{font-size:26px;font-weight:800;margin-top:10px}
+.blue{color:var(--blue)}.green{color:var(--green)}.orange{color:var(--orange)}
+.grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(260px,.8fr);gap:17px;align-items:start}
+.title{font-size:17px;margin:0 0 17px}
+.balance{
+  background:linear-gradient(115deg,#1253b8,#2686f0);
+  color:white;border-radius:15px;padding:23px;margin-bottom:17px;
+}
+.balance small{color:#dceaff}
+.balance strong{display:block;font-size:32px;margin:9px 0 16px}
+.btn{border:0;border-radius:8px;padding:11px 14px;background:var(--blue);color:white;font-weight:700;font-size:12px;cursor:pointer}
+.btn.white{background:white;color:#1758b5}
+.btn.light{background:#eaf2ff;color:#1758b5}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:470px}
+th,td{padding:13px 10px;border-bottom:1px solid var(--border);text-align:left;font-size:12px}
+th{color:var(--muted)}
+.badge{padding:5px 8px;border-radius:20px;font-size:10px;font-weight:700;background:#e1f7ec;color:#08794a}
+.badge.pending{background:#fff1d9;color:#9b6100}
+.badge.rejected{background:#ffeded;color:#bd3434}
+.field{margin:15px 0}
+.field label{display:block;font-size:13px;font-weight:700;margin-bottom:7px}
+.field input,.field select{width:100%;padding:12px;border:1px solid var(--border);border-radius:9px;font:inherit;font-size:13px}
+.note{background:var(--light);color:#315a91;padding:13px;border-radius:10px;font-size:12px;line-height:1.6;margin-top:15px}
+.modal-bg{display:none;position:fixed;inset:0;background:#102f6170;align-items:center;justify-content:center;padding:15px}
+.modal{background:white;padding:23px;border-radius:15px;width:min(400px,100%)}
+.modal h2{font-size:19px;margin-top:0}
+.modal p{font-size:13px;color:var(--muted);line-height:1.6}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.footer{text-align:center;color:#98a6b8;font-size:12px;margin-top:25px}
+@media(max-width:1000px){.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}}
+@media(max-width:650px){
+ .layout{display:block}.sidebar{width:100%;padding:15px}
+ .brand{margin-bottom:12px}.nav{display:flex;overflow-x:auto;gap:5px}
+ .nav a{white-space:nowrap;padding:10px}.main{padding:16px}
+ h1{font-size:22px}.stats{gap:9px}.card{padding:14px}
+ .value{font-size:22px}.balance strong{font-size:28px}
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">Smart <span>Printing</span></div>
+  <nav class="nav">
+    <a href="shop-dashboard.html">Dashboard</a>
+    <a href="shop-orders.html">My Orders</a>
+    <a class="active" href="shop-earnings.html">Earnings</a>
+    <a href="shop-profile.html">Shop Profile</a>
+    <a href="support.html">Help & Support</a>
+    <a href="index.html">Customer Website</a>
+  </nav>
+</aside>
+
+<main class="main">
+  <div class="header">
+    <div>
+      <h1>My Earnings</h1>
+      <div class="subtitle">Track your shop income and payouts</div>
+    </div>
+    <div class="subtitle">Shop Partner Panel</div>
+  </div>
+
+  <div class="demo">
+    <strong>Demo Mode:</strong> Ye amounts sample figures hain.
+    Abhi real wallet, commission calculation, bank transfer aur payout system connected nahi hai.
+  </div>
+
+  <section class="balance">
+    <small>Demo Available Balance</small>
+    <strong id="available">₹2,450.00</strong>
+    <button class="btn white" id="requestButton">Request Payout</button>
+  </section>
+
+  <section class="stats">
+    <div class="card">
+      <div class="label">Total Earnings</div>
+      <div class="value blue" id="totalEarnings">₹5,000</div>
+    </div>
+    <div class="card">
+      <div class="label">Platform Commission</div>
+      <div class="value orange" id="commission">₹100</div>
+    </div>
+    <div class="card">
+      <div class="label">Total Paid Out</div>
+      <div class="value green" id="paidOut">₹2,450</div>
+    </div>
+    <div class="card">
+      <div class="label">Pending Payout</div>
+      <div class="value orange" id="pendingPayout">₹0</div>
+    </div>
+  </section>
+
+  <section class="grid">
+    <div class="card">
+      <h2 class="title">Payout History</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Request ID</th>
+              <th>Date</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="historyBody"></tbody>
+        </table>
+      </div>
+      <div id="empty" style="display:none;text-align:center;padding:20px;color:#718096;font-size:13px">
+        No payout history available.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 class="title">Earnings Information</h2>
+      <div class="field">
+        <label>Demo Commission Rate</label>
+        <input value="2%" disabled>
+      </div>
+      <div class="field">
+        <label>Settlement Method</label>
+        <select disabled>
+          <option>Bank Transfer / UPI</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Settlement Schedule</label>
+        <select disabled>
+          <option>Daily Payout (Planned)</option>
+        </select>
+      </div>
+      <div class="note">
+        Commission aur payout rules ko baad mein Super Admin panel se control kiya jayega.
+        Actual payout se pehle payment reconciliation aur admin approval zaroori hoga.
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">Smart Printing Network · Shop Earnings</div>
+</main>
+</div>
+
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h2>Request Payout</h2>
+    <p>Demo payout request ke liye amount enter karein.</p>
+    <div class="field">
+      <label for="amount">Payout Amount (₹)</label>
+      <input id="amount" type="number" min="1" step="1" placeholder="Enter amount">
+    </div>
+    <div class="modal-actions">
+      <button class="btn light" id="cancel">Cancel</button>
+      <button class="btn" id="submit">Submit Demo Request</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let available = 2450;
+let totalEarnings = 5000;
+let commission = 100;
+let paidOut = 2450;
+let pendingPayout = 0;
+
+let history = [
+  {id:"PO-1001",date:"08 Nov 2026",amount:1500,status:"PAID"},
+  {id:"PO-1002",date:"06 Nov 2026",amount:950,status:"PAID"}
+];
+
+const modalBg = document.getElementById("modalBg");
+const amountInput = document.getElementById("amount");
+
+function money(value){
+  return "₹" + value.toLocaleString("en-IN",{maximumFractionDigits:2});
+}
+
+function render(){
+  document.getElementById("available").textContent=money(available);
+  document.getElementById("totalEarnings").textContent=money(totalEarnings);
+  document.getElementById("commission").textContent=money(commission);
+  document.getElementById("paidOut").textContent=money(paidOut);
+  document.getElementById("pendingPayout").textContent=money(pendingPayout);
+
+  const body=document.getElementById("historyBody");
+  body.innerHTML=history.map(item=>`
+    <tr>
+      <td><strong>${item.id}</strong></td>
+      <td>${item.date}</td>
+      <td>${money(item.amount)}</td>
+      <td><span class="badge ${item.status==="PENDING"?"pending":item.status==="REJECTED"?"rejected":""}">${item.status}</span></td>
+    </tr>
+  `).join("");
+
+  document.getElementById("empty").style.display=
+    history.length ? "none" : "block";
+}
+
+document.getElementById("requestButton").addEventListener("click",()=>{
+  if(available<=0){
+    alert("Available balance nahi hai.");
+    return;
+  }
+  amountInput.value="";
+  amountInput.max=available;
+  modalBg.style.display="flex";
+});
+
+document.getElementById("cancel").addEventListener("click",()=>{
+  modalBg.style.display="none";
+});
+
+document.getElementById("submit").addEventListener("click",()=>{
+  const amount=Number(amountInput.value);
+
+  if(!Number.isFinite(amount)||amount<=0||!Number.isInteger(amount)){
+    alert("Valid whole-number amount enter karein.");
+    return;
+  }
+
+  if(amount>available){
+    alert("Payout amount available balance se zyada hai.");
+    return;
+  }
+
+  const id="PO-"+(1000+history.length+1);
+
+  available-=amount;
+  pendingPayout+=amount;
+
+  history.unshift({
+    id,
+    date:new Date().toLocaleDateString("en-IN"),
+    amount,
+    status:"PENDING"
+  });
+
+  modalBg.style.display="none";
+  render();
+  alert("Demo payout request create ho gayi. Real payment transfer nahi hua.");
+});
+
+render();
+</script>
+</body>
+</html>
