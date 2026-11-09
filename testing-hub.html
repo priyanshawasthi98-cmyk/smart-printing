@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Printing | Testing Hub</title>
+
+<style>
+:root{
+  --blue:#1769e0;
+  --dark:#12366d;
+  --light:#edf5ff;
+  --bg:#f5f9ff;
+  --text:#263750;
+  --muted:#718096;
+  --border:#dce8f7;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+header{
+  background:white;
+  border-bottom:1px solid var(--border);
+  padding:17px 20px;
+}
+.header-inner{
+  max-width:1100px;
+  margin:auto;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+}
+.logo{font-size:21px;font-weight:800;color:var(--blue)}
+.logo span{color:var(--dark)}
+.container{max-width:1100px;margin:30px auto;padding:0 18px}
+.hero{
+  background:linear-gradient(120deg,#1255bd,#3289f5);
+  color:white;
+  text-align:center;
+  padding:35px 20px;
+  border-radius:18px;
+  margin-bottom:25px;
+}
+.hero h1{font-size:30px;margin-bottom:8px}
+.hero p{font-size:14px;color:#e4efff}
+.info{
+  background:#fff7e6;
+  color:#805b12;
+  padding:13px 16px;
+  border-radius:10px;
+  font-size:13px;
+  margin-bottom:25px;
+}
+.group{margin-bottom:28px}
+.group h2{
+  font-size:20px;
+  color:var(--dark);
+  margin-bottom:13px;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:13px;
+}
+.link-card{
+  background:white;
+  border:1px solid var(--border);
+  padding:17px;
+  border-radius:13px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  transition:.2s;
+}
+.link-card:hover{
+  border-color:var(--blue);
+  transform:translateY(-3px);
+  box-shadow:0 8px 22px #1769e018;
+}
+.link-card strong{
+  display:block;
+  color:var(--dark);
+  font-size:14px;
+}
+.link-card small{
+  color:var(--muted);
+  font-size:11px;
+}
+.open{
+  background:var(--light);
+  color:var(--blue);
+  padding:8px 11px;
+  border-radius:8px;
+  font-size:12px;
+  font-weight:bold;
+  white-space:nowrap;
+  text-decoration:none;
+  border:0;
+}
+.open:hover{background:var(--blue);color:white}
+.footer{
+  text-align:center;
+  color:var(--muted);
+  font-size:12px;
+  padding:25px;
+}
+@media(max-width:750px){
+  .grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:480px){
+  .grid{grid-template-columns:1fr}
+  .hero h1{font-size:25px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">🖨️ Smart <span>Printing</span></div>
+    <a class="open" href="index.html">Open Website</a>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="hero">
+    <h1>Website Testing Hub</h1>
+    <p>Smart Printing ke sabhi pages ek hi jagah se open aur test karein.</p>
+  </section>
+
+  <div class="info">
+    ⚠️ Kuch management pages abhi Demo Mode mein hain.
+    Real database, authentication aur payment testing Firebase configuration ke baad hogi.
+  </div>
+
+  <!-- CUSTOMER PAGES -->
+  <section class="group">
+    <h2>👨‍🎓 Customer Pages</h2>
+    <div class="grid">
+
+      <div class="link-card">
+        <div><strong>Home / Order Form</strong><small>index.html</small></div>
+        <a class="open" href="index.html">Open ↗</a>
+      </div>
+
+      <div class="link-card">
+        <div><strong>Order Confirmation</strong><small>confirmation.html</small></div>
+        <a class="open" href="confirmation.html">Open ↗</a>
+      </div>
+
+      <div class="link-card">
+        <div><strong>Payment</strong><small>payment.html</small></div>
+        <a class="open" href="payment.html">Open ↗</a>
+      </div>
+
+      <div class="link-card">
+        <div><strong>Help & Support</strong><small>support.html</small></div>
+        <a class="open" href="support.html">Open ↗</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ADMIN PAGES -->
+  <section class="group">
+    <h2>🔐 Admin Pages</h2>
+    <div class="grid">
+
+      <div class="link-card">
+        <div><strong>Admin Login</strong><small>admin.html</small></div>
+        <a class="open" href="admin.html">Open ↗</a>
+      </div>
+
+      <div class="link-card">
+        <div><strong>Admin Dashboard</strong><small>admin-dashboard.html</small></div>
+        <a class="open" href="admin-dashboard.html">Open ↗</a>
+      </div>
+
+      <div class="link-card">
+        <div><strong>Order Management</strong><small>order-management.html</small></div>
+        <a class="open" href="order-management.html">Open ↗</a>
+      </div>
+
+      <div class="link-card">
+        <div><strong>Payment Management</strong><small>payment-management.html</small></div>
+        <a class="open" href="payment-management.html">Open ↗</a>
+      </div>
+
+      <div class="link-card">
+        <div><strong>Pricing Management</strong><small>pricing-management.html</small></div>
+        <a class="open" href="pricing-management.html">Open ↗</a>
+      </div>
+
+      <div class="link-card">
+        <div><strong>Shop Management</strong><small>shop-management.html</small></div>
+        <a class="open" href="shop-management.html">Open ↗</a>
+      </div>
+
+      <div class="link-card">
+        <div><strong>College Management</strong><small>college-management.html</small></div>
+        <a class="open" href="college-management.html">Open ↗</a>
+      </div>
+
+      <div class="link-card">
+        <div><strong>Commission Management</strong><small>commission-management.html</small></div>
+        <a class="open" href="commission-management.html">Open ↗</a>
+      </div>
+
+      <div class="link-card">
+        <div><strong>Wallet Management</strong><small>wallet-management.html</small></div>
+        <a class="open" href="wallet-management.html">Open ↗</a>
+      </div>
+
+      <div class="link-card">
+        <div><strong>Notification Management</strong><small>notification-management.html</small></div>
+        <a class="open" href="notification-management.html">Open ↗</a>
+      </div>
+
+      <div class="link-card">
+        <div><strong>Security Management</strong><small>security-management.html</small></div>
+        <a class="open" href="security-management.html">Open ↗</a>
+      </div>
+
+      <div class="link-card">
+        <div><strong>Website Settings</strong><small>website-settings.html</small></div>
+        <a class="open" href="website-settings.html">Open ↗</a>
+      </div>
+
+      <div class="link-card">
+        <div><strong>Reports Management</strong><small>reports-management.html</small></div>
+        <a class="open" href="reports-management.html">Open ↗</a>
+      </div>
+
+      <div class="link-card">
+        <div><strong>Printing Management</strong><small>printing-management.html</small></div>
+        <a class="open" href="printing-management.html">Open ↗</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SHOP OWNER PAGES -->
+  <section class="group">
+    <h2>🏪 Shop Owner Pages</h2>
+    <div class="grid">
+
+      <div class="link-card">
+        <div><strong>Shop Registration</strong><small>shop-registration.html</small></div>
+        <a class="open" href="shop-registration.html">Open ↗</a>
+      </div>
+
+      <div class="link-card">
+        <div><strong>Shop Dashboard</strong><small>shop-dashboard.html</small></div>
+        <a class="open" href="shop-dashboard.html">Open ↗</a>
+      </div>
+
+      <div class="link-card">
+        <div><strong>Shop Orders</strong><small>shop-orders.html</small></div>
+        <a class="open" href="shop-orders.html">Open ↗</a>
+      </div>
+
+      <div class="link-card">
+        <div><strong>Shop Earnings</strong><small>shop-earnings.html</small></div>
+        <a class="open" href="shop-earnings.html">Open ↗</a>
+      </div>
+
+      <div class="link-card">
+        <div><strong>Shop Profile</strong><small>shop-profile.html</small></div>
+        <a class="open" href="shop-profile.html">Open ↗</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PROJECT FILE -->
+  <section class="group">
+    <h2>⚙️ Project File</h2>
+    <div class="grid">
+      <div class="link-card">
+        <div>
+          <strong>Firebase JavaScript</strong>
+          <small>firebase.js (not a web page)</small>
+        </div>
+        <span class="open">JS File</span>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  Smart Printing Network · Testing Hub · 2026
+</footer>
+
+</body>
+</html>
