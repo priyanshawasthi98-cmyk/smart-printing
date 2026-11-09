@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop Orders | Smart Printing</title>
+<style>
+:root{
+  --blue:#1769e0;--dark:#10366f;--light:#edf5ff;
+  --text:#1c2d45;--muted:#718096;--border:#e1eaf5;
+  --green:#159b65;--orange:#e58a19;--red:#d94a4a;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f8ff;color:var(--text)}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:245px;background:#102f61;color:white;padding:24px 15px;flex-shrink:0}
+.brand{font-size:23px;font-weight:800;margin:0 8px 28px}
+.brand span{color:#69b4ff}
+.nav a{display:block;color:#dceaff;text-decoration:none;padding:13px;margin:5px 0;border-radius:9px;font-size:14px}
+.nav a:hover,.nav a.active{background:#24549a;color:white}
+.main{flex:1;min-width:0;padding:27px}
+.header{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:22px}
+h1{font-size:27px;margin:0 0 7px}
+.subtitle{font-size:13px;color:var(--muted)}
+.demo{padding:12px 15px;background:#fff5df;color:#875a0b;border:1px solid #f1d99d;border-radius:10px;font-size:12px;line-height:1.6;margin-bottom:20px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:20px}
+.card{background:white;border:1px solid var(--border);border-radius:14px;padding:18px;box-shadow:0 5px 18px rgba(25,75,140,.04)}
+.stat-label{font-size:12px;color:var(--muted)}
+.stat-value{font-size:25px;font-weight:800;margin-top:9px}
+.blue{color:var(--blue)}.orange{color:var(--orange)}.green{color:var(--green)}.red{color:var(--red)}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:15px}
+input,select{padding:11px 12px;border:1px solid var(--border);border-radius:9px;background:white;color:var(--text);font:inherit;font-size:13px;min-width:0}
+input{flex:1}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:680px}
+th,td{padding:13px 10px;border-bottom:1px solid var(--border);text-align:left;font-size:12px}
+th{color:var(--muted)}
+.status{display:inline-block;padding:5px 8px;border-radius:20px;font-size:10px;font-weight:700;background:#edf1f6;color:#526176}
+.status.accepted{background:#eaf2ff;color:#2459a5}
+.status.printing{background:#fff1d9;color:#9b6100}
+.status.completed{background:#e1f7ec;color:#08794a}
+.status.rejected{background:#ffeded;color:#bd3434}
+.actions{display:flex;gap:6px;flex-wrap:wrap}
+.btn{border:0;border-radius:7px;padding:8px 10px;font-size:11px;font-weight:700;cursor:pointer}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.accept{background:#e5f7ed;color:#08794a}
+.reject{background:#fff0f0;color:#bd3434}
+.start{background:#eaf2ff;color:#1758b5}
+.complete{background:#1769e0;color:white}
+.empty{text-align:center;color:var(--muted);padding:25px}
+.modal-backdrop{display:none;position:fixed;inset:0;background:#102f6170;align-items:center;justify-content:center;padding:15px;z-index:5}
+.modal{background:white;padding:23px;border-radius:15px;width:min(420px,100%)}
+.modal h2{margin-top:0;font-size:19px}
+.modal p{font-size:13px;color:var(--muted);line-height:1.6}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
+.footer{text-align:center;color:#98a6b8;font-size:12px;margin-top:25px}
+@media(max-width:1000px){.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:650px){
+ .layout{display:block}.sidebar{width:100%;padding:15px}
+ .brand{margin-bottom:12px}.nav{display:flex;overflow-x:auto;gap:5px}
+ .nav a{white-space:nowrap;padding:10px}.main{padding:16px}
+ h1{font-size:22px}.stats{gap:9px}.card{padding:14px}
+ .stat-value{font-size:22px}
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">Smart <span>Printing</span></div>
+  <nav class="nav">
+    <a href="shop-dashboard.html">Dashboard</a>
+    <a class="active" href="shop-orders.html">My Orders</a>
+    <a href="shop-earnings.html">Earnings</a>
+    <a href="shop-profile.html">Shop Profile</a>
+    <a href="support.html">Help & Support</a>
+    <a href="index.html">Customer Website</a>
+  </nav>
+</aside>
+
+<main class="main">
+  <div class="header">
+    <div>
+      <h1>My Orders</h1>
+      <div class="subtitle">Manage customer printing orders</div>
+    </div>
+    <div class="subtitle">Shop Partner Panel</div>
+  </div>
+
+  <div class="demo">
+    <strong>Demo Mode:</strong> Ye page sample orders par kaam karta hai.
+    Real orders, customer files aur shop-wise access Firebase integration ke baad aayenge.
+  </div>
+
+  <section class="stats">
+    <div class="card">
+      <div class="stat-label">Total Orders</div>
+      <div class="stat-value blue" id="total">5</div>
+    </div>
+    <div class="card">
+      <div class="stat-label">New Orders</div>
+      <div class="stat-value orange" id="pending">2</div>
+    </div>
+    <div class="card">
+      <div class="stat-label">Printing</div>
+      <div class="stat-value blue" id="printing">1</div>
+    </div>
+    <div class="card">
+      <div class="stat-label">Completed</div>
+      <div class="stat-value green" id="completed">1</div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 style="font-size:18px;margin:0 0 17px">Order List</h2>
+
+    <div class="toolbar">
+      <input id="search" placeholder="Search Order ID or customer">
+      <select id="filter">
+        <option value="ALL">All Status</option>
+        <option value="PENDING">New</option>
+        <option value="ACCEPTED">Accepted</option>
+        <option value="PRINTING">Printing</option>
+        <option value="COMPLETED">Completed</option>
+        <option value="REJECTED">Rejected</option>
+      </select>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Print Details</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="ordersBody"></tbody>
+      </table>
+    </div>
+    <div class="empty" id="empty" hidden>No orders found.</div>
+  </section>
+
+  <div class="footer">Smart Printing Network · Shop Orders</div>
+</main>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal">
+    <h2 id="modalTitle">Confirm Action</h2>
+    <p id="modalText"></p>
+    <div class="modal-actions">
+      <button class="btn" style="background:#edf1f6" id="cancel">Cancel</button>
+      <button class="btn complete" id="confirm">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const orders = [
+ {id:"SP-1001",name:"Rahul Sharma",pages:25,copies:2,type:"B&W",amount:100,status:"PENDING"},
+ {id:"SP-1002",name:"Aman Verma",pages:40,copies:1,type:"Colour",amount:400,status:"PRINTING"},
+ {id:"SP-1003",name:"Priya Patel",pages:18,copies:1,type:"B&W",amount:36,status:"COMPLETED"},
+ {id:"SP-1004",name:"Rohit Singh",pages:60,copies:3,type:"Colour",amount:1800,status:"PENDING"},
+ {id:"SP-1005",name:"Neha Gupta",pages:30,copies:1,type:"B&W",amount:60,status:"ACCEPTED"}
+];
+
+const body=document.getElementById("ordersBody");
+const search=document.getElementById("search");
+const filter=document.getElementById("filter");
+const backdrop=document.getElementById("modalBackdrop");
+let pendingAction=null;
+
+function render(){
+ const term=search.value.trim().toLowerCase();
+ const status=filter.value;
+
+ const visible=orders.filter(o=>{
+   const matches=o.id.toLowerCase().includes(term)||
+                 o.name.toLowerCase().includes(term);
+   return matches&&(status==="ALL"||o.status===status);
+ });
+
+ body.innerHTML=visible.map(o=>{
+   let buttons="";
+
+   if(o.status==="PENDING"){
+     buttons=`
+       <button class="btn accept" data-action="ACCEPTED" data-id="${o.id}">Accept</button>
+       <button class="btn reject" data-action="REJECTED" data-id="${o.id}">Reject</button>`;
+   }else if(o.status==="ACCEPTED"){
+     buttons=`<button class="btn start" data-action="PRINTING" data-id="${o.id}">Start Print</button>`;
+   }else if(o.status==="PRINTING"){
+     buttons=`<button class="btn complete" data-action="COMPLETED" data-id="${o.id}">Complete</button>`;
+   }else{
+     buttons=`<span style="color:#718096">No action</span>`;
+   }
+
+   return `
+   <tr>
+     <td><strong>${o.id}</strong></td>
+     <td>${o.name}</td>
+     <td>${o.pages} pages · ${o.copies} copies · ${o.type}</td>
+     <td>₹${o.amount}</td>
+     <td><span class="status ${o.status.toLowerCase()}">${o.status}</span></td>
+     <td><div class="actions">${buttons}</div></td>
+   </tr>`;
+ }).join("");
+
+ document.getElementById("empty").hidden=visible.length!==0;
+
+ document.getElementById("total").textContent=orders.length;
+ document.getElementById("pending").textContent=
+   orders.filter(o=>o.status==="PENDING").length;
+ document.getElementById("printing").textContent=
+   orders.filter(o=>o.status==="PRINTING").length;
+ document.getElementById("completed").textContent=
+   orders.filter(o=>o.status==="COMPLETED").length;
+}
+
+body.addEventListener("click",event=>{
+ const button=event.target.closest("button[data-action]");
+ if(!button)return;
+
+ const order=orders.find(o=>o.id===button.dataset.id);
+ if(!order)return;
+
+ pendingAction={orderId:order.id,status:button.dataset.action};
+
+ document.getElementById("modalTitle").textContent="Confirm Order Update";
+ document.getElementById("modalText").textContent=
+   `Order ${order.id} ka status ${button.dataset.action} karna chahte hain?`;
+
+ backdrop.style.display="flex";
+});
+
+document.getElementById("cancel").addEventListener("click",()=>{
+ pendingAction=null;
+ backdrop.style.display="none";
+});
+
+document.getElementById("confirm").addEventListener("click",()=>{
+ if(!pendingAction)return;
+
+ const order=orders.find(o=>o.id===pendingAction.orderId);
+ if(order)order.status=pendingAction.status;
+
+ pendingAction=null;
+ backdrop.style.display="none";
+ render();
+});
+
+search.addEventListener("input",render);
+filter.addEventListener("change",render);
+
+render();
+</script>
+</body>
+  </html>
